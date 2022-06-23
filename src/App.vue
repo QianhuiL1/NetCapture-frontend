@@ -1,18 +1,18 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <DemosticOverview/>
+    <!-- <ForeignOverview/> -->
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import DemosticOverview from './views/Overview/domestic'
+import ForeignOverview from './views/Overview/foreign'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+    name: "App",
+    components: { DemosticOverview, ForeignOverview }
 }
 </script>
 
