@@ -93,14 +93,14 @@
         <el-table-column label="操作" min-width="15%">
           <template slot-scope="scope">
   <el-button
-    size="primary"
+    size="medium"
     type="text"
     @click="handleClick(scope.row, 'line')"
   >
     <i class="icon-view iconfont" style="color: #3388ff" />
     <span style="color: #223355"> 活动轨迹</span>
   </el-button>
-  <el-button type="text" size="primary" @click="handleClick(scope.row, 'detail')">
+  <el-button type="text" size="medium" @click="handleClick(scope.row, 'detail')">
     <i class="el-icon-odometer" style="color: #3388ff" />
     <span style="color: #223355"> 查看详情</span>
   </el-button>

@@ -1,9 +1,9 @@
 <template>
-  <el-menu :default-active="this.$route.path" router class="el-menu-demo" mode="horizontal" background-color="#334157" text-color="#fff" active-text-color="#fff">
+  <el-menu :default-active="this.$route.path" router class="el-menu-demo" mode="horizontal" background-color="#334157" text-color="#fff" active-text-color="#ffd04b">
     <el-button class="buttonimg">
-      <img class="showimg" :src="collapsed?imgshow:imgsq" @click="doToggle()">
+      <img class="showimg" :src="img" @click="doToggle()">
     </el-button>
-    	<el-menu-item v-for="(tit,i) in titleList" :key="i" :index="tit.name">
+    	<el-menu-item class="submenu-item" v-for="(tit,i) in titleList" :key="i" :index="tit.name">
         <template>{{ tit.navItem }}</template>
       </el-menu-item>
     <el-submenu index="4" class="submenu">
@@ -27,9 +27,8 @@
           {name:'home', navItem:'国内疫情'},
           {name:'aboard',navItem:'国外疫情'},
           {name:'track',navItem:'人员轨迹追踪'},
-        ]
-          // imgshow:require('../assets/img/show.png'),
-          // imgsq:require('../assets/img/sq.png')
+        ],
+          img:require('../assets/list.png'),
       }
     },
     methods: {
@@ -44,7 +43,6 @@
       },
       doToggle:function(){
           this.collapsed=!this.collapsed;
-           console.log('TopNav组件的collasped='+this.collasped);
           this.$emit('open-collasped',this.collapsed);
       }
     }
@@ -52,7 +50,9 @@
 </script>
  
 <style scoped>
-  .el-menu-vertical-demo:not(.el-menu--collapse) {
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    min-height: 400px;
     border: none;
   }
  .el-menu-demo{
@@ -63,13 +63,25 @@
     position:absolute;
 	right:0px;
   }
- 
+ .submenu-item{
+width:16em;
+height:5em;
+ }
+ .submenu-item:focus {
+   background-color: rgb(30, 46, 65) !important;
+}
   .buttonimg {
     height: 60px;
+    width:60px;
     background-color: transparent;
     border: none;
   }
- 
+ .buttonimg:hover {
+    background-color: transparent;
+  }
+  .buttonimg:focus {
+    background-color: transparent;
+  }
   .showimg {
     width: 26px;
     height: 26px;
@@ -80,5 +92,6 @@
  
   .showimg:active {
     border: none;
+    background-color: transparent;
   }
 </style>

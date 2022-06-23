@@ -40,12 +40,19 @@
     <el-table-column label="操作" style="width: 10%">
       <template slot-scope="scope">
         <el-button
-          size="mini"
-          @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, tableData)">删除</el-button>
+    size="medium"
+    type="text"
+    @click="handleEdit(scope.$index, scope.row)"
+  >
+    <i class="el-icon-edit" style="color: #3388ff" />
+    <span style="color: #223355"> 编辑</span></el-button>
+  <el-button
+    size="medium"
+    type="text"
+    @click="handleDelete(scope.$index, tableData)"
+  >
+    <i class="el-icon-delete" style="color: #d81e06" />
+    <span style="color: #223355"> 删除</span></el-button>
       </template>
     </el-table-column>
   </el-table>        

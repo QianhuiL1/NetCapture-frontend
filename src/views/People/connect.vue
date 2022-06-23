@@ -68,13 +68,21 @@
         </el-table-column>    
        <el-table-column label="操作">
       <template slot-scope="scope">
-        <el-button
-          size="mini"
-          @click="handleEdit(scope.$index, scope.row,1)">编辑</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, tableData)">删除</el-button>
+             <el-button
+    size="medium"
+    type="text"
+    @click="handleEdit(scope.$index, scope.row,1)"
+  >
+    <i class="el-icon-edit" style="color: #3388ff" />
+    <span style="color: #223355"> 编辑</span>
+  </el-button>
+     <el-button
+    size="medium"
+    type="text"
+    @click="handleDelete(scope.$index, tableData)"
+  >
+    <i class="el-icon-edit" style="color: #d81e06" />
+    <span style="color: #223355"> 删除</span></el-button>
       </template>
     </el-table-column>
     </el-table>
@@ -152,13 +160,21 @@
         </el-table-column>    
        <el-table-column label="操作">
       <template slot-scope="scope">
-        <el-button
-          size="mini"
-          @click="handleEdit(scope.$index, scope.row,2)">编辑</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, tableData)">删除</el-button>
+          <el-button
+    size="medium"
+    type="text"
+    @click="handleEdit(scope.$index, scope.row,2)"
+  >
+    <i class="el-icon-edit" style="color: #3388ff" />
+    <span style="color: #223355"> 编辑</span>
+  </el-button>
+     <el-button
+    size="medium"
+    type="text"
+    @click="handleDelete(scope.$index, tableData)"
+  >
+    <i class="el-icon-edit" style="color: #d81e06" />
+    <span style="color: #223355"> 删除</span></el-button>
       </template>
     </el-table-column>
     </el-table>

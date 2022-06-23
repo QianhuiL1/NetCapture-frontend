@@ -7,19 +7,18 @@
 		</div>
 		<el-submenu index="1">
 			<template slot="title">
-				<i class="el-icon-location"></i>
-				<span>国内疫情</span>
+				<i class="el-icon-s-home" style="font-size: 28px;"></i>
+				<span>  国内疫情</span>
 			</template>
 			<el-menu-item-group>
-				<!-- <template slot="title">国内疫情</template> -->
 				<el-menu-item index="/home">疫情速报</el-menu-item>
 				<el-menu-item index="/home1">疫情趋势</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
 		<el-submenu index="2">
 			<template slot="title">
-				<i class="el-icon-location"></i>
-				<span>国外疫情</span>
+				<i class="el-icon-s-promotion" style="font-size: 28px;"></i>
+				<span>  国外疫情</span>
 			</template>
 			<el-menu-item-group>
 				<!-- <template slot="title">国内疫情</template> -->
@@ -29,8 +28,8 @@
 		</el-submenu>
         <el-submenu index="3">
 			<template slot="title">
-				<i class="el-icon-location"></i>
-				<span>重点人员追踪</span>
+				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
+				<span>  重点人员追踪</span>
 			</template>
 			<el-menu-item-group>
 				<!-- <template slot="title">国内疫情</template> -->
@@ -43,19 +42,21 @@
 </template>
 <script>
 	export default {
-		
+    name:'LeftAside',
+    props:['collapsed'],
 	}
 </script>
 <style>
 	.el-menu-vertical-demo:not(.el-menu--collapse) {
-		width: 200px;
-        border: none;
-		text-align: left;
-	}
+    width: 200px;
+	padding: 0px;
+	border: none;
+    text-align: left;
+  }
  
-	.el-menu-item-group__title {
-		padding: 0px;
-	}
+  .el-menu-item-group__title {
+    padding: 0px;
+  }
  
 	.el-menu-bg {
 		background-color: #1f2d3d !important;

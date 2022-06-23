@@ -40,7 +40,6 @@
     methods:{
       doClick:function(collasped){
             this.collapsed=collasped;
-            console.log('Main组件的collasped='+collasped);
       }
     }
   };
@@ -53,7 +52,7 @@
 	}
  
 	.main-aside-collapsed {
-		width: 64px !important;
+		width: 80px !important;
 		height: 100%;
 		background-color: #334157;
 		margin: 0px;
