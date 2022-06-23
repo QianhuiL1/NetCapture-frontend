@@ -1,18 +1,17 @@
 <template>
   <div id="app">
-    <DemosticOverview/>
-    <!-- <ForeignOverview/> -->
+    <Header/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import DemosticOverview from './views/Overview/domestic'
-import ForeignOverview from './views/Overview/foreign'
+import Header from './components/Header.vue'
 
 export default {
-    name: "App",
-    components: { DemosticOverview, ForeignOverview }
+  name: 'App',
+  components: {
+    Header
+  }
 }
 </script>
 
@@ -23,6 +22,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
