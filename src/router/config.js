@@ -1,12 +1,5 @@
-import domesticOverview from '@/views/Overview/domestic/index'
 export default {
     routes: [{
-            path: '/',
-            redirect: domesticOverview,
-            // component: domesticOverview,
-            name: '国内疫情总览',
-            // hidden: true
-        }, {
             path: "/home",
             component: () =>
                 import ("@/views/Overview/domestic")

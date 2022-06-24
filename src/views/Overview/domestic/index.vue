@@ -17,37 +17,37 @@
         </div>
           <div class="content-top">
             <div class="event-content">
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增确诊</span>
                 <span class="count">{{xzqz}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增本土</span>
                 <span class="count">{{xzbt}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增境外</span>
                 <span class="count">{{xzjw}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增无症状</span>
                 <span class="count">{{xzwzz}}</span>
               </div>
               </div>
               <div class="event-content">
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有确诊</span>
                 <span class="count">{{xyqz}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有本土</span>
                 <span class="count">{{xybt}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有境外</span>
                 <span class="count">{{xyjw}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有无症状</span>
                 <span class="count">{{xywzz}}</span>
               </div>

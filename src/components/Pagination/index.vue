@@ -1,6 +1,17 @@
 <template>
   <div :class="{'hidden':hidden}" class="pagination-container">
-    <el-pagination :background="background" :current-page.sync="currentPage" :page-size.sync="pageSize" :layout="layout" :page-sizes="pageSizes" :total="total" v-bind="$attrs" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    <el-pagination
+      :background="background"
+      :current-page.sync="currentPage"
+      :page-size.sync="pageSize"
+      :layout="layout"
+      :page-sizes="pageSizes"
+      :pager-count="pagerCount"
+      :total="total"
+      v-bind="$attrs"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
   </div>
 </template>
 
@@ -28,9 +39,14 @@ export default {
         return [10, 20, 30, 50]
       }
     },
+    // 移动端页码按钮的数量端默认值5
+    pagerCount: {
+      type: Number,
+      default: document.body.clientWidth < 992 ? 5 : 7
+    },
     layout: {
       type: String,
-      default: 'total, prev, pager, next, sizes, jumper'
+      default: 'total, sizes, prev, pager, next, jumper'
     },
     background: {
       type: Boolean,
@@ -44,6 +60,10 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  data() {
+    return {
+    };
   },
   computed: {
     currentPage: {
@@ -65,6 +85,9 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
+      if (this.currentPage * val > this.total) {
+        this.currentPage = 1
+      }
       this.$emit('pagination', { page: this.currentPage, limit: val })
       if (this.autoScroll) {
         scrollTo(0, 800)
@@ -83,8 +106,7 @@ export default {
 <style scoped>
 .pagination-container {
   background: #fff;
-  padding: 0px 0px;
-  padding-top: 18px;
+  padding: 32px 16px;
 }
 .pagination-container.hidden {
   display: none;

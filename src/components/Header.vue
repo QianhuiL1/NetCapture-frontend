@@ -47,7 +47,7 @@
 <style scoped>
 	.main-container {
 		height: 100%;
-		width: 100% !important;
+		width: 100%!important;
 		box-sizing: border-box;
 	}
  

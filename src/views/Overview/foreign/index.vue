@@ -4,7 +4,7 @@
     <el-card class="table_content table_content_all">
         <div class="theme">
           <span>新型冠状病毒肺炎</span>
-          </div>
+        </div>
         <div class="image" @click="getHelp">
         </div>
     </el-card>
@@ -17,31 +17,31 @@
         </div>
           <div class="content-top">
             <div class="event-content">
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增确诊</span>
                 <span class="count">{{xzqz}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增死亡</span>
                 <span class="count">{{xzsw}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有确诊</span>
                 <span class="count">{{xyqz}}</span>
               </div>
               </div>
               <div class="event-content">
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有确诊</span>
                 <span class="count">{{xyqz}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">累计死亡</span>
                 <span class="count">{{ljsw}}</span>
               </div>
-              <div class="event-item" style="background:#5290FD">
+              <div class="event-item" style="background:#B3D8FF">
                 <span class="label">累计治愈</span>
-                <span class="count">{{xyjw}}</span>
+                <span class="count">{{ljzy}}</span>
               </div>
             </div>
       </div>
@@ -52,29 +52,28 @@
      <el-col :span="12">
       <el-card  class="table_content table_content_all">
         <div slot="header">
-          <span>新增本土趋势</span>
+          <span>新增确诊国家TOP</span>
         </div>
         <template>
-          <div>新增本土趋势图</div>
+          <div>新增确诊国家Top10图</div>
         </template>
       </el-card>
      </el-col>
      <el-col :span="12">
       <el-card  class="table_content table_content_all">
         <div slot="header">
-          <span>新增本土趋势</span>
+          <span>国外新增确诊趋势</span>
         </div>
         <template>
-          <div>境外输入趋势图</div>
+          <div>国外新增确诊图</div>
         </template>
       </el-card>
      </el-col>
     </div>
   <div class="center-content">
-    <el-col :span="12">
       <el-card class="table_content table_content_all">
         <div slot="header">
-          <span>疫情速报</span>
+          <span>国外各国家疫情统计汇总</span>
         </div>
         <el-table
           class="table_tree">
@@ -83,38 +82,19 @@
             >
             </el-table-column>
           <el-table-column
-            label="新增本土"
+            label="新增"
             >
             </el-table-column>
           <el-table-column
-            label="新增无症状"
+            label="累计"
             >
             </el-table-column>  
             <el-table-column
-            label="风险区域"
+            label="死亡"
             >
             </el-table-column>
         </el-table>
       </el-card>
-      </el-col>
-      <el-col :span="12">
-      <el-card class="table_content table_content_all">
-        <div slot="header">
-          <span>中风险地区</span>
-        </div>
-                <el-table
-          class="table_tree">
-          <el-table-column
-            label="风险"
-            >
-            </el-table-column>
-          <el-table-column
-            label="地区"
-            >
-            </el-table-column>
-        </el-table>
-      </el-card>
-      </el-col>
     </div>
     <el-dialog title="帮助"  :visible.sync="dialogVisible" width="45%" :model="helpItems">
       <div 
