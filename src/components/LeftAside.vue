@@ -1,9 +1,9 @@
 <template>
-	<el-menu :router="true" :default-active="$route.name" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" background-color="#334157"
-	 text-color="#fff" active-text-color="#ffd04b" :collapse="collapsed" :collapse-transition="bb">
-		<!-- <el-menu default-active="2" :collapse="collapsed" collapse-transition router :default-active="$route.path" unique-opened class="el-menu-vertical-demo" background-color="#334157" text-color="#fff" active-text-color="#ffd04b"> -->
+	<el-menu :router="true" :default-active="$route.name" class="el-menu-vertical-demo" background-color="#334157"
+	 text-color="#fff" active-text-color="#ffd04b" :collapse="collapsed">
 		<div class="logobox">
 			<img class="logoimg" src="../assets/logo1.png" alt="">
+			<div class="tim"><span>疫情流调系统</span></div>
 		</div>
 		<el-submenu index="1">
 			<template slot="title">
@@ -15,17 +15,16 @@
 				<el-menu-item index="/home1">疫情趋势</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="2">
+		<!-- <el-submenu index="2">
 			<template slot="title">
 				<i class="el-icon-s-promotion" style="font-size: 28px;"></i>
 				<span>  国外疫情</span>
 			</template>
 			<el-menu-item-group>
-				<!-- <template slot="title">国内疫情</template> -->
 				<el-menu-item index="/aboard">疫情速报</el-menu-item>
 				<el-menu-item index="/aboard1">疫情趋势</el-menu-item>
 			</el-menu-item-group>
-		</el-submenu>
+		</el-submenu> -->
         <el-submenu index="3">
 			<template slot="title">
 				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
@@ -48,12 +47,13 @@
 </script>
 <style>
 	.el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
-	padding: 0px;
-	border: none;
+    width: 220px;
+		padding: 0px;
+		border: none;
+		/* margin: auto; */
     text-align: left;
   }
- 
+
   .el-menu-item-group__title {
     padding: 0px;
   }
@@ -69,14 +69,26 @@
 
 	.logobox {
 		height: 80px;
-		line-height: 40px;
-		color: #9d9d9d;
+		/* line-height: 40px; */
+		/* color: #9d9d9d;
 		font-size: 20px;
-		text-align: center;
-		padding: 20px 0px;
+		text-align: center; */
+		/* padding: 20px 20px; */
+		display: flex;
+		flex-direction: row;
 	}
- 
 	.logoimg {
-		height: 40px;
+		height: 60px;
+		width: 60px;
+		margin-top: 10px;
+		margin-left: 5px;
 	}
+	.tim{
+		margin-top: 23px;
+		font-size: 22px;
+		font-weight: 550;
+		color:#FFFFFF;
+	}
+
+
 </style>

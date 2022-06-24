@@ -25,7 +25,6 @@
         activeIndex2: '1',
         titleList:[
           {name:'home', navItem:'国内疫情'},
-          {name:'aboard',navItem:'国外疫情'},
           {name:'track',navItem:'人员轨迹追踪'},
         ],
           img:require('../assets/list.png'),
@@ -53,7 +52,7 @@
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   display:flex;
     /* width: 200px; */
-    min-height: 400px;
+    min-height: 4em;
     border: none;
   }
  .el-menu-demo{
@@ -61,18 +60,24 @@
 	display: flex;
  }
   .submenu {
+    width:11em;
+    height:4em;
     position:absolute;
-	right:0px;
+	  right:0px;
+    font-size: 16px;
+    font-weight: 540;
   }
  .submenu-item{
-width:16em;
-height:5em;
+    font-size: 16px;
+    font-weight: 540;
+    width:16em;
+    height:4em;
  }
  .submenu-item:focus {
    background-color: rgb(30, 46, 65) !important;
 }
   .buttonimg {
-    height: 60px;
+    height: 70px;
     width:60px;
     background-color: transparent;
     border: none;
@@ -84,11 +89,10 @@ height:5em;
     background-color: transparent;
   }
   .showimg {
-    width: 26px;
-    height: 26px;
-    position: absolute;
-    top: 17px;
-    left: 17px;
+    width: 25px;
+    height: 24px;
+    position: relative;
+    margin-top:0px;
   }
  
   .showimg:active {

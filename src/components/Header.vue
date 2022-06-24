@@ -39,7 +39,7 @@
     },
     methods:{
       doClick:function(collasped){
-            this.collapsed=collasped;
+        this.collapsed=collasped;
       }
     }
   };
@@ -48,26 +48,26 @@
 	.main-container {
 		height: 100%;
 		width: 100%!important;
-		box-sizing: border-box;
+		/* box-sizing: border-box; */
 	}
  
 	.main-aside-collapsed {
-		width: 80px !important;
+		width: 60px !important;
 		height: 100%;
 		background-color: #334157;
-		margin: 0px;
+		padding: 0px;
 	}
  
 	.main-aside {
-		width: 240px !important;
+		width: 220px!important;
 		height: 100%;
 		background-color: #334157;
-		margin: 0px;
+		padding: 0px;
 	}
  
 	.main-header,
 	.main-center {
 		padding: 0px;
-		border-left: 2px solid #333;
+		/* border-left: 2px solid #333; */
 	}
 </style>
