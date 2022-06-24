@@ -81,7 +81,7 @@
     type="text"
     @click="handleDelete(scope.$index, tableData)"
   >
-    <i class="el-icon-edit" style="color: #d81e06" />
+    <i class="el-icon-delete" style="color: #d81e06" />
     <span style="color: #223355"> 删除</span></el-button>
       </template>
     </el-table-column>
@@ -173,7 +173,7 @@
     type="text"
     @click="handleDelete(scope.$index, tableData)"
   >
-    <i class="el-icon-edit" style="color: #d81e06" />
+    <i class="el-icon-delete" style="color: #d81e06" />
     <span style="color: #223355"> 删除</span></el-button>
       </template>
     </el-table-column>

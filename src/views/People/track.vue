@@ -62,6 +62,7 @@
         >新增轨迹点</el-button
       >
     </el-card>
+<el-card><div id="amap" class="amap" ref="amap"></div></el-card>
     <el-dialog title="编辑" :visible.sync="centerDialogEdit" width="30%">    
       时间：<el-input v-model="new_time" placeholder="请输入具体时间" width="10px"></el-input>      
     地点：<el-input v-model="new_address" placeholder="请输入具体地点"></el-input>  
@@ -97,6 +98,7 @@ export default {
  },
   data() {
     return {
+      map: null,
       new_time:'',
       new_address:'',
         listID: '',      
@@ -129,17 +131,16 @@ centerDialogDel: false,
     };
   },
  
-  mounted() {
-
-  },
   methods: {
     initMap() {
       this.map = new AMap.Map("amap", {
         resizeEnable: true,
-        zoom: 12,
-        mapStyle: "amap://styles/blue",
+        zoom: 11,
+        mapStyle: "amap://styles/110232685baf957df55daf16dfe7aa6d",
         center: [114.306434, 30.5988]
-      })},
+      })
+       this.map.setCity("武汉市");
+      },
     handleEdit (index, row) {   
     this.centerDialogEdit = true   
     this.new_time=row.date
@@ -183,5 +184,8 @@ del () {
  
  
 <style lang="scss" scoped>
-
+.amap {
+  height: 400px;
+  width: 100%;
+}
 </style>
