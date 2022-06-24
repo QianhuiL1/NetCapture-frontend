@@ -19,29 +19,29 @@
             <div class="event-content">
               <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增确诊</span>
-                <span class="count">{{xzqz}}</span>
+                <span class="count">{{totalNum.xzqz}}</span>
               </div>
               <div class="event-item" style="background:#B3D8FF">
                 <span class="label">新增死亡</span>
-                <span class="count">{{xzsw}}</span>
+                <span class="count">{{totalNum.xzsw}}</span>
               </div>
               <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有确诊</span>
-                <span class="count">{{xyqz}}</span>
+                <span class="count">{{totalNum.xyqz}}</span>
               </div>
               </div>
               <div class="event-content">
               <div class="event-item" style="background:#B3D8FF">
                 <span class="label">现有确诊</span>
-                <span class="count">{{xyqz}}</span>
+                <span class="count">{{totalNum.xyqz}}</span>
               </div>
               <div class="event-item" style="background:#B3D8FF">
                 <span class="label">累计死亡</span>
-                <span class="count">{{ljsw}}</span>
+                <span class="count">{{totalNum.ljsw}}</span>
               </div>
               <div class="event-item" style="background:#B3D8FF">
                 <span class="label">累计治愈</span>
-                <span class="count">{{ljzy}}</span>
+                <span class="count">{{totalNum.ljzy}}</span>
               </div>
             </div>
       </div>
@@ -55,7 +55,7 @@
           <span>新增确诊国家TOP</span>
         </div>
         <template>
-          <div>新增确诊国家Top10图</div>
+          <div id="topCountryChart" style="height: 50vh"></div>
         </template>
       </el-card>
      </el-col>
@@ -65,7 +65,7 @@
           <span>国外新增确诊趋势</span>
         </div>
         <template>
-          <div>国外新增确诊图</div>
+          <div id="foreignAddChart" style="height: 50vh"></div>
         </template>
       </el-card>
      </el-col>
@@ -96,7 +96,7 @@
         </el-table>
       </el-card>
     </div>
-    <el-dialog title="帮助"  :visible.sync="dialogVisible" width="45%" :model="helpItems">
+    <el-dialog title="疫情数据说明"  :visible.sync="dialogVisible" width="45%" :model="helpItems">
       <div 
         v-for="(item,index) in helpItems"
         :key="index"
@@ -116,14 +116,18 @@
 </template>
 
 <script>
+import echarts from 'echarts'
+
 export default {
   data() {
     return {
+      totalNum:{
         xzqz: '35,835' ,
         xzsw: '9',
         xyqz: '28',
         ljsw: '1,132',
         ljzy: '3,574,754',
+      },
         dialogVisible: false,
         helpItems:[
           {
@@ -150,10 +154,18 @@ export default {
             noun: '数据统计规则',
             detail: '每日上午全国数据会优先使用国家卫健委公布的数据'
           }
-        ]
+        ],
+        topCountryChart:'',
+        foreignAddChart: '',
+        topCountryOption: {},
+        foreignAddOption: {},
     }
   },
   component: {
+    
+  },
+  mounted(){
+    this.initCharts()
   },
   created() {
 
@@ -161,6 +173,125 @@ export default {
   methods: {
     getHelp(){
       this.dialogVisible= true
+    },
+    initCharts(){
+      this.topCountryChart= echarts.init(document.getElementById('topCountryChart'))
+      this.topCountryOption={
+        dataset: [
+        {
+          dimensions: ['name', 'age', 'profession', 'score', 'date'],
+          source: [
+            ['Hannah Krause', 41, 'Engineer', 314, '2011-02-12'],
+            ['Zhao Qian', 20, 'Teacher', 351, '2011-03-01'],
+            ['Jasmin Krause ', 52, 'Musician', 287, '2011-02-14'],
+            ['Li Lei', 37, 'Teacher', 219, '2011-02-18'],
+            ['Karle Neumann', 25, 'Engineer', 253, '2011-04-02'],
+            ['Adrian Groß', 19, 'Teacher', '-', '2011-01-16'],
+            ['Mia Neumann', 71, 'Engineer', 165, '2011-03-19'],
+            ['Böhm Fuchs', 36, 'Musician', 318, '2011-02-24'],
+            ['Han Meimei', 67, 'Engineer', 366, '2011-03-12']
+          ]
+        },
+        {
+          transform: {
+            type: 'sort',
+            config: { dimension: 'score', order: 'desc' }
+          }
+        }
+      ],
+      xAxis: {
+        type: 'category',
+        axisLabel: { interval: 0, rotate: 30 }
+      },
+      yAxis: {},
+      series: {
+        type: 'bar',
+        encode: { x: 'name', y: 'score' },
+        datasetIndex: 1
+      }
+      }
+    this.topCountryChart.setOption(this.topCountryOption)
+    // 初始化境外输入趋势折线图
+    this.foreignAddChart= echarts.init(document.getElementById('foreignAddChart'))
+    const data = [["2000-06-05", 116], ["2000-06-06", 129], ["2000-06-07", 135], ["2000-06-08", 86], ["2000-06-09", 73], ["2000-06-10", 85], ["2000-06-11", 73], ["2000-06-12", 68], ["2000-06-13", 92], ["2000-06-14", 130], ["2000-06-15", 245], ["2000-06-16", 139], ["2000-06-17", 115], ["2000-06-18", 111], ["2000-06-19", 309], ["2000-06-20", 206], ["2000-06-21", 137], ["2000-06-22", 128], ["2000-06-23", 85], ["2000-06-24", 94], ["2000-06-25", 71], ["2000-06-26", 106], ["2000-06-27", 84], ["2000-06-28", 93], ["2000-06-29", 85], ["2000-06-30", 73], ["2000-07-01", 83], ["2000-07-02", 125], ["2000-07-03", 107], ["2000-07-04", 82], ["2000-07-05", 44], ["2000-07-06", 72], ["2000-07-07", 106], ["2000-07-08", 107], ["2000-07-09", 66], ["2000-07-10", 91], ["2000-07-11", 92], ["2000-07-12", 113], ["2000-07-13", 107], ["2000-07-14", 131], ["2000-07-15", 111], ["2000-07-16", 64], ["2000-07-17", 69], ["2000-07-18", 88], ["2000-07-19", 77], ["2000-07-20", 83], ["2000-07-21", 111], ["2000-07-22", 57], ["2000-07-23", 55], ["2000-07-24", 60]];
+    const dateList = data.map(function (item) {
+      return item[0];
+    });
+    const valueList = data.map(function (item) {
+      return item[1];
+    });
+    this.foreignAddChart.setOption({
+      // Make gradient line here
+        visualMap: [
+          {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+          },
+          {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: dateList.length - 1
+          }
+        ],
+        title: [
+          {
+            left: 'center',
+            text: 'Gradient along the y axis'
+          },
+          {
+            top: '55%',
+            left: 'center',
+            text: 'Gradient along the x axis'
+          }
+        ],
+        tooltip: {
+          trigger: 'axis'
+        },
+        xAxis: [
+          {
+            data: dateList
+          },
+          {
+            data: dateList,
+            gridIndex: 1
+          }
+        ],
+        yAxis: [
+          {},
+          {
+            gridIndex: 1
+          }
+        ],
+        grid: [
+          {
+            bottom: '60%'
+          },
+          {
+            top: '60%'
+          }
+        ],
+        series: [
+          {
+            type: 'line',
+            showSymbol: false,
+            data: valueList
+          },
+          {
+            type: 'line',
+            showSymbol: false,
+            data: valueList,
+            xAxisIndex: 1,
+            yAxisIndex: 1
+          }
+        ]
+    })
+    this.foreignAddChart.setOption(this.foreignAddOption)
     }
   }
 }
@@ -174,7 +305,7 @@ export default {
     flex-direction:column;
 }
 .home_container {
-  padding: 12px 24px;
+  padding: 5px 5px;
   line-height: 1;
   .content-top {
     display: flex;
@@ -187,24 +318,27 @@ export default {
       flex-direction: row;
       justify-content: space-between;
       .event-item {
-        // display:flex;
-        // flex-direction:column;
+        display:flex;
+        flex-direction:row;
+        justify-content: space-between;
         flex: 1;
         width: 300px;
         font-weight: 600;
         color: #1E1E1E;
         margin-top:10px;
         margin-right: 10px;
-        border-radius: 2px;
+        border-radius: 4px;
         overflow: hidden;
         .label {
           height: 100px;
+          width: 120px;
           font-size: 20px;
-          margin: 0;
         }
         .count {
+          width: 180px;
           height: 100px;
-          font-size: 35px;
+          font-size: 33px;
+          font-weight: 550;
           margin: 0;
         }
       }
@@ -263,6 +397,7 @@ export default {
   color:#1E1E1E;
   font-size: 20px;
   padding:3px;
+  font-weight: 550;
   border-bottom: 1px solid #CCCCCC
 }
 .title span{

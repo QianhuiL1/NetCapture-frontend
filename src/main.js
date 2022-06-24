@@ -5,6 +5,8 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss'
 import "./assets/icons/iconfont.css";
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 
 import VueAMap from 'vue-amap';
 Vue.use(VueAMap);

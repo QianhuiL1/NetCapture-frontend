@@ -34,14 +34,16 @@
         border: solid 1px #3c7fff;
     }
 }
+
 // 变革按钮组
-.buttons_content{
+.buttons_content {
     background-color: #ffffff;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     border: solid 1px #eef2f5;
     padding: 15px 24px;
 }
+
 // 表格容器
 .table_content {
     height: 100%;
@@ -50,6 +52,7 @@
     border-radius: 5px;
     border: solid 1px #eef2f5;
     .el-card__header {
+        margin-top: 5px;
         padding: 8px 24px;
         position: relative;
         border: none;
@@ -57,7 +60,7 @@
         font-weight: bold;
         letter-spacing: 0px;
         color: #242424;
-        height: 51px;
+        height: 35px;
         overflow: hidden;
         &:after {
             content: " ";
@@ -83,7 +86,7 @@
     }
     .el-card__body {
         height: 100%;
-        padding: 20px 24px 15px;
+        padding: 10px 24px 15px;
     }
 }
 
@@ -189,7 +192,7 @@ div.el-table {
 
 // 表格树
 .table_tree {
-    .el-table__expand-icon{
+    .el-table__expand-icon {
         // float: left;
     }
     .el-icon-child {
@@ -211,7 +214,7 @@ div.el-table {
     }
     .el-table__cell {
         border-bottom: none!important;
-        .cell span{
+        .cell span {
             // width: 100%;
             // display: inline-block;
             text-overflow: ellipsis;
