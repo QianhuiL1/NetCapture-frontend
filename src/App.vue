@@ -31,4 +31,8 @@ export default  {
   text-align: center;
   color: #2c3e50;
 }
+.amap-sug-result {
+z-index: 99999!important;
+visibility: visible;
+}
 </style>
