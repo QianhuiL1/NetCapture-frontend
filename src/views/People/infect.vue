@@ -231,6 +231,11 @@ export default {
           type:1,
         }],
       value: "",
+      people:{
+          id:"",
+          name:"",
+          phone:"",
+        }
     };
   },
   methods: {
@@ -249,9 +254,19 @@ export default {
         // 加载详情内容
         this.dialogVisible = true;
       } else if (mode === "line") {
+        this.people.id=row.id
+        this.people.name=row.name
+        this.people.phone=row.phone
         this.drawerVisible = true;
       }else if (mode === "check"){
-        this.$router.push('/track');
+        this.$router.push({
+          name:"track",
+          params:{
+            peopleId:this.people.id,
+            peoplePhone:this.people.phone,
+            peopleName:this.people.name,
+          }
+        });
       }
     },
     getList() {

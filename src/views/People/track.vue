@@ -10,7 +10,7 @@
           style="width: 200px; margin: 10px"
         />身份证号：
         <el-input
-          v-model="formQuery.address"
+          v-model="formQuery.id"
           style="width: 200px; margin: 10px"
         />电话号码：
         <el-input
@@ -116,9 +116,11 @@ export default {
   geoCoder: ''
   },
  mounted(){
+   this.formQuery.name=this.$route.params.peopleName
+   this.formQuery.id=this.$route.params.peopleId
+   this.formQuery.phone=this.$route.params.peoplePhone
    setTimeout(() => {
       this.initMap() // 异步加载（否则报错initMap is not defined）
-      
     }, 1000)
  },
   data() {
@@ -133,7 +135,7 @@ centerDialogEdit: false,
 centerDialogDel: false, 
       formQuery: {
         name: "",
-        address: "",
+        id: "",
         phone: "",
         email: "",
         contactPersonName: "",

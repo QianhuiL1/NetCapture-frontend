@@ -19,6 +19,7 @@ export default {
                 import ("@/views/Tendency/foreign")
         },
         {
+            name: "track",
             path: "/track",
             component: () =>
                 import ("@/views/People/track.vue")
