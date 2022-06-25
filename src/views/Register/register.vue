@@ -48,7 +48,37 @@
               autocomplete="on"
               @keyup.native="checkCapslock"
               @blur="capsTooltip = false"
-              @keyup.enter.native="handleLogin"
+              @keyup.enter.native="handleRegister"
+            >
+              <template slot="prepend"
+                ><svg-icon icon-class="password"
+              /></template>
+              <el-button slot="append" @click="showPwd"
+                ><svg-icon
+                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+              /></el-button>
+            </el-input>
+            </el-form-item>
+            </el-tooltip>
+            <el-tooltip
+              v-model="capsTooltip"
+              content="Caps lock is On"
+              placement="right"
+              manual
+            >
+            <el-form-item prop="password" style="margin-top: 40px">
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="请再次输入密码"
+              name="password"
+              tabindex="2"
+              autocomplete="on"
+              @keyup.native="checkCapslock"
+              @blur="capsTooltip = false"
+              @keyup.enter.native="handleRegister"
             >
               <template slot="prepend"
                 ><svg-icon icon-class="password"
@@ -65,7 +95,7 @@
           :loading="loading"
           type="primary"
           block
-          @click.native.prevent="handleLogin"
+          @click.native.prevent="handleRegister"
         >
           注 册
         </el-button>
@@ -170,7 +200,9 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
+    handleRegister() {
+      this.$message.success('注册成功')
+      this.$router.push('/')
       // this.$refs.loginForm.validate(valid => {
       //   if (valid) {
       //     this.loading = true

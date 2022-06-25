@@ -8,19 +8,16 @@
             </div>
         </div>
     <div class="tendencyCard">
-      <el-tabs type="border-card">
-        <el-tab-pane label="现有确诊" @click="getMap">
+      <div class="lmap">
           <template>
-            <div id="map" style="width: 600px; height: 400px;margin:auto"></div>
+            <div id="map" style="width: 700px; height: 500px;"></div>
           </template>
-          </el-tab-pane>
-        <el-tab-pane label="新增确诊趋势">
-          <div slot="label" @click="getOwnAck">新增确诊趋势</div>
-          <template>
-          <div id="ownAckChart" style="width: 600px; height: 400px;margin:auto"></div>
-          </template>
-        </el-tab-pane>
-      </el-tabs>
+          </div>
+          <div class="rmap">
+            <template>
+            <div id="ownAckChart" style="width: 600px; height: 500px;margin:auto"></div>
+            </template>
+          </div>
       </div>
     </el-card>
   </div>
@@ -85,6 +82,7 @@ export default {
   },
   mounted(){
     this.getMap()
+    this.getOwnAck()
   },
   created() {
 
@@ -105,6 +103,13 @@ export default {
                 text: '中国疫情趋势',
                 x:'center'
             },
+            // grid: {
+            //   x:10,
+            //   y:10,
+            //   x2:20,
+            //   y2:20,
+            //   borderWidth:1
+            // },
             dataRange:{
             	min:0,
             	max:100,
@@ -122,19 +127,17 @@ export default {
               orient: 'vertical',
               left:'right',
               top:'center',
-              Location: {
-                y:100,
-                x:40
-              }
             },
             series:[
             	{
-            		name:'犯罪数量',
+            		name:'国内疫情趋势',
             		type:'map',
             		map:'滁州',
-            		mapLocation:{
-            			y:100
-            		},
+                zoom: 1.2,   //这里是关键，一定要放在 series中
+                roam: true,
+                // roam: 'scale',
+                // roam:'move',
+            		layoutCenter: ['50%', '50%'],
             		itemStyle:{
             			emphasis:{label:{show:false}}
             		},
@@ -251,7 +254,8 @@ export default {
                   barGap: '-100%',
                   barCategoryGap: '40%',
                   data: dataShadow,
-                  animation: false
+                  animation: false,
+                  zoom: 0.5,
               },
               {
                   type: 'bar',
@@ -332,6 +336,9 @@ export default {
 }
 .tendencyCard{
   margin-top: 10px;
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
 }
 .title2{
   color:#1E1E1E;

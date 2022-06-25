@@ -19,11 +19,11 @@
             <div class="event-content">
               <div class="event-item" style="background:#FFF4F4">
                 <span class="label">新增确诊</span>
-                <span class="count">{{totalNum.xzqz}}</span>
+                <span class="count" style="color:red">{{totalNum.xzqz}}</span>
               </div>
               <div class="event-item" style="background:#FFFAF7">
                 <span class="label">新增本土</span>
-                <span class="count">{{totalNum.xzbt}}</span>
+                <span class="count" style="color:#FF7357">{{totalNum.xzbt}}</span>
               </div>
               <div class="event-item" style="background:#FFF4F4">
                 <span class="label">新增境外</span>
@@ -31,17 +31,17 @@
               </div>
               <div class="event-item" style="background:#FFFAF7">
                 <span class="label">新增无症状</span>
-                <span class="count">{{totalNum.xzwzz}}</span>
+                <span class="count" style="color:#26AEB5">{{totalNum.xzwzz}}</span>
               </div>
               </div>
               <div class="event-content">
               <div class="event-item" style="background:#FFF4F4">
                 <span class="label">现有确诊</span>
-                <span class="count">{{totalNum.xyqz}}</span>
+                <span class="count" style="color:#E8317A">{{totalNum.xyqz}}</span>
               </div>
               <div class="event-item" style="background:#FFF7F7">
                 <span class="label">现有本土</span>
-                <span class="count">{{totalNum.xybt}}</span>
+                <span class="count" style="color:#C23531">{{totalNum.xybt}}</span>
               </div>
               <div class="event-item" style="background:#FEF7FF">
                 <span class="label">现有境外</span>
@@ -49,7 +49,7 @@
               </div>
               <div class="event-item" style="background:#FEF7FF">
                 <span class="label">现有无症状</span>
-                <span class="count">{{totalNum.xywzz}}</span>
+                <span class="count" style="color:#34C9C3">{{totalNum.xywzz}}</span>
               </div>
             </div>
       </div>
