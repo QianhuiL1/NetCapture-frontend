@@ -1,13 +1,16 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from "./router/index";
+import VueRouter from "vue-router";
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss'
 import "./assets/icons/iconfont.css";
 import echarts from 'echarts'
+import './assets/icons/index.js'
 Vue.prototype.$echarts = echarts
 
+Vue.use(VueRouter);
 import VueAMap from 'vue-amap';
 Vue.use(VueAMap);
 

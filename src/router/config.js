@@ -1,5 +1,18 @@
 export default {
     routes: [{
+            name: 'login',
+            path: '/',
+            component: () =>
+                import ("@/views/Login/login.vue")
+        },
+        {
+            name: "register",
+            path: "/register",
+            component: () =>
+                import ("@/views/Register/register.vue")
+        },
+        {
+            name: "home",
             path: "/home",
             component: () =>
                 import ("@/views/Overview/domestic")

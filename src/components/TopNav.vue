@@ -1,5 +1,5 @@
 <template>
-  <el-menu :default-active="this.$route.path" router class="el-menu-demo" mode="horizontal" background-color="#334157" text-color="#fff" active-text-color="#ffd04b">
+  <el-menu :default-active="this.$route.path" :router ="true" class="el-menu-demo" mode="horizontal" background-color="#334157" text-color="#fff" active-text-color="#C8000A">
     <el-button class="buttonimg">
       <img class="showimg" :src="img" @click="doToggle()">
     </el-button>
@@ -37,7 +37,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-             this.$router.push('/');
+             this.$router.push('/login');
         }).catch(() => {});
       },
       doToggle:function(){

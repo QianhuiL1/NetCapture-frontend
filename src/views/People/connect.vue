@@ -1,10 +1,20 @@
 <template>
-<div class="app-container">
-    <el-card>  <el-button type="primary" icon="el-icon-plus" @click="handleAdd"
+<div class="home_container">
+    <el-card class="table_content">  
+      <div class="center_content">
+      <div class="theme">
+        <span>
+      密接人员列表
+      </span>
+      </div>
+      <div>
+      <el-button type="primary" icon="el-icon-plus" size="medium" @click="handleAdd"
         >新增人员信息</el-button
       >
+      </div>
+      </div>
     </el-card>
-    <el-card>密接人员列表
+    <el-card class="table_content">
         <el-form ref="queryForm" :model="queryParams" :inline="true" size="small">
         <el-form-item label="姓名:" prop="name">
           <el-input
@@ -60,11 +70,11 @@
           label="姓名"
           prop="name"
           :show-overflow-tooltip="true"
-          min-width="5%"
+          min-width="20%"
         />
-        <el-table-column label="身份证号" prop="id" min-width="30%" />
-        <el-table-column label="联系电话" prop="phone" min-width="10%" />
-          <el-table-column label="状态" prop="status" min-width="5%">
+        <el-table-column label="身份证号" prop="id" min-width="40%" />
+        <el-table-column label="联系电话" prop="phone" min-width="30%" />
+          <el-table-column label="状态" prop="status" min-width="20%">
         </el-table-column>    
        <el-table-column label="操作">
       <template slot-scope="scope">
@@ -95,8 +105,8 @@
         @pagination="getList1"
       />
 </el-card>
-<el-card>次密接人员列表
-
+<el-card class="table_content">
+  次密接人员列表
         <el-form ref="queryForm" :model="queryParams" :inline="true" size="small">
         <el-form-item label="姓名:" prop="name">
           <el-input
@@ -152,11 +162,11 @@
           label="姓名"
           prop="name"
           :show-overflow-tooltip="true"
-          min-width="5%"
+          min-width="20%"
         />
-        <el-table-column label="身份证号" prop="id" min-width="30%" />
-        <el-table-column label="联系电话" prop="phone" min-width="10%" />
-          <el-table-column label="状态" prop="status" min-width="5%">
+        <el-table-column label="身份证号" prop="id" min-width="40%" />
+        <el-table-column label="联系电话" prop="phone" min-width="30%" />
+          <el-table-column label="状态" prop="status" min-width="20%">
         </el-table-column>    
        <el-table-column label="操作">
       <template slot-scope="scope">
@@ -194,10 +204,23 @@
       <el-radio :label="false">次密接人员</el-radio>
     </el-radio-group>
   </div> 
-      姓名：<el-input v-model="info.name" placeholder="请输入人员姓名" @input="change($event)"></el-input>      
-    身份证号：<el-input v-model="info.id" placeholder="请输入身份证号" @input="change($event)"></el-input>  
-    联系电话：<el-input v-model="info.phone" placeholder="请输入联系电话" @input="change($event)"></el-input>  
-    健康状况：<el-input v-model="info.status" placeholder="请输入健康状况" @input="change($event)"></el-input>  
+  <div class="inputTitle"><span>
+      姓名：
+      </span>
+      </div>
+      <el-input v-model="info.name" placeholder="请输入人员姓名" @input="change($event)"></el-input>      
+      <div class="inputTitle"><span>
+      身份证号：
+      </span>
+      </div><el-input v-model="info.id" placeholder="请输入身份证号" @input="change($event)"></el-input>  
+      <div class="inputTitle"><span>
+      联系电话：
+      </span>
+      </div><el-input v-model="info.phone" placeholder="请输入联系电话" @input="change($event)"></el-input>  
+      <div class="inputTitle"><span>
+      健康状况：
+      </span>
+      </div><el-input v-model="info.status" placeholder="请输入健康状况" @input="change($event)"></el-input>  
         <span slot="footer" class="dialog-footer">        
         <el-button @click="centerDialogEdit = false; listID=''">取 消</el-button>        
         <el-button type="primary" @click="edit">确 定</el-button>      
@@ -210,10 +233,22 @@
       <el-radio :label="false">次密接人员</el-radio>
     </el-radio-group>
   </div> 
-          姓名：<el-input v-model="new_name" placeholder="请输入人员姓名" @input="change($event)"></el-input>      
-    身份证号：<el-input v-model="new_id" placeholder="请输入身份证号" @input="change($event)"></el-input>  
-    联系电话：<el-input v-model="new_phone" placeholder="请输入联系电话" @input="change($event)"></el-input>  
-    健康状况：<el-input v-model="new_status" placeholder="请输入健康状况" @input="change($event)"></el-input>  
+  <div class="inputTitle"><span>
+      姓名：
+      </span>
+      </div><el-input v-model="new_name" placeholder="请输入人员姓名" @input="change($event)"></el-input>      
+      <div class="inputTitle"><span>
+      身份证号：
+      </span>
+      </div><el-input v-model="new_id" placeholder="请输入身份证号" @input="change($event)"></el-input>  
+     <div class="inputTitle"><span>
+      联系电话：
+      </span>
+      </div><el-input v-model="new_phone" placeholder="请输入联系电话" @input="change($event)"></el-input>  
+    <div class="inputTitle"><span>
+      健康状况：
+      </span>
+      </div><el-input v-model="new_status" placeholder="请输入健康状况" @input="change($event)"></el-input>  
         <span slot="footer" class="dialog-footer">        
         <el-button @click="centerDialogAdd = false; listID=''">取 消</el-button>        
         <el-button type="primary" @click="add">确 定</el-button>      
@@ -287,6 +322,11 @@ centerDialogDel: false,
           id:'430221636522222222',
           phone:'13962462222',
           status:"发热",
+        }, {
+           name: '彭思',
+          id:'430221636522222222',
+          phone:'13962462222',
+          status:"健康",
         }],
 
         connectList1: [{
@@ -304,6 +344,11 @@ centerDialogDel: false,
           id:'430221636522222222',
           phone:'13962462222',
           status:"发热",
+        }, {
+           name: '彭思',
+          id:'430221636522222222',
+          phone:'13962462222',
+          status:"健康",
         }],
       value: "",
     };
@@ -391,6 +436,33 @@ del () {
 </script>
 
 <style lang="scss" scoped>
+.home_container {
+  padding: 2px 5px;
+  line-height: 1;
+}
+  .first-content {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+.center_content{
+    margin-top: 3px;
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+}
+  .theme{
+    color:#1E1E1E;
+    font-size: 20px;
+    font-weight: 550;
+    padding:0px;
+  }
+  .inputTitle{
+    font-size: 15px;
+    font-weight: 500;
+    float:left;
+    padding: 2px
+  }
 .el-scrollbar__wrap {
   overflow-x: hidden;
 }

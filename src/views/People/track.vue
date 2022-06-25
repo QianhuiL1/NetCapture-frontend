@@ -1,24 +1,37 @@
 
 <template>
-  <div>
-      <el-card class="myCard">重点人员轨迹</el-card>
-    <el-card class="myCard">
-      <div>
+  <div class="home_container">
+    <div class="center-content">
+      <el-card class="table_content table_content_all">
+        <div class="theme">
+          <span>
+        重点人员轨迹
+        </span>
+        </div></el-card>
+        <div class="center-content">
+    <el-card class="table_content table_content_all">
+      <div class="inputItems">
         姓名：
         <el-input
           v-model="formQuery.name"
-          style="width: 200px; margin: 10px"
+          style="width: 150px; margin: 10px"
+          size="mini"
+          placeholder="请输入姓名"
         />身份证号：
         <el-input
           v-model="formQuery.id"
           style="width: 200px; margin: 10px"
+          size="mini"
+          placeholder="请输入身份证号"
         />电话号码：
         <el-input
           v-model="formQuery.phone"
           style="width: 200px; margin: 10px"
-        /> <el-button type="primary" icon="el-icon-plus" @click="handleAdd"
+          size="mini"
+          placeholder="请输入电话号码"
+        /> <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
         >新增轨迹点</el-button
-      ><el-button type="success" icon="el-icon-check" @click="handleCommit"
+      ><el-button type="success" icon="el-icon-check" size="mini" @click="handleCommit"
         >提交</el-button
       >
         <div class="con-list">         
@@ -63,11 +76,19 @@
     <span style="color: #223355"> 删除</span></el-button>
       </template>
     </el-table-column>
-  </el-table>        
+  </el-table>
+      
 </div>
       </div>
     </el-card>
-<el-card><div id="amap" class="amap"></div></el-card>
+    </div>
+<div class="center-content">
+<el-card class="table_content table_content_all">
+  <div id="amap" class="amap">
+  </div>
+  </el-card>
+  </div>
+</div>
     <el-dialog title="修改轨迹信息" :visible.sync="centerDialogEdit" width="40%">    
       时间：<el-date-picker
     id="time2"
@@ -361,6 +382,23 @@ del () {
  
  
 <style lang="scss" scoped>
+.home_container {
+  padding: 5px 5px;
+  line-height: 1;
+    .center-content {
+    margin-top: 3px;
+    display: flex;
+    flex-direction:column;
+    }
+}
+  .theme{
+    color:#1E1E1E;
+    font-size: 20px;
+    font-weight: 550;
+    margin-bottom: 2px;
+    text-align: center;
+    padding:0px;
+  }
 .amap {
   height: 500px;
   width: 100%;

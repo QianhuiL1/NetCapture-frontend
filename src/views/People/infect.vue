@@ -1,7 +1,8 @@
 <template>
-<div class="app-container">
+<div class="home_container">
     <!-- 搜索框 + 删除按钮 -->
-    <el-card class="myCard">
+    <div class="center-content">
+      <el-card class="table_content">
         <el-form ref="queryForm" :model="queryParams" :inline="true" size="small">
         <el-form-item label="姓名:" prop="name">
           <el-input
@@ -57,15 +58,16 @@
           >
         </el-form-item>
       </el-form>
-    </el-card>
-<el-card>
+      </el-card>
+    </div>
+<div class="center-content">
+  <el-card class="table_content">
     <el-table  v-loading="loading"
         :data="infectList"
         :cell-style="cellStyle"
         border
         highlight-current-row 
         ref="EventTable">
-
       <el-table-column
           label="姓名"
           prop="name"
@@ -92,20 +94,20 @@
         </el-table-column>    
         <el-table-column label="操作" min-width="15%">
           <template slot-scope="scope">
-  <el-button
-    size="medium"
-    type="text"
-    @click="handleClick(scope.row, 'line')"
-  >
-    <i class="icon-view iconfont" style="color: #3388ff" />
-    <span style="color: #223355"> 活动轨迹</span>
-  </el-button>
-  <el-button type="text" size="medium" @click="handleClick(scope.row, 'detail')">
-    <i class="el-icon-odometer" style="color: #3388ff" />
-    <span style="color: #223355"> 查看详情</span>
-  </el-button>
+            <el-button
+              size="medium"
+              type="text"
+              @click="handleClick(scope.row, 'line')"
+            >
+              <i class="icon-view iconfont" style="color: #3388ff" />
+              <span style="color: #223355"> 活动轨迹</span>
+            </el-button>
+            <el-button type="text" size="medium" @click="handleClick(scope.row, 'detail')">
+              <i class="el-icon-odometer" style="color: #3388ff" />
+              <span style="color: #223355"> 查看详情</span>
+            </el-button>
      </template>
-        </el-table-column>
+  </el-table-column>
     </el-table>
     <pagination
         v-show="total > 0"
@@ -116,8 +118,9 @@
         @pagination="getList"
       />
 </el-card>
+</div>
     <!-- 人员轨迹框 -->
-    <el-drawer
+    <!-- <el-drawer
       :with-header="false"
       :visible.sync="drawerVisible"
       append-to-body
@@ -130,8 +133,8 @@
       <el-radio :label="true">倒序</el-radio>
       <el-radio :label="false">正序</el-radio>
     </el-radio-group>
-  </div>
-
+  </div> -->
+<!-- <div class="timeline">
   <el-timeline :reverse="reverse">
     <el-timeline-item
       v-for="(activity, index) in activities"
@@ -140,11 +143,12 @@
       {{activity.content}}
     </el-timeline-item>
   </el-timeline>
+  </div>
   </el-main>
         <el-footer>
           <el-button
               type="text"
-              size="small"
+              size="middle"
              @click="handleClick(id, 'check')"
             >
             <i class="el-icon-odometer" style="color: #3388FF; " />
@@ -152,15 +156,15 @@
             </el-button>
         </el-footer>
       </el-container>
-    </el-drawer>
+    </el-drawer> -->
     <!-- 详情框 -->
-    <el-dialog title="个人信息" :visible.sync="dialogVisible" width="30%">      
+    <!-- <el-dialog title="个人信息" :visible.sync="dialogVisible" width="30%">      
     <span>姓名：</span>      
         <span slot="footer" class="dialog-footer">        
         <el-button @click="dialogVisible = false; listID=''">关 闭</el-button>             
     </span>    
-</el-dialog>
-    </div>
+  </el-dialog> -->
+</div>
 </template>
 
 <script>
@@ -288,6 +292,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.home_container {
+  padding: 2px 5px;
+  line-height: 1;
+  height: 100%;
+}
+  .center-content {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+.radio{
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 30px;
+}
+.timeline{
+  margin-left: 0px;
+}
 .el-scrollbar__wrap {
   overflow-x: hidden;
 }

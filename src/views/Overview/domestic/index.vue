@@ -17,37 +17,37 @@
         </div>
           <div class="content-top">
             <div class="event-content">
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FFF4F4">
                 <span class="label">新增确诊</span>
                 <span class="count">{{totalNum.xzqz}}</span>
               </div>
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FFFAF7">
                 <span class="label">新增本土</span>
                 <span class="count">{{totalNum.xzbt}}</span>
               </div>
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FFF4F4">
                 <span class="label">新增境外</span>
                 <span class="count">{{totalNum.xzjw}}</span>
               </div>
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FFFAF7">
                 <span class="label">新增无症状</span>
                 <span class="count">{{totalNum.xzwzz}}</span>
               </div>
               </div>
               <div class="event-content">
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FFF4F4">
                 <span class="label">现有确诊</span>
                 <span class="count">{{totalNum.xyqz}}</span>
               </div>
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FFF7F7">
                 <span class="label">现有本土</span>
                 <span class="count">{{totalNum.xybt}}</span>
               </div>
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FEF7FF">
                 <span class="label">现有境外</span>
                 <span class="count">{{totalNum.xyjw}}</span>
               </div>
-              <div class="event-item" style="background:#B3D8FF">
+              <div class="event-item" style="background:#FEF7FF">
                 <span class="label">现有无症状</span>
                 <span class="count">{{totalNum.xywzz}}</span>
               </div>
@@ -85,21 +85,36 @@
           <span>疫情速报</span>
         </div>
         <el-table
-          class="table_tree">
+          v-loading="loading"
+          :data="quickInfo"
+          :cell-style="cellStyle"
+          highlight-current-row>
           <el-table-column
+          align="center"
             label="地区"
+            prop="area"
+            :show-overflow-tooltip="true"
             >
             </el-table-column>
           <el-table-column
+            align="center"
             label="新增本土"
+            prop="ownAdd"
+            :show-overflow-tooltip="true"
             >
             </el-table-column>
           <el-table-column
+            align="center"
             label="新增无症状"
+            prop="healthyAdd"
+            :show-overflow-tooltip="true"
             >
             </el-table-column>  
             <el-table-column
+            align="center"
             label="风险区域"
+            prop="dangerArea"
+            :show-overflow-tooltip="true"
             >
             </el-table-column>
         </el-table>
@@ -108,16 +123,26 @@
       <el-col :span="12">
       <el-card class="table_content table_content_all">
         <div slot="header">
-          <span>中风险地区</span>
+          <span>风险地区</span>
         </div>
-                <el-table
-          class="table_tree">
+        <el-table
+          v-loading="loading"
+          :data="dangerData"
+          :cell-style="cellStyle"
+          highlight-current-row
+          >
           <el-table-column
-            label="风险"
+            align="center"
+            label="风险等级"
+            prop="level"
+           :show-overflow-tooltip="true"           
             >
             </el-table-column>
           <el-table-column
+            align="center"
             label="地区"
+            prop="area"
+           :show-overflow-tooltip="true"   
             >
             </el-table-column>
         </el-table>
@@ -190,7 +215,35 @@ export default {
         ownAddOption:{},
         otherAddOption:{},
         ownAddChart: '',
-        otherAddChart: ''
+        otherAddChart: '',
+        dangerData:[
+          {
+            level: '高风险',
+            area: '内蒙古锡林郭勒盟'
+          },{
+            level:'高风险',
+            area:'北京市昌平区'
+          },
+          {
+            level:'中风险',
+            area:'上海市闵行区'
+          }
+        ],
+        quickInfo:[
+          {
+            area: '北京市',
+            ownAdd: 2,
+            healthyAdd:7,
+            dangerArea:'经济开发区'
+          },
+          {
+            area:'上海市',
+            ownAdd: 0,
+            healthyAdd: 5,
+            dangerArea:'七宝镇航华四村'
+          }
+        ]
+
     }
   },
   component: {
@@ -220,7 +273,7 @@ export default {
             type: 'value'
         },
         series: [{
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            data: [23, 95, 80, 30, 100, 110, 70],
             type: 'line',
             smooth: true
         }]
@@ -229,13 +282,6 @@ export default {
     this.ownAddChart.setOption(this.ownAddOption)
     // 初始化境外输入趋势折线图
     this.otherAddChart= echarts.init(document.getElementById('otherAddChart'))
-    // const data = [["2000-06-05", 116], ["2000-06-06", 129], ["2000-06-07", 135], ["2000-06-08", 86], ["2000-06-09", 73], ["2000-06-10", 85], ["2000-06-11", 73], ["2000-06-12", 68], ["2000-06-13", 92], ["2000-06-14", 130], ["2000-06-15", 245], ["2000-06-16", 139], ["2000-06-17", 115], ["2000-06-18", 111], ["2000-06-19", 309], ["2000-06-20", 206], ["2000-06-21", 137], ["2000-06-22", 128], ["2000-06-23", 85], ["2000-06-24", 94], ["2000-06-25", 71], ["2000-06-26", 106], ["2000-06-27", 84], ["2000-06-28", 93], ["2000-06-29", 85], ["2000-06-30", 73], ["2000-07-01", 83], ["2000-07-02", 125], ["2000-07-03", 107], ["2000-07-04", 82], ["2000-07-05", 44], ["2000-07-06", 72], ["2000-07-07", 106], ["2000-07-08", 107], ["2000-07-09", 66], ["2000-07-10", 91], ["2000-07-11", 92], ["2000-07-12", 113], ["2000-07-13", 107], ["2000-07-14", 131], ["2000-07-15", 111], ["2000-07-16", 64], ["2000-07-17", 69], ["2000-07-18", 88], ["2000-07-19", 77], ["2000-07-20", 83], ["2000-07-21", 111], ["2000-07-22", 57], ["2000-07-23", 55], ["2000-07-24", 60]];
-    // const dateList = data.map(function (item) {
-    //   return item[0];
-    // });
-    // const valueList = data.map(function (item) {
-    //   return item[1];
-    // });
     this.otherAddOption={
       xAxis: {
         type: 'category',
@@ -245,83 +291,12 @@ export default {
           type: 'value'
       },
       series: [{
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          data: [40, 30, 50, 80, 100, 70, 80],
           type: 'line',
           smooth: true
       }]
       }
     this.otherAddChart.setOption(this.otherAddOption)
-    // this.otherAddChart.setOption({
-    //   // Make gradient line here
-    //     visualMap: [
-    //       {
-    //         show: false,
-    //         type: 'continuous',
-    //         seriesIndex: 0,
-    //         min: 0,
-    //         max: 400
-    //       },
-    //       {
-    //         show: false,
-    //         type: 'continuous',
-    //         seriesIndex: 1,
-    //         dimension: 0,
-    //         min: 0,
-    //         max: dateList.length - 1
-    //       }
-    //     ],
-    //     title: [
-    //       {
-    //         left: 'center',
-    //         text: 'Gradient along the y axis'
-    //       },
-    //       {
-    //         top: '55%',
-    //         left: 'center',
-    //         text: 'Gradient along the x axis'
-    //       }
-    //     ],
-    //     tooltip: {
-    //       trigger: 'axis'
-    //     },
-    //     xAxis: [
-    //       {
-    //         data: dateList
-    //       },
-    //       {
-    //         data: dateList,
-    //         gridIndex: 1
-    //       }
-    //     ],
-    //     yAxis: [
-    //       {},
-    //       {
-    //         gridIndex: 1
-    //       }
-    //     ],
-    //     grid: [
-    //       {
-    //         bottom: '60%'
-    //       },
-    //       {
-    //         top: '60%'
-    //       }
-    //     ],
-    //     series: [
-    //       {
-    //         type: 'line',
-    //         showSymbol: false,
-    //         data: valueList
-    //       },
-    //       {
-    //         type: 'line',
-    //         showSymbol: false,
-    //         data: valueList,
-    //         xAxisIndex: 1,
-    //         yAxisIndex: 1
-    //       }
-    //     ]
-    // })
   }
 
   }
@@ -331,6 +306,7 @@ export default {
 
 
 <style lang="scss" scoped>
+
 .box{
     display: flex;
     flex-direction:column;
@@ -398,10 +374,13 @@ export default {
     }
     }
   }
-
+::v-deep .center-content{
+  background-color: transparent !important
+}
   .center-content {
     margin-top: 20px;
     display: flex;
+    background-color: transparent!important;
     .op-card {
       flex: 1;
     }

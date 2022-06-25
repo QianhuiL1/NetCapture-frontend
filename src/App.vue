@@ -1,11 +1,14 @@
 <template>
   <div id="app">
-    <Header/>
+    <Header v-show="$route.path!='/'&& $route.path!='/register'"></Header>
+    <router-view v-show="$route.path=='/'||$route.path=='/register'"/>
+    <!-- <router-view/> -->
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
+import Login from './views/Login/login.vue'
 
 export default  {
   name:  'App',
@@ -18,7 +21,8 @@ export default  {
     //     }
     // }
   components: {
-    Header
+    Header,
+    Login
   }
 }
 </script>
