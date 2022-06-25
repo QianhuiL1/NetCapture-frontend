@@ -1,0 +1,389 @@
+<template>
+  <div
+    class="login-container"
+  >
+    <el-card class="box-card">
+      <el-form
+        ref="loginForm"
+        :model="loginForm"
+        :rules="loginRules"
+        class="login-form"
+        autocomplete="on"
+        label-position="left"
+      >
+        <div class="title-container">
+          <div class="title">
+            <img :src="logo" alt="" />
+            疫情流调系统
+          </div>
+        </div>
+        <el-form-item prop="username">
+          <el-input
+            ref="username"
+            v-model="loginForm.username"
+            placeholder="用户名"
+            name="username"
+            type="text"
+            tabindex="1"
+            autocomplete="on"
+          >
+            <template slot="prepend"><svg-icon icon-class="user"/></template>
+          </el-input>
+        </el-form-item>
+        <el-tooltip
+          v-model="capsTooltip"
+          content="Caps lock is On"
+          placement="right"
+          manual
+        >
+          <el-form-item prop="password" style="margin-top: 40px">
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="登录密码"
+              name="password"
+              tabindex="2"
+              autocomplete="on"
+              @keyup.native="checkCapslock"
+              @blur="capsTooltip = false"
+              @keyup.enter.native="handleLogin"
+            >
+              <template slot="prepend"
+                ><svg-icon icon-class="password"
+              /></template>
+              <el-button slot="append" @click="showPwd"
+                ><svg-icon
+                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+              /></el-button>
+            </el-input>
+          </el-form-item>
+        </el-tooltip>
+        <el-button
+          class="submit-button"
+          :loading="loading"
+          type="primary"
+          block
+          @click.native.prevent="handleLogin"
+        >
+          注 册
+        </el-button>
+        <div class="tip" @click="toLogin"><span>已有账号？直接登录</span></div>
+      </el-form>
+    </el-card>
+  </div>
+</template>
+
+<script>
+import { validUsername } from '@/utils/validate'
+import { mapGetters } from 'vuex'
+
+export default {
+  name: 'Register',
+  // components: { SocialSign },
+  data() {
+    const validateUsername = (rule, value, callback) => {
+      if (!validUsername(value)) {
+        callback(new Error('请输入用户名'))
+      } else {
+        callback()
+      }
+    }
+    const validatePassword = (rule, value, callback) => {
+      if (!value || value.length < 4) {
+        callback(new Error('密码不能小于4个字符'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      logo: require('../../../public/logo.png'),
+      loginForm: {},
+      loginRules: {
+        username: [
+          { required: true, trigger: 'blur', validator: validateUsername }
+        ],
+        password: [
+          { required: true, trigger: 'blur', validator: validatePassword }
+        ]
+      },
+      passwordType: 'password',
+      capsTooltip: false,
+      loading: false,
+      showDialog: false,
+      redirect: undefined,
+      otherQuery: {},
+      imageData: '',
+      scale: 1
+    }
+  },
+  computed: {
+    // ...mapGetters(['rootRoles', 'permission_routes'])
+  },
+  watch: {
+    // $route: {
+    //   handler: function(route) {
+    //     const query = route.query
+    //     this.redirect = query.redirect
+    //     this.otherQuery = this.getOtherQuery(query)
+    //   },
+    //   immediate: true
+    // }
+  },
+  created() {
+    // window.addEventListener('storage', this.afterQRScan)
+    // this.getImage()
+  },
+  mounted() {
+    if (this.loginForm.username === '') {
+      this.$refs.username.focus()
+    } else if (this.loginForm.password === '') {
+      this.$refs.password.focus()
+    }
+    window.onresize = () => {
+      this.getScale()
+    }
+    this.getScale()
+  },
+  destroyed() {
+    // window.removeEventListener('storage', this.afterQRScan)
+  },
+  methods: {
+    getScale() {
+      this.scale = window.document.body.offsetWidth / window.screen.availWidth
+      if (this.scale == 1) {
+        this.scale = window.screen.availWidth / 1920
+      }
+    },
+    checkCapslock(e) {
+      // const { key } = e
+      // this.capsTooltip = key && key.length === 1 && key >= 'A' && key <= 'Z'
+    },
+    showPwd() {
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
+      } else {
+        this.passwordType = 'password'
+      }
+      this.$nextTick(() => {
+        this.$refs.password.focus()
+      })
+    },
+    handleLogin() {
+      // this.$refs.loginForm.validate(valid => {
+      //   if (valid) {
+      //     this.loading = true
+      //     this.$store
+      //       .dispatch('user/login', this.loginForm)
+      //       .then(() => {
+      //         if (this.rootRoles.includes('role_zhzx')) {
+      //           this.$router.push({
+      //             path: '/map/map'
+      //           })
+      //         } else if (this.rootRoles.includes('role_admin')) {
+      //           this.handleRouter()
+      //         } else if (
+      //           this.rootRoles.length === 1 &&
+      //           this.rootRoles[0] === 'USER'
+      //         ) {
+      //           this.$router.push({
+      //             path: '/sso/no-role'
+      //           })
+      //         } else {
+      //           this.$router.push({
+      //             path: '/home'
+      //           })
+      //         }
+      //         this.loading = false
+      //       })
+      //       .catch(e => {
+      //         this.loading = false
+      //         if (e === '无角色') {
+      //         } else {
+      //           this.$message.error('请输入正确的用户名密码！')
+      //         }
+      //       })
+      //   } else {
+      //     return false
+      //   }
+      // })
+    },
+    handleRouter() {
+      // const route = this.permission_routes.find(
+      //   item => item.path === '/top-' + 'system'
+      // )
+      // this.$store.commit('permission/SET_CURRENT_ROUTES', route)
+      // sessionStorage.setItem('activeMenu', 'system')
+      // this.$router.push({ path: '/system-setup/group' })
+    },
+
+    toLogin(){
+      this.$router.push({path:'/'})
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+
+$bg: #e5e5e5;
+$light_gray: #fff;
+$cursor: #e5e5e5;
+
+.login-container {
+  background: url(../../assets/loginback.jpg);
+  background-size: 100% 100%;
+
+  .el-form-item {
+    // border: 1px solid rgba(255, 255, 255, 0.1);
+    // background: rgba(0, 0, 0, 0.1);
+    // border-radius: 5px;
+    // color: #454545;
+    border-bottom: 2px solid #ecebeb;
+    .el-input__inner {
+      transform: translateY(5px);
+    }
+  }
+  .el-input-group__append,
+  .el-input-group__prepend,
+  .el-input__inner,
+  .el-form-item.is-error .el-input__inner,
+  .el-form-item.is-error .el-input__inner:focus,
+  .el-form-item.is-error .el-textarea__inner,
+  .el-form-item.is-error .el-textarea__inner:focus {
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 24px;
+    line-height: 50px;
+    color: #666666;
+  }
+  .el-form-item__error {
+    line-height: 35px;
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+$bg: #e5e5e5;
+$dark_gray: #889aa4;
+$light_gray: #eee;
+
+.login-container {
+  min-height: 100%;
+  width: 100%;
+  // background-color: $bg;
+  overflow: hidden;
+  position: relative;
+  .box-card {
+    // background-color: rgba(126, 144, 166);
+    width: 500px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 200px;
+  }
+  .login-form {
+    padding: 16px 16px 50px;
+    margin: 0 auto;
+    overflow: hidden;
+    .title {
+      height: 90px;
+      line-height: 90px;
+      display: flex;
+      font-size: 40px;
+      font-weight: bold;
+      color: #454545;
+      justify-content: center;
+      margin: 0 0 50px;
+    }
+    img {
+      margin-right: 12px;
+    }
+    ::v-deep .submit-button {
+      width: 100%;
+      height: 77px;
+      background-color: #3a6ffe;
+      border-radius: 2px;
+      overflow: hidden;
+      font-size: 30px;
+      color: #ffffff;
+      margin-top: 20px;
+    }
+  }
+.tip{
+  border-bottom: 1px solid #0F111A;
+  width: 200px;
+  margin: 0 auto;
+}
+.tip:hover{
+  color: #858585;
+  border-bottom: 1px solid #858585;
+  cursor: pointer;
+  transition: .2s;
+}
+  .tips {
+    font-size: 20px;
+    // color: #fff;
+    margin-bottom: 10px;
+    width: 20%;
+
+    span {
+      &:first-of-type {
+        margin-right: 16px;
+      }
+    }
+  }
+
+  .svg-container {
+    padding: 6px 5px 6px 15px;
+    // color: $dark_gray;
+    vertical-align: middle;
+    width: 30px;
+    display: inline-block;
+  }
+
+  .title-container {
+    position: relative;
+
+    .title {
+      font-size: 26px;
+      // color: $light_gray;
+      color: #666666;
+      margin: 0px auto 40px auto;
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+
+  .show-pwd {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    font-size: 16px;
+    // color: $dark_gray;
+    cursor: pointer;
+    user-select: none;
+  }
+.submit-button{
+  padding: 10px;
+  margin-top: 10px;
+}
+  .thirdparty-button {
+    position: absolute;
+    right: 0;
+    bottom: 6px;
+  }
+
+  .image-code {
+    position: absolute;
+    top: 1px;
+    right: 0;
+    z-index: 5;
+    border-radius: 0 5px 5px 0;
+    width: 128px;
+    height: 48px;
+    cursor: pointer;
+  }
+}
+</style>
