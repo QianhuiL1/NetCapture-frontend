@@ -4,92 +4,76 @@
   >
     <el-card class="box-card">
       <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        autocomplete="on"
+        ref="registerForm"
+        :model="registerForm"
+        :rules="registerRules"
+        class="register-form"
         label-position="left"
       >
         <div class="title-container">
           <div class="title">
-            <img :src="logo" alt="" />
-            疫情流调系统
+            <div class="titleImg">
+            <img :src="logo" alt="" style="width:60px "/>
+            </div>
+            <div class="titleText">
+              <span> 疫情流调系统</span>
+            </div>
           </div>
         </div>
         <el-form-item prop="username">
           <el-input
-            ref="username"
-            v-model="loginForm.username"
+            v-model="registerForm.username"
             placeholder="用户名"
-            name="username"
             type="text"
-            tabindex="1"
-            autocomplete="on"
+            auto-complete="off"
           >
             <template slot="prepend"><svg-icon icon-class="user"/></template>
           </el-input>
         </el-form-item>
-        <el-tooltip
-          v-model="capsTooltip"
-          content="Caps lock is On"
-          placement="right"
-          manual
-        >
           <el-form-item prop="password" style="margin-top: 40px">
             <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.password"
-              :type="passwordType"
+              v-model="registerForm.password"
+              auto-complete="off"
+              type="password"
               placeholder="登录密码"
-              name="password"
-              tabindex="2"
-              autocomplete="on"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
               @keyup.enter.native="handleRegister"
             >
               <template slot="prepend"
                 ><svg-icon icon-class="password"
               /></template>
-              <el-button slot="append" @click="showPwd"
-                ><svg-icon
-                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-              /></el-button>
             </el-input>
             </el-form-item>
-            </el-tooltip>
-            <el-tooltip
-              v-model="capsTooltip"
-              content="Caps lock is On"
-              placement="right"
-              manual
-            >
-            <el-form-item prop="password" style="margin-top: 40px">
+            <el-form-item prop="confirmPassword" style="margin-top: 40px">
             <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.password"
-              :type="passwordType"
-              placeholder="请再次输入密码"
-              name="password"
-              tabindex="2"
-              autocomplete="on"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
+              v-model="registerForm.confirmPassword"
+              type="password"
+              auto-complete="off"
+              placeholder="确认密码"
               @keyup.enter.native="handleRegister"
             >
               <template slot="prepend"
                 ><svg-icon icon-class="password"
               /></template>
-              <el-button slot="append" @click="showPwd"
-                ><svg-icon
-                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-              /></el-button>
             </el-input>
           </el-form-item>
-        </el-tooltip>
+          <el-form-item prop="code" v-if="captchaOnOff">
+        <el-input
+          v-model="registerForm.code"
+          auto-complete="off"
+          placeholder="验证码"
+          style="width: 63%"
+          @keyup.enter.native="handleLogin"
+        >
+        <template slot="prepend">
+          <svg-icon icon-class="validCode"/>
+        </template>
+          <!-- <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon
+          input-icon" /> -->
+        </el-input>
+        <div class="login-code">
+          <img :src="codeUrl" @click="getCode" class="login-code-img"/>
+        </div>
+      </el-form-item>
         <el-button
           class="submit-button"
           :loading="loading"
@@ -97,9 +81,10 @@
           block
           @click.native.prevent="handleRegister"
         >
-          注 册
+        <span v-if="!loading">注册</span>
+        <span v-else>注册中...</span>
         </el-button>
-        <div class="tip" @click="toLogin"><span>已有账号？直接登录</span></div>
+        <div class="tip" @click="toLogin"><span>使用已有账户登录</span></div>
       </el-form>
     </el-card>
   </div>
@@ -108,65 +93,53 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
+import { getCodeImg,register } from '@/api/login'
 
 export default {
   name: 'Register',
   // components: { SocialSign },
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入用户名'))
+     const equalToPassword = (rule, value, callback) => {
+      if (this.registerForm.password !== value) {
+        callback(new Error("两次输入的密码不一致"));
       } else {
-        callback()
+        callback();
       }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (!value || value.length < 4) {
-        callback(new Error('密码不能小于4个字符'))
-      } else {
-        callback()
-      }
-    }
+    };
     return {
       logo: require('../../../public/logo.png'),
-      loginForm: {},
-      loginRules: {
+      codeUrl: "",
+      registerForm: {
+        username: "",
+        password: "",
+        confirmPassword: "",
+        code: "",
+        uuid: ""
+      },
+      registerRules: {
         username: [
-          { required: true, trigger: 'blur', validator: validateUsername }
+          { required: true, trigger: "blur", message: "请输入您的账号" },
+          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
         ],
         password: [
-          { required: true, trigger: 'blur', validator: validatePassword }
-        ]
+          { required: true, trigger: "blur", message: "请输入您的密码" },
+          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+        ],
+        confirmPassword: [
+          { required: true, trigger: "blur", message: "请再次输入您的密码" },
+          { required: true, validator: equalToPassword, trigger: "blur" }
+        ],
+        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
-      passwordType: 'password',
-      capsTooltip: false,
       loading: false,
-      showDialog: false,
-      redirect: undefined,
-      otherQuery: {},
-      imageData: '',
-      scale: 1
+      captchaOnOff: true
     }
   },
-  computed: {
-    // ...mapGetters(['rootRoles', 'permission_routes'])
-  },
-  watch: {
-    // $route: {
-    //   handler: function(route) {
-    //     const query = route.query
-    //     this.redirect = query.redirect
-    //     this.otherQuery = this.getOtherQuery(query)
-    //   },
-    //   immediate: true
-    // }
-  },
   created() {
-    // window.addEventListener('storage', this.afterQRScan)
-    // this.getImage()
+    this.getCode();
   },
   mounted() {
-    if (this.loginForm.username === '') {
+        if (this.loginForm.username === '') {
       this.$refs.username.focus()
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
@@ -180,79 +153,46 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+   
+    getCode() {
+      getCodeImg().then(res => {
+        this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
+        if (this.captchaOnOff) {
+          this.codeUrl = "data:image/gif;base64," + res.img;
+          this.registerForm.uuid = res.uuid;
+        }
+      });
+    },
+    handleRegister() {
+      this.$refs.registerForm.validate(valid => {
+        if (valid) {
+          this.loading = true;
+          register(this.registerForm).then(res => {
+            const username = this.registerForm.username;
+            this.$alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
+              dangerouslyUseHTMLString: true,
+              type: 'success'
+            }).then(() => {
+              this.$router.push('/');
+            }).catch(() => {});
+          }).catch(() => {
+            this.loading = false;
+            if (this.captchaOnOff) {
+              this.getCode();
+            }
+          })
+        }
+      }); 
+    },
+    toLogin(){
+      this.$router.push({path:'/'})
+    },
     getScale() {
       this.scale = window.document.body.offsetWidth / window.screen.availWidth
       if (this.scale == 1) {
         this.scale = window.screen.availWidth / 1920
       }
     },
-    checkCapslock(e) {
-      // const { key } = e
-      // this.capsTooltip = key && key.length === 1 && key >= 'A' && key <= 'Z'
-    },
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
-    },
-    handleRegister() {
-      this.$message.success('注册成功')
-      this.$router.push('/')
-      // this.$refs.loginForm.validate(valid => {
-      //   if (valid) {
-      //     this.loading = true
-      //     this.$store
-      //       .dispatch('user/login', this.loginForm)
-      //       .then(() => {
-      //         if (this.rootRoles.includes('role_zhzx')) {
-      //           this.$router.push({
-      //             path: '/map/map'
-      //           })
-      //         } else if (this.rootRoles.includes('role_admin')) {
-      //           this.handleRouter()
-      //         } else if (
-      //           this.rootRoles.length === 1 &&
-      //           this.rootRoles[0] === 'USER'
-      //         ) {
-      //           this.$router.push({
-      //             path: '/sso/no-role'
-      //           })
-      //         } else {
-      //           this.$router.push({
-      //             path: '/home'
-      //           })
-      //         }
-      //         this.loading = false
-      //       })
-      //       .catch(e => {
-      //         this.loading = false
-      //         if (e === '无角色') {
-      //         } else {
-      //           this.$message.error('请输入正确的用户名密码！')
-      //         }
-      //       })
-      //   } else {
-      //     return false
-      //   }
-      // })
-    },
-    handleRouter() {
-      // const route = this.permission_routes.find(
-      //   item => item.path === '/top-' + 'system'
-      // )
-      // this.$store.commit('permission/SET_CURRENT_ROUTES', route)
-      // sessionStorage.setItem('activeMenu', 'system')
-      // this.$router.push({ path: '/system-setup/group' })
-    },
-
-    toLogin(){
-      this.$router.push({path:'/'})
-    }
   }
 }
 </script>
@@ -263,6 +203,18 @@ $bg: #e5e5e5;
 $light_gray: #fff;
 $cursor: #e5e5e5;
 
+.login-code-img {
+  height: 38px;
+}
+.login-code {
+  width: 37%;
+  height: 38px;
+  float: right;
+  img {
+    cursor: pointer;
+    vertical-align: middle;
+  }
+}
 .login-container {
   background: url(../../assets/loginback.jpg);
   background-size: 100% 100%;
@@ -377,14 +329,21 @@ $light_gray: #eee;
 
   .title-container {
     position: relative;
-
     .title {
       font-size: 26px;
       // color: $light_gray;
       color: #666666;
+      height: 20px;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
+      margin-bottom: 80px;
+      display:flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+    .titleText{
+      margin-top: 10px;
     }
   }
 
@@ -398,14 +357,23 @@ $light_gray: #eee;
     user-select: none;
   }
 .submit-button{
+  font-size: 20px;
   padding: 10px;
   margin-top: 10px;
+  width: 400px;
+  height: 50px
 }
   .thirdparty-button {
     position: absolute;
     right: 0;
     bottom: 6px;
   }
+
+  // @media only screen and (max-width: 470px) {
+  //   .thirdparty-button {
+  //     display: none;
+  //   }
+  // }
 
   .image-code {
     position: absolute;

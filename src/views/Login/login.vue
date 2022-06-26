@@ -59,7 +59,6 @@
               /></el-button>
             </el-input>
           </el-form-item>
-      
         </el-tooltip>
         <el-form-item prop="code" v-if="captchaOnOff">
         <el-input
@@ -69,7 +68,11 @@
           style="width: 63%"
           @keyup.enter.native="handleLogin"
         >
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
+        <template slot="prepend">
+          <svg-icon icon-class="validCode"/>
+        </template>
+          <!-- <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon
+          input-icon" /> -->
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
@@ -306,6 +309,18 @@ $bg: #e5e5e5;
 $light_gray: #fff;
 $cursor: #e5e5e5;
 
+.login-code-img {
+  height: 38px;
+}
+.login-code {
+  width: 37%;
+  height: 38px;
+  float: right;
+  img {
+    cursor: pointer;
+    vertical-align: middle;
+  }
+}
 .login-container {
   background: url(../../assets/loginback.jpg);
   background-size: 100% 100%;
