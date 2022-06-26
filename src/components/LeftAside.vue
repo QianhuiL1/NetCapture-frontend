@@ -34,6 +34,7 @@
 				<el-menu-item index="/infect">感染人员列表</el-menu-item>
 				<el-menu-item index="/track">行动轨迹追踪</el-menu-item>
 				<el-menu-item index="/connect">密接人员列表</el-menu-item>
+				<el-menu-item index="/ci">次密接人员列表</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
 		 <el-submenu index="/map">

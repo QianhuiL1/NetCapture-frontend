@@ -16,7 +16,7 @@
     filterable
     v-model="formQuery.name"
     placeholder="请选择人员姓名"
-    style="width: 200px; margin: 10px"
+    style="width: 300px; margin: 10px"
     @change="queryInfo"
     >
     <el-option
@@ -29,14 +29,14 @@
         身份证号：
         <el-input
           v-model="formQuery.id"
-          style="width: 200px; margin: 10px"
-          size="mini"
+          clearable
+          style="width: 300px; margin: 10px"
           placeholder="请输入身份证号"
         />电话号码：
         <el-input
           v-model="formQuery.phone"
-          style="width: 200px; margin: 10px"
-          size="mini"
+          clearable
+          style="width: 300px; margin: 10px"
           placeholder="请输入电话号码"
         /> <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
         >新增轨迹点</el-button
@@ -46,8 +46,9 @@
         <div class="con-list">         
       <el-table
     :data="tableData"
+    v-loading="loading"
     :default-sort = "{prop: 'date', order: 'ascending'}"
-    style="width: 100%;" height="20%">
+    style="width: 100%; height:30%;">
     <el-table-column
     fixed
     prop="date"
@@ -56,7 +57,7 @@
       style="width: 30%">
       <template slot-scope="scope">
         <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ scope.row.date }}</span>
+        <span style="margin-left: 10px">{{ scope.row.time }}</span>
       </template>
     </el-table-column>
     <el-table-column
@@ -64,7 +65,7 @@
       style="width: 40%">
      <template slot-scope="scope">
         <i class="el-icon-map-location"></i>
-        <span style="margin-left: 10px">{{ scope.row.spot }}</span>
+        <span style="margin-left: 10px">{{ scope.row.address }}</span>
       </template>
     </el-table-column>
     <el-table-column label="操作" style="width: 10%">
@@ -140,7 +141,8 @@
   
 </template>
 <script>
-import { infectList } from '../../api/People/infect/basic';
+import { infectList,infectInfo } from '../../api/People/infect/basic';
+import {trackList} from '../../api/People/track/basic';
 const AMap = window.AMap;
 export default {
   components: {
@@ -174,18 +176,10 @@ centerDialogDel: false,
         phone: "",
         email: "",
       },
+      loading:false,
       tableData: [{
-          date: '2016-05-02',
-          spot: '武汉大学'
-        }, {
-          date: '2016-05-04',
-          spot: '武汉长江大桥'
-        }, {
-          date: '2016-05-01',
-          spot: '武汉火车站'
-        }, {
-          date: '2016-05-03',
-          spot: '武昌火车站'
+          time: '',
+          address: ''
         }]
     };
   },
@@ -239,8 +233,8 @@ const map = this.map;
         var lat=""
         this.lineArr=[]
 for (const index in this.tableData) {
-        const spot = this.tableData[index].spot;
-        const time = this.tableData[index].date
+        const spot = this.tableData[index].address;
+        const time = this.tableData[index].time
         this.geoCoder.getLocation(spot, function(status, result) {
         if (status === "complete" && result.geocodes.length) {
           var lnglat = result.geocodes[0].location;
@@ -312,13 +306,13 @@ for (const index in this.tableData) {
       },
       initLine(){
         let Driving_obj = new AMap.Driving({
-          map: this.map, // map 指定将路线规划方案绘制到对应的AMap.Map对象上
+          map: this.map, 
         })
         Driving_obj.clear()
         var path =[]
         for (const index in this.tableData) {
-        const spot = this.tableData[index].spot;
-              path.push({keyword:spot,city:'武汉'})
+        const spot = this.tableData[index].address;
+              path.push({keyword:spot,city:'湖北'})
         }
         Driving_obj.search(path,function(status, result) { 
           if (status === 'complete') {
@@ -345,19 +339,41 @@ for (const index in this.tableData) {
     },
 
 queryPeople(){
-  infectList({status:3}).forEach(item => {
-  this.peopleList.push({label:item.name,value:item.peopleId})
+  infectList({status:3}).then((response)=>{
+    for(var index in response.rows){
+      this.peopleList.push({label:response.rows[index].name,value:response.rows[index].peopleId})
+    }
+    this.formQuery.name=response.rows[0].name
+    this.queryInfo(response.rows[0].peopleId)
   })
 },
-queryInfo(){
-  if(this.formQuery.name!=""){
-    infectInfo(this.formQuery.name).then((response)=>{
-this.formQuery.id=response.peopleId
-this.formQuery.phone=phonenumber
+queryInfo(id){
+  if(id!=""){
+infectInfo(id).then((response)=>{
+      this.formQuery.name=response.data.name
+      this.formQuery.id=response.data.peopleId
+      this.formQuery.phone=response.data.phonenumber
+      this.getList()
     })
   }
-
+  else if(this.formQuery.name!=""){
+    infectInfo(this.formQuery.name).then((response)=>{
+      this.formQuery.name=response.data.name
+      this.formQuery.id=response.data.peopleId
+      this.formQuery.phone=response.data.phonenumber
+      this.getList()
+    })
+    
+  }
 },
+getList() {
+      this.loading = true;
+      trackList({peopleId:this.formQuery.id}).then((response) => {
+        this.loading = false;
+        this.tableData = response.rows;
+        this.initMap()
+      });
+    },
     handleEdit (index, row) {   
     this.centerDialogEdit = true   
     this.new_time=row.date
@@ -430,10 +446,6 @@ for(var index in this.tableData){
   height: 500px;
   width: 100%;
 }
-.amap-sug-result { 
-  visibility: visible;
-  z-index: 9999999999 !important;
-   } 
 .show_table {
   position: relative;
   width: 100%;

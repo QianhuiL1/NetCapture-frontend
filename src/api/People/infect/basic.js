@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const prefix = '/idfs/personInfo'
+const prefix = '/personInfo'
 
 // 获取感染人员记录
 export function infectList(queryParams) {

@@ -1,13 +1,20 @@
 import request from '@/utils/request'
-const prefix = '/idfs/scanInfo'
+const prefix = '/scanInfo'
 
 // 获取轨迹记录
-export function trackList(id) {
+export function trackList(queryParams) {
     return request({
-        url: prefix + '/' + id,
-        method: 'get'
+        url: prefix + '/list',
+        method: 'get',
+        params: queryParams
     })
 }
+// export function trackList(id) {
+//     return request({
+//         url: prefix + '/' + id,
+//         method: 'get'
+//     })
+// }
 // 添加轨迹记录
 export function trackAdd(data) {
     return request({

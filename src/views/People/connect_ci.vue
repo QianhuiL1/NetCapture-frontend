@@ -4,7 +4,7 @@
       <div class="center_content">
       <div class="theme">
         <span>
-      密接人员列表
+      次密接人员列表
       </span>
       </div>
       <div>
@@ -26,7 +26,7 @@
         </el-form-item>
         <el-form-item label="身份证号:" prop="id">
           <el-input
-            v-model="queryParams.id"
+            v-model="queryParams.peopleId"
             placeholder="请输入身份证号"
             clearable
             @keyup.enter.native="getList1"
@@ -178,7 +178,7 @@ centerDialogDel: false,
         name: "",
         peopleId:'',
         address:'',
-        status: 2,
+        status: 1,
       },
       queryDateRange: [],
       connectList: [],

@@ -74,9 +74,9 @@
           :show-overflow-tooltip="true"
           min-width="5%"
         />
-        <el-table-column label="身份证号" prop="id" min-width="30%" />
-        <el-table-column label="联系电话" prop="phone" min-width="10%" />
-        <el-table-column label="确诊日期" prop="date" min-width="10%" >
+        <el-table-column label="身份证号" prop="peopleId" min-width="30%" />
+        <el-table-column label="联系电话" prop="phonenumber" min-width="10%" />
+        <el-table-column label="确诊日期" prop="createTime" min-width="10%" >
             <template slot-scope="scope">
             <span>{{ scope.row.date }}</span>
           </template></el-table-column>
@@ -120,7 +120,7 @@
 </el-card>
 </div>
     <!-- 人员轨迹框 -->
-    <!-- <el-drawer
+   <el-drawer
       :with-header="false"
       :visible.sync="drawerVisible"
       append-to-body
@@ -133,8 +133,8 @@
       <el-radio :label="true">倒序</el-radio>
       <el-radio :label="false">正序</el-radio>
     </el-radio-group>
-  </div> -->
-<!-- <div class="timeline">
+  </div> 
+ <div class="timeline">
   <el-timeline :reverse="reverse">
     <el-timeline-item
       v-for="(activity, index) in activities"
@@ -148,7 +148,6 @@
         <el-footer>
           <el-button
               type="text"
-              size="middle"
              @click="handleClick(id, 'check')"
             >
             <i class="el-icon-odometer" style="color: #3388FF;" />
@@ -156,7 +155,7 @@
             </el-button>
         </el-footer>
       </el-container>
-    </el-drawer> -->
+    </el-drawer> 
     <!-- 详情框 -->
     <el-dialog title="个人信息"  :visible.sync="dialogVisible" width="30%">
           <span class="noun">姓名： </span>
@@ -194,7 +193,7 @@
         <span slot="footer" class="dialog-footer">        
         <el-button @click="dialogVisible = false; listID=''">关 闭</el-button>             
     </span>    
-  </el-dialog> -->
+  </el-dialog>
 </div>
 </template>
 
@@ -234,7 +233,7 @@ this.getList()
         name: "",
         peopleId:'',
         type: "",
-        status:"",
+        status:3,
         startDate: "",
         endDate: "",
       },
@@ -251,21 +250,9 @@ this.getList()
       ],
       infectList: [{
           name: '张三',
-          id:'42030219901024737X',
-          phone:'13962462222',
-          date: '2016-05-02',
-          type:1,
-        }, {
-           name: '李四',
-          id:'430228355522222222',
-          phone:'13962462222',
-          date: '2016-05-02',
-          type:2,
-        }, {
-           name: '王五',
-          id:'430221636522222222',
-          phone:'13962462222',
-          date: '2016-05-02',
+          peopleId:'42030219901024737X',
+          phonenumber:'13962462222',
+          createTime: '2016-05-02',
           type:1,
         }],
       value: "",
@@ -294,24 +281,27 @@ this.getList()
       handleClick(row, mode) {
       if (mode === "detail") {
         // 加载详情内容
-        this.people.id=row.id
+        this.people.id=row.peopleId
         infectInfo(this.people.id).then((response) => {
-        this.people.name=response.name
-        this.people.sex=response.sex
-        this.people.phone=response.phonenumber
-        this.people.address=response.address
-        this.people.date=response.updateTime
-        this.people.status=response.status
+        this.people.name=response.data.name
+        this.people.sex=response.data.sex === 0 ? "女":"男"
+        this.people.phone=response.data.phonenumber
+        this.people.address=response.data.address
+        this.people.date=response.data.updateTime
+        this.people.status=response.data.status
         })
         
         this.dialogVisible = true;
       } else if (mode === "line") {
-        this.people.id=row.id
+        this.people.id=row.peopleId
         this.people.name=row.name
-        this.people.phone=row.phone
-        this.activities=""
-        trackList(this.people.id).forEach(item => {
-          this.activities.push({content:item.address,timestamp:item.date})
+        this.people.phone=row.phonenumber
+        this.activities=[]
+        trackList({peopleId:this.people.id}).then((response) => {
+          for(var index in response.rows){
+          this.activities.push({content:response.rows[index].address,timestamp:response.rows[index].time})
+          }
+          
         })
         this.drawerVisible = true;
       }else if (mode === "check"){
@@ -333,6 +323,7 @@ this.getList()
       });
     },
     resetQuery() {
+      this.queryParams.status = 3
       this.queryParams.name = "";
       this.queryParams.peopleId = "";
       this.queryParams.type = "";

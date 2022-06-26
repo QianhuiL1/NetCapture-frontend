@@ -1,5 +1,15 @@
+import Layout from '@/layout'
 export default {
     routes: [{
+            path: '/redirect',
+            component: Layout,
+            hidden: true,
+            children: [{
+                path: '/redirect/:path(.*)',
+                component: () =>
+                    import ('@/views/redirect')
+            }]
+        }, {
             name: 'login',
             path: '/',
             component: () =>
@@ -51,6 +61,11 @@ export default {
             path: "/connect",
             component: () =>
                 import ("@/views/People/connect.vue")
+        },
+        {
+            path: "/ci",
+            component: () =>
+                import ("@/views/People/connect_ci.vue")
         }
     ],
     // 去掉Vue地址的#
