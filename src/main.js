@@ -1,4 +1,11 @@
 import Vue from 'vue'
+import Cookies from 'js-cookie'
+import store from './store'
+import plugins from './plugins'
+import directive from './directive'
+import { getConfigKey } from "@/api/system/config";
+import { getDicts } from "@/api/system/dict/data";
+import { download } from '@/utils/request'
 import App from './App.vue'
 import router from "./router/index";
 import VueRouter from "vue-router";
@@ -13,7 +20,11 @@ Vue.prototype.$echarts = echarts
 Vue.use(VueRouter);
 import VueAMap from 'vue-amap';
 Vue.use(VueAMap);
-
+Vue.prototype.getConfigKey = getConfigKey
+Vue.prototype.getDicts = getDicts
+Vue.prototype.getConfigKey = getConfigKey
+Vue.use(plugins)
+Vue.use(directive)
 VueAMap.initAMapApiLoader({
     // 高德key
     key: '9f693d11d5d5eef597c781eadfd7371e', // 自己到官网申请，我随便写的
@@ -24,11 +35,12 @@ VueAMap.initAMapApiLoader({
 
 })
 Vue.use(ElementUI)
-
 Vue.config.productionTip = false
+
 
 new Vue({
     el: '#app',
     router,
+    store,
     render: h => h(App),
 })

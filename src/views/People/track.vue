@@ -12,12 +12,21 @@
     <el-card class="table_content table_content_all">
       <div class="inputItems">
         姓名：
-        <el-input
-          v-model="formQuery.name"
-          style="width: 150px; margin: 10px"
-          size="mini"
-          placeholder="请输入姓名"
-        />身份证号：
+        <el-select
+    filterable
+    v-model="formQuery.name"
+    placeholder="请选择人员姓名"
+    style="width: 200px; margin: 10px"
+    @change="queryInfo"
+    >
+    <el-option
+      v-for="item in peopleList"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value"
+    />
+  </el-select>
+        身份证号：
         <el-input
           v-model="formQuery.id"
           style="width: 200px; margin: 10px"
@@ -131,21 +140,26 @@
   
 </template>
 <script>
+import { infectList } from '../../api/People/infect/basic';
 const AMap = window.AMap;
 export default {
   components: {
   geoCoder: ''
+  },
+  created(){
+this.queryPeople()
   },
  mounted(){
    this.formQuery.name=this.$route.params.peopleName
    this.formQuery.id=this.$route.params.peopleId
    this.formQuery.phone=this.$route.params.peoplePhone
    setTimeout(() => {
-      this.initMap() // 异步加载（否则报错initMap is not defined）
+      this.initMap() 
     }, 1000)
  },
   data() {
     return {
+      peopleList:[],
       map: null,
       lineArr:[],
       new_time:'',
@@ -159,9 +173,6 @@ centerDialogDel: false,
         id: "",
         phone: "",
         email: "",
-        contactPersonName: "",
-        contactPhone: "",
-        note: "",
       },
       tableData: [{
           date: '2016-05-02',
@@ -187,11 +198,8 @@ centerDialogDel: false,
         mapStyle: "amap://styles/whitesmoke",
         center: [114.306434, 30.5988]
       })
-    //   AMap.plugin(['AMap.ToolBar', 'AMap.Scale'], function () {
-    //                     _this.map.addControl(new AMap.ToolBar())
-    //                     _this.map.addControl(new AMap.Scale())
-    //                 })
-                    AMap.plugin('AMap.Driving',function(){
+
+        AMap.plugin('AMap.Driving',function(){
     });
         AMap.plugin('AMap.Autocomplete', function() {
       AMap.plugin('AMap.Geocoder', function() {
@@ -295,7 +303,7 @@ for (const index in this.tableData) {
 //         infoWindow.setContent(e.target.content);
 //         infoWindow.open(map, e.target.getPosition());
 // }
-map.setFitView();
+          map.setFitView();
         }
         })
       }
@@ -312,8 +320,8 @@ map.setFitView();
         const spot = this.tableData[index].spot;
               path.push({keyword:spot,city:'武汉'})
         }
-Driving_obj.search(path,function(status, result) { 
-  if (status === 'complete') {
+        Driving_obj.search(path,function(status, result) { 
+          if (status === 'complete') {
                 if (result.routes && result.routes.length) {
                   drawRoute(result.routes[0], f)
                 }
@@ -336,6 +344,20 @@ Driving_obj.search(path,function(status, result) {
       this.map.setFitView() // 合适的视口
     },
 
+queryPeople(){
+  infectList({status:3}).forEach(item => {
+  this.peopleList.push({label:item.name,value:item.peopleId})
+  })
+},
+queryInfo(){
+  if(this.formQuery.name!=""){
+    infectInfo(this.formQuery.name).then((response)=>{
+this.formQuery.id=response.peopleId
+this.formQuery.phone=phonenumber
+    })
+  }
+
+},
     handleEdit (index, row) {   
     this.centerDialogEdit = true   
     this.new_time=row.date
@@ -377,6 +399,11 @@ del () {
     this.initMap()
 },
   },
+  handleCommit(){
+for(var index in this.tableData){
+  
+}
+  }
 };
 </script>
  

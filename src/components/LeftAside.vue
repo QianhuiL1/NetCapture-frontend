@@ -1,6 +1,6 @@
 <template>
-	<el-menu :router="true" :default-active="$route.name" class="el-menu-vertical-demo" background-color="#334157"
-	 text-color="#fff" active-text-color="#C8000A" :collapse="collapsed">
+	<el-menu :router="true" :default-active="$route.path" class="el-menu-vertical-demo" background-color="#334157"
+	 text-color="#fff" active-text-color="#ffd04b" :collapse="collapsed">
 		<div class="logobox">
 			<img class="logoimg" src="../assets/logo1.png" alt="">
 			<div class="tim"><span>疫情流调系统</span></div>
@@ -15,7 +15,17 @@
 				<el-menu-item index="/home1">疫情趋势</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-        <el-submenu index="3">
+		<!-- <el-submenu index="2">
+			<template slot="title">
+				<i class="el-icon-s-promotion" style="font-size: 28px;"></i>
+				<span>  国外疫情</span>
+			</template>
+			<el-menu-item-group>
+				<el-menu-item index="/aboard">疫情速报</el-menu-item>
+				<el-menu-item index="/aboard1">疫情趋势</el-menu-item>
+			</el-menu-item-group>
+		</el-submenu> -->
+        <el-submenu index="2">
 			<template slot="title">
 				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
 				<span>  重点人员追踪</span>
@@ -25,6 +35,12 @@
 				<el-menu-item index="/track">行动轨迹追踪</el-menu-item>
 				<el-menu-item index="/connect">密接人员列表</el-menu-item>
 			</el-menu-item-group>
+		</el-submenu>
+		 <el-submenu index="/map">
+			<template slot="title">
+				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
+				<span>  疫情概况一览</span>
+			</template>
 		</el-submenu>
 	</el-menu>
 </template>

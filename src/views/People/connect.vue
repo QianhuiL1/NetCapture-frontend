@@ -32,20 +32,13 @@
             @keyup.enter.native="getList1"
           />
         </el-form-item>
-        <el-form-item label="健康状态:">
-          <el-select
-            v-model="queryParams.type"
-            placeholder="请选择健康状态"
+        <el-form-item label="家庭住址:">
+          <el-input
+            v-model="queryParams.address"
+            placeholder="请输入家庭住址"
             clearable
-            @change="handleStatusSelect"
-          >
-            <el-option
-              v-for="(item, $index) in  TypeOptions"
-              :key="$index"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+            @keyup.enter.native="getList1"
+          />
         </el-form-item>
         <el-form-item style="float: right">
           <el-button
@@ -76,12 +69,12 @@
         <el-table-column label="联系电话" prop="phone" min-width="30%" />
           <el-table-column label="状态" prop="status" min-width="20%">
         </el-table-column>    
-       <el-table-column label="操作">
+       <el-table-column label="操作" min-width="20%">
       <template slot-scope="scope">
              <el-button
     size="medium"
     type="text"
-    @click="handleEdit(scope.$index, scope.row,1)"
+    @click="handleEdit(scope.row,1)"
   >
     <i class="el-icon-edit" style="color: #3388ff" />
     <span style="color: #223355"> 编辑</span>
@@ -89,7 +82,7 @@
      <el-button
     size="medium"
     type="text"
-    @click="handleDelete(scope.$index, tableData)"
+    @click="handleDelete(scope.row.id, 1)"
   >
     <i class="el-icon-delete" style="color: #d81e06" />
     <span style="color: #223355"> 删除</span></el-button>
@@ -113,7 +106,7 @@
             v-model="queryParams.name"
             placeholder="请输入人员姓名"
             clearable
-            @keyup.enter.native="getList1"
+            @keyup.enter.native="getList2"
           />
         </el-form-item>
         <el-form-item label="身份证号:" prop="id">
@@ -121,33 +114,26 @@
             v-model="queryParams.id"
             placeholder="请输入身份证号"
             clearable
-            @keyup.enter.native="getList1"
+            @keyup.enter.native="getList2"
           />
         </el-form-item>
-        <el-form-item label="健康状态:">
-          <el-select
+        <el-form-item label="家庭住址:">
+          <el-input
             v-model="queryParams.type"
-            placeholder="请选择健康状态"
+            placeholder="请输入家庭住址"
             clearable
-            @change="handleStatusSelect"
-          >
-            <el-option
-              v-for="(item, $index) in  TypeOptions"
-              :key="$index"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+            @change="getList2"
+          />
         </el-form-item>
         <el-form-item style="float: right">
           <el-button
             type="primary"
             size="mini"
             icon="el-icon-search"
-            @click="getList1"
+            @click="getList2"
             >搜索</el-button
           >
-          <el-button size="mini" icon="el-icon-refresh" @click="resetQuery1"
+          <el-button size="mini" icon="el-icon-refresh" @click="resetQuery2"
             >重置</el-button
           >
         </el-form-item>
@@ -168,12 +154,12 @@
         <el-table-column label="联系电话" prop="phone" min-width="30%" />
           <el-table-column label="状态" prop="status" min-width="20%">
         </el-table-column>    
-       <el-table-column label="操作">
+       <el-table-column label="操作" min-width="20%">
       <template slot-scope="scope">
           <el-button
     size="medium"
     type="text"
-    @click="handleEdit(scope.$index, scope.row,2)"
+    @click="handleEdit(scope.row,2)"
   >
     <i class="el-icon-edit" style="color: #3388ff" />
     <span style="color: #223355"> 编辑</span>
@@ -181,7 +167,7 @@
      <el-button
     size="medium"
     type="text"
-    @click="handleDelete(scope.$index, tableData)"
+    @click="handleDelete(scope.row.id, 2)"
   >
     <i class="el-icon-delete" style="color: #d81e06" />
     <span style="color: #223355"> 删除</span></el-button>
@@ -266,14 +252,19 @@
 
 
 <script>
-import Pagination from "@/components/Pagination";
+import {List1,connectUpdate1,connectDelete1,connectAdd1} from '../../api/People/connect/base';
+import {List2,connectUpdate2,connectDelete2,connectAdd2} from '../../api/People/connect/basic';
+const ids = new Set()
 export default {
   name: "connectList",
-  components: {
-    Pagination,
+  created(){
+    this.getList1()
+    this.getList2()
   },
   data() {
     return {
+      ids1:ids,
+      ids2:ids,
         centerDialogAdd: false,      
 centerDialogEdit: false,      
 centerDialogDel: false, 
@@ -311,7 +302,7 @@ centerDialogDel: false,
           name: '张三',
           id:'430220235522222222',
           phone:'13962462222',
-          status:"健康",
+          address:"健康",
         }, {
            name: '李四',
           id:'430228355522222222',
@@ -357,7 +348,7 @@ centerDialogDel: false,
       change (e) {
     this.$forceUpdate()
 },
-       handleEdit (index, row,type) {   
+handleEdit (row,type) {   
     this.centerDialogEdit = true   
     if(type === 1){
         this.type=true
@@ -369,60 +360,125 @@ centerDialogDel: false,
     this.info.id=row.id
     this.info.phone=row.phone
     this.info.status=row.status
-    this.listID=index;   
+    this.listID=row.id;   
 }, 
 edit () {      
     const i = this.listID      
     if(this.type ===true){
-    this.connectList[parseInt(i)].status=this.info.status
-    this.connectList[parseInt(i)].name=this.info.name
-    this.connectList[parseInt(i)].phone=this.info.phone
-    this.connectList[parseInt(i)].id=this.info.id
+      connectUpdate1(i).then(response => {
+          this.connectList1();
+          this.$message("修改成功！")
+        });
+    // this.connectList[parseInt(i)].status=this.info.status
+    // this.connectList[parseInt(i)].name=this.info.name
+    // this.connectList[parseInt(i)].phone=this.info.phone
+    // this.connectList[parseInt(i)].id=this.info.id
     }else{
-        this.connectList1[parseInt(i)].status=this.info.status
-    this.connectList1[parseInt(i)].name=this.info.name
-    this.connectList1[parseInt(i)].phone=this.info.phone
-    this.connectList1[parseInt(i)].id=this.info.id
+       connectUpdate2(i).then(response => {
+          this.connectList2();
+          this.$message("修改成功！")
+        });
+    //     this.connectList1[parseInt(i)].status=this.info.status
+    // this.connectList1[parseInt(i)].name=this.info.name
+    // this.connectList1[parseInt(i)].phone=this.info.phone
+    // this.connectList1[parseInt(i)].id=this.info.id
     }
     this.info.name=''
     this.info.id=''
     this.info.phone=''
     this.info.status=''
     this.centerDialogEdit = false 
-    this.$message("修改成功！")
+    
 },
 handleAdd () {      
     this.centerDialogAdd = true    
     },    
 add () {     
     if(this.type ===true){ 
-    this.connectList.push(this.info)      
+      if (this.ids1.has(this.info.id)) {
+        this.$message.warning('该密接人员已经添加！')
+        this.info={
+            name:'',
+            id:'',
+            phone:'',
+            status:'',
+        }
+        return
+      } else {
+      connectAdd1(this.info)
+      this.$message.success('添加成功')
+      this.centerDialogAdd = false   
+    this.getList1()  
+      } 
     }
     else{
-    this.connectList1.push(this.info)     
+    if (this.ids2.has(this.info.id)) {
+        this.$message.warning('该次密接人员已经添加！')
+        this.info={
+            name:'',
+            id:'',
+            phone:'',
+            status:'',
+        }
+        return
+      } else {
+      connectAdd2(this.info)
+      this.$message.success('添加成功')
+      this.centerDialogAdd = false   
+    this.getList2()  
+      }    
     }
     this.info.name=''
     this.info.id=''
     this.info.phone=''
     this.info.status=''  
-    this.centerDialogAdd = false    
-    this.$message("添加成功！")
 },
-handleDelete (index, rows) {      
-    this.centerDialogDel = true    
-    this.listID=index
-},    
-del () {      
-    const i = this.listID      
-    this.connectList.splice(i,1)     
-    this.centerDialogDel = false    
-    this.$message("删除成功！")
+handleDelete (index, type) {          
+  if (index.length === 0) return
+  if(type === 1){
+   this.$confirm('是否确认删除该密接人员记录?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(function() {
+          return connectDelete1({ id: index })
+        })
+        .then(() => {
+          this.getList1()
+          this.msgSuccess('删除成功')
+        })
+        .catch(() => {})
+  }else{
+    this.$confirm('是否确认删除该密接人员记录?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(function() {
+          return connectDelete2({ id: index })
+        })
+        .then(() => {
+          this.getList2()
+          this.msgSuccess('删除成功')
+        })
+        .catch(() => {})
+  }
 },
     getList1() {
       this.loading = true;
-      listNoticeUser(this.queryParams).then((response) => {
+      List1(this.queryParams).then((response) => {
         this.loading = false;
         this.connectList = response.records;
+        this.ids1=response.records.id;
+      });
+    },
+    getList2() {
+      this.loading = true;
+      List2(this.queryParams).then((response) => {
+        this.loading = false;
+        this.connectList = response.records;
+        this.ids2=response.records.id;
       });
     },
     resetQuery1() {
@@ -430,6 +486,12 @@ del () {
       this.queryParams.id = "";
       this.queryParams.type = "";
       this.getList1();
+    },
+    resetQuery2() {
+      this.queryParams.name = "";
+      this.queryParams.id = "";
+      this.queryParams.type = "";
+      this.getList2();
     },
   },
 };

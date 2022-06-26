@@ -18,6 +18,11 @@ export default {
                 import ("@/views/Overview/domestic")
         },
         {
+            path: "/map",
+            component: () =>
+                import ("@/views/Region/map")
+        },
+        {
             path: "/aboard",
             component: () =>
                 import ("@/views/Overview/foreign")

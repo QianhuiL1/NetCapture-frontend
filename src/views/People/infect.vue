@@ -151,15 +151,46 @@
               size="middle"
              @click="handleClick(id, 'check')"
             >
-            <i class="el-icon-odometer" style="color: #3388FF; " />
+            <i class="el-icon-odometer" style="color: #3388FF;" />
                <span style="color: #223355; "> 修改轨迹</span>
             </el-button>
         </el-footer>
       </el-container>
     </el-drawer> -->
     <!-- 详情框 -->
-    <!-- <el-dialog title="个人信息" :visible.sync="dialogVisible" width="30%">      
-    <span>姓名：</span>      
+    <el-dialog title="个人信息"  :visible.sync="dialogVisible" width="30%">
+          <span class="noun">姓名： </span>
+          <span style="color:#2e2d2d;float:left;
+      font-size: 20px;
+      font-weight: 200;">{{people.name}}</span>
+      <br><br>
+      <span class="noun">性别： </span>
+          <span style="float:left;
+          color:#2e2d2d;
+      font-size: 20px;
+      font-weight: 200;">{{people.sex}}</span>
+      <br><br>
+        <span class="noun">身份证号： </span>
+          <span style="float:left;
+          color:#2e2d2d;
+      font-size: 20px;
+      font-weight: 200;">{{people.id}}</span>
+      <br><br>
+       
+         <span class="noun">确诊时间： </span>
+          <span style="color:#2e2d2d;float:left;
+      font-size: 20px;
+      font-weight: 200;">{{people.date}}</span>
+      <br><br>
+        <span class="noun">电话号码： </span>
+          <span style="color:#2e2d2d;float:left;
+      font-size: 20px;
+      font-weight: 200;">{{people.phone}}</span>
+     <br><br>
+      <span class="noun">家庭住址： </span>
+          <span style="color:#2e2d2d;float:left;
+      font-size: 20px;
+      font-weight: 200;">{{people.address}}</span>
         <span slot="footer" class="dialog-footer">        
         <el-button @click="dialogVisible = false; listID=''">关 闭</el-button>             
     </span>    
@@ -169,11 +200,15 @@
 
 <script>
 import Pagination from "@/components/Pagination";
-
+import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
+import {trackList} from '../../api/People/track/basic';
 export default {
   name: "infectList",
   components: {
     Pagination,
+  },
+  created(){
+this.getList()
   },
   data() {
     return {
@@ -196,11 +231,10 @@ export default {
         },
       ],
       queryParams: {
-        _page: 1,
-        _limit: 10,
-        name: undefined,
-        id:'',
+        name: "",
+        peopleId:'',
         type: "",
+        status:"",
         startDate: "",
         endDate: "",
       },
@@ -217,7 +251,7 @@ export default {
       ],
       infectList: [{
           name: '张三',
-          id:'430220235522222222',
+          id:'42030219901024737X',
           phone:'13962462222',
           date: '2016-05-02',
           type:1,
@@ -237,8 +271,12 @@ export default {
       value: "",
       people:{
           id:"",
+          sex:"",
           name:"",
           phone:"",
+          address:"",
+          date:"",
+          status:""
         }
     };
   },
@@ -256,11 +294,25 @@ export default {
       handleClick(row, mode) {
       if (mode === "detail") {
         // 加载详情内容
+        this.people.id=row.id
+        infectInfo(this.people.id).then((response) => {
+        this.people.name=response.name
+        this.people.sex=response.sex
+        this.people.phone=response.phonenumber
+        this.people.address=response.address
+        this.people.date=response.updateTime
+        this.people.status=response.status
+        })
+        
         this.dialogVisible = true;
       } else if (mode === "line") {
         this.people.id=row.id
         this.people.name=row.name
         this.people.phone=row.phone
+        this.activities=""
+        trackList(this.people.id).forEach(item => {
+          this.activities.push({content:item.address,timestamp:item.date})
+        })
         this.drawerVisible = true;
       }else if (mode === "check"){
         this.$router.push({
@@ -275,14 +327,14 @@ export default {
     },
     getList() {
       this.loading = true;
-      listNoticeUser(this.queryParams).then((response) => {
+      infectList(this.queryParams).then((response) => {
         this.loading = false;
-        this.infectList = response.records;
+        this.infectList = response.rows;
       });
     },
     resetQuery() {
       this.queryParams.name = "";
-      this.queryParams.id = "";
+      this.queryParams.peopleId = "";
       this.queryParams.type = "";
       this.queryDateRange = [];
       this.handleQuery();
@@ -310,6 +362,17 @@ export default {
 }
 .timeline{
   margin-left: 0px;
+}
+.noun{
+  float: left;
+color:#1E1E1E;
+      font-size: 20px;
+      font-weight: 600;
+}
+.info{
+      color:#2e2d2d;
+      font-size: 18px;
+      font-weight: 200;
 }
 .el-scrollbar__wrap {
   overflow-x: hidden;
