@@ -25,7 +25,7 @@
             name="username"
             type="text"
             tabindex="1"
-            autocomplete="on"
+            autocomplete="off"
           >
             <template slot="prepend"><svg-icon icon-class="user"/></template>
           </el-input>
@@ -45,7 +45,7 @@
               placeholder="登录密码"
               name="password"
               tabindex="2"
-              autocomplete="on"
+              auto-complete="off"
               @keyup.native="checkCapslock"
               @blur="capsTooltip = false"
               @keyup.enter.native="handleLogin"
@@ -96,7 +96,6 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
-import $ from 'jquery'
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
@@ -105,9 +104,14 @@ export default {
   // components: { SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      // if (!validUsername(value)) {
+      //   callback(new Error('请输入用户名'))
+      // } else {
+      //   callback()
+      // }
+      if(value==''){
         callback(new Error('请输入用户名'))
-      } else {
+      }else{
         callback()
       }
     }
@@ -133,7 +137,8 @@ export default {
         ],
         password: [
           { required: true, trigger: 'blur', validator: validatePassword }
-        ]
+        ],
+        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
       codeUrl: "",
       passwordType: 'password',
@@ -147,7 +152,7 @@ export default {
       // 验证码开关
       captchaOnOff: true,
       // 注册开关
-      register: false,
+      register: true,
 
     }
   },
@@ -167,8 +172,8 @@ export default {
   created() {
     this.getCode();
     this.getCookie();
-    // window.addEventListener('storage', this.afterQRScan)
-    // this.getImage()
+    window.addEventListener('storage', this.afterQRScan)
+    this.getImage()
   },
   mounted() {
     if (this.loginForm.username === '') {
@@ -182,7 +187,7 @@ export default {
     this.getScale()
   },
   destroyed() {
-    // window.removeEventListener('storage', this.afterQRScan)
+    window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {getCode() {
       getCodeImg().then(res => {
