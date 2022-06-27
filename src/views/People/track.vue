@@ -177,10 +177,7 @@ centerDialogDel: false,
         email: "",
       },
       loading:false,
-      tableData: [{
-          time: '',
-          address: ''
-        }]
+      tableData: []
     };
   },
  

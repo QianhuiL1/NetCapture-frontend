@@ -21,16 +21,16 @@ export function infectInfo(id) {
 // 添加感染人员记录
 export function infectAdd(data) {
     return request({
-        url: prefix + '/create',
+        url: prefix,
         method: 'post',
         data: data
     })
 }
 
 // 修改感染人员记录
-export function infectUpdate(id, data) {
+export function infectUpdate(data) {
     return request({
-        url: prefix + '/' + id,
+        url: prefix,
         method: 'put',
         data: data
     })

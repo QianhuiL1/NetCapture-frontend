@@ -72,11 +72,11 @@
           label="姓名"
           prop="name"
           :show-overflow-tooltip="true"
-          min-width="5%"
+          min-width="10%"
         />
-        <el-table-column label="身份证号" prop="peopleId" min-width="30%" />
+        <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
         <el-table-column label="联系电话" prop="phonenumber" min-width="10%" />
-        <el-table-column label="确诊日期" prop="createTime" min-width="10%" >
+        <el-table-column label="确诊日期" prop="createTime" min-width="20%" >
             <template slot-scope="scope">
             <span>{{ scope.row.date }}</span>
           </template></el-table-column>
