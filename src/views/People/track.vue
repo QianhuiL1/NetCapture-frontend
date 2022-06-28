@@ -53,8 +53,15 @@
               >提交</el-button
             >
             <div class="con-list">
+                <el-button
+                  icon="el-icon-share"
+                  type="primary"
+                  size="mini"
+                  @click="handleExport"
+                >导出</el-button>   
               <el-table
                 :row-class-name="tableRowClassName"
+                id="statisTable"
                 :data="tableData"
                 v-loading="loading"
                 :default-sort="{ prop: 'date', order: 'ascending' }"
@@ -234,6 +241,8 @@ import {
 } from "../../api/People/travel/basic";
 import { connectList } from "../../api/People/connect/basic";
 const AMap = window.AMap;
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 export default {
   components: {
     geoCoder: "",
@@ -565,6 +574,29 @@ export default {
       connectList(this.spot.recordId).then(this.$message.success("提交成功"));
     },
   },
+  handleCommit(){
+for(var index in this.tableData){
+  
+}
+  },
+   handleExport(){
+      let xlsxParam = { raw: true }
+      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
+      var wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'array'
+      })
+      try {
+        FileSaver.saveAs(
+          new Blob([wbout], { type: 'application/octet-stream' }),
+          "重点人员轨迹" + '.xlsx'
+        )
+      } catch (e) {
+        // if (typeof console !== 'undefined') console.log(e, wbout)
+      }
+      return wbout
+    }
 };
 </script>
  

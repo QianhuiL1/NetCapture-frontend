@@ -59,9 +59,15 @@
   </div>
   <div class="center-content">
     <el-card class="table_content">
+      <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+      >导出</el-button>
       <el-table v-loading="loading"
+        id="statisTable"
         :data="infectTable"
-        :cell-style="cellStyle"
         border
         hightlight-current-row
         ref="infectTable">
@@ -117,6 +123,8 @@
 </template>
 
 <script>
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 
 export default{
   name: 'infectTable',
@@ -129,12 +137,47 @@ export default{
         {name:'阳性',value:'阳性'},
         {name:'密接',value:'密接'},
         {name:'次密接',value:'次密接'}
-      ]
+      ],
+      queryParams:{},
+      infectTable:[],
+      formData:{},
     }
   },
   methods:{
     handleAdd(){
       this.dialogVisible=true
+    },
+    handleQuery(){
+
+    },
+    getInfectList(){
+
+    },
+    resetQuery(){
+
+    },
+    submitForm(){
+
+    },
+    resetForm(){
+
+    },
+    handleExport(){
+      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'))
+      var wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'array'
+      })
+      try {
+        FileSaver.saveAs(
+          new Blob([wbout], { type: 'application/octet-stream' }),
+          "社区重点人员列表" + '.xlsx'
+        )
+      } catch (e) {
+        // if (typeof console !== 'undefined') console.log(e, wbout)
+      }
+      return wbout
     }
   }
 }

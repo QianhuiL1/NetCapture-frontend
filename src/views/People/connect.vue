@@ -61,7 +61,14 @@
         </el-form-item>
       </el-form>
 <p></p>
+    <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+      >导出</el-button>
     <el-table  v-loading="loading"
+        id="statisTable"
         :data="connectList"
         :cell-style="cellStyle"
         border
@@ -157,6 +164,8 @@
 <script>
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import { connectCreate } from '../../api/People/connect/base';
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 const ids = new Set()
 export default {
   name: "connectList",
@@ -279,8 +288,28 @@ handleDelete (id) {
         connectCreate(this.connectList[index].address)
       }
       this.$message("提交成功")
-  }
   },
+  handleExport(){
+     let xlsxParam = { raw: true }
+      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
+      var wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'array'
+      })
+      try {
+        FileSaver.saveAs(
+          new Blob([wbout], { type: 'application/octet-stream' }),
+          "密接人员列表" + '.xlsx'
+        )
+      } catch (e) {
+        // if (typeof console !== 'undefined') console.log(e, wbout)
+      }
+      return wbout
+    }
+
+  },
+
   
 };
 </script>

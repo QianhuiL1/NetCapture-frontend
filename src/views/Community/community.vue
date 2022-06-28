@@ -37,9 +37,15 @@
   </div>
   <div class="center-content">
     <el-card class="table_content">
-      <el-table v-loading="loading"
+      <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+      >导出</el-button>
+      <el-table
+        id="statisTable"
        :data="residentTable"
-       :cell-style="cellStyle"
        border
        highlight-current-row
        ref="residentTable">
@@ -47,19 +53,19 @@
           label="姓名"
           prop="name"
           :show-overflow-tooltip="true"
-          min-width="20%"
+          min-width="10%"
         />
         <el-table-column label="性别" prop="sex" min-width="10%" />
-        <el-table-column label="身份证号" prop="peopleId" min-width="10%" />
-        <el-table-column label="联系电话" prop="phonenumber" min-width="10%" />
+        <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
+        <el-table-column label="联系电话" prop="phonenumber" min-width="20%" />
         <el-table-column label="健康状态" prop="type" min-width="10%"></el-table-column>
         <el-table-column label="居住地址" prop="address" min-width="30%"></el-table-column>
-        <el-table-column label="操作" min-width="15%">
+        <el-table-column label="操作" min-width="10%">
           <template slot-scope="scope">
             <el-button
               size="medium"
               type="text"
-              @click="handleClick(scope.row, 'line')"
+              @click="handleClick(scope.row)"
             >
               <i class="el-icon-edit" style="color: #3388ff" />
               <span style="color: #223355"> 修改信息</span>
@@ -67,18 +73,17 @@
         </template>
       </el-table-column>
        </el-table>
-        <pagination
+        <!-- <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="queryParams._page"
         :limit.sync="queryParams._limit"
         style="float: right; margin: 20px"
         @pagination="getList"
-      />
+      /> -->
     </el-card>
   </div>
   <el-dialog title="个人信息" :visible.sync="dialogVisible" width="30%">
-  <div class="info"><span></span></div>
   <el-form ref="editForm" :model="editFormData"
       :inline="true" size="medium">
       <el-form-item label="姓名：" prop="name">
@@ -120,22 +125,66 @@
 
 <script>
 import Pagination from "@/components/Pagination";
+import { searchByArea } from "../../api/Person/basic";
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 
 export default{
   name:'residentList',
-  components:{
+  component:{
     Pagination,
-  },
-  created() {
   },
   data() {
     return {
+      editFormData:{},
+      residentTable:[
+        {name:'崔香雅',sex:'女',peopleId:350403198611111000,phonenumber:15605197233,type: '次密接',address:'涧池乡军家河村４组'}
+      ],
+      param:{
+        ancestors: "0,420000,420102"
+      },
+      queryParams:{},
       dialogVisible: false
     }
   },
+  created() {
+
+    searchByArea(this.param.ancestors).then(res=>{
+      console.log(res)
+      
+    })
+  },
   methods:{
+    handleQuery(){
+
+    },
     handleClick(row){
-      this.dialogVisible=true
+      this.dialogVisible = true
+      this.editFormData.name=row.name
+    },
+    handleEdit(){
+
+    },
+    resetQuery(){
+
+    },
+    handleExport(){
+      let xlsxParam = { raw: true }
+      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
+      var wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'array'
+      })
+      try {
+        FileSaver.saveAs(
+          new Blob([wbout], { type: 'application/octet-stream' }),
+          "社区居民信息表" + '.xlsx'
+        )
+      } catch (e) {
+        // if (typeof console !== 'undefined') console.log(e, wbout)
+      }
+      return wbout
     }
   }
 }
@@ -151,8 +200,9 @@ export default{
 }
 .center-content {
   margin-top: 10px;
-  display: flex;
-  flex-direction: column;
+}
+.table_content{
+  padding: 10px 5px 0px 0px;
 }
 
 

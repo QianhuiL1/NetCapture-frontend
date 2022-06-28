@@ -14,6 +14,19 @@ export default {
             path: '/',
             component: () =>
                 import ("@/views/Login/login.vue")
+        }, {
+            path: '/community',
+            component: () =>
+                import ("@/views/Community/community.vue")
+        }, {
+            path: '/communityInfect',
+            component: () =>
+                import ("@/views/Community/infect.vue")
+        },
+        {
+            path: '/communityImport',
+            component: () =>
+                import ("@/views/Community/import.vue")
         },
         {
             name: "register",
