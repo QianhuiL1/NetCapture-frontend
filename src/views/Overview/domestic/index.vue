@@ -109,7 +109,7 @@
             prop="healthyAdd"
             :show-overflow-tooltip="true"
             >
-            </el-table-column>  
+            </el-table-column>
             <el-table-column
             align="center"
             label="风险区域"
@@ -135,14 +135,14 @@
             align="center"
             label="风险等级"
             prop="level"
-           :show-overflow-tooltip="true"           
+           :show-overflow-tooltip="true"
             >
             </el-table-column>
           <el-table-column
             align="center"
             label="地区"
             prop="area"
-           :show-overflow-tooltip="true"   
+           :show-overflow-tooltip="true"
             >
             </el-table-column>
         </el-table>
@@ -150,7 +150,7 @@
       </el-col>
     </div>
     <el-dialog title="疫情数据说明"  :visible.sync="dialogVisible" width="45%" :model="helpItems">
-      <div 
+      <div
         v-for="(item,index) in helpItems"
         :key="index"
         class="help_item" >
@@ -262,7 +262,7 @@ export default {
       this.initCharts()
     },
     initCharts(){
-      
+
       this.ownAddChart= echarts.init(document.getElementById('ownAddChart'))
       this.ownAddOption = {
         xAxis: {
@@ -369,7 +369,7 @@ export default {
         }
         p:nth-last-of-type(1) {
           margin-bottom: 0;
-        
+
         }
     }
     }
@@ -404,7 +404,7 @@ export default {
   }
 }
 .title{
-  color:#1E1E1E;
+  color:#C8102E;
   font-size: 20px;
   padding:3px;
   font-weight: 550;
@@ -431,7 +431,7 @@ export default {
     // width: calc( 100% - 400px );
   }
   .theme{
-    color:#1E1E1E;
+    color:#950008;
     font-size: 20px;
     font-weight: 550;
     padding:3px;
@@ -445,8 +445,8 @@ export default {
     background-size:100% 100%;
     cursor: pointer;
     transition: .2s;
-  } 
-  
+  }
+
 .image:hover{
   background-image: url(../../../assets/help_on.png);
   background-size:100% 100%;

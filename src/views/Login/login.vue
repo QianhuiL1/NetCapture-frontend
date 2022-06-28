@@ -1,6 +1,6 @@
 <template>
   <div
-    class="login-container"
+    class="login-container":style="backgorund"
   >
     <el-card class="box-card">
       <el-form
@@ -13,8 +13,7 @@
       >
         <div class="title-container">
           <div class="title">
-            <img :src="logo" alt="" />
-            疫情流调系统
+            <img :src="logo"/>
           </div>
         </div>
         <el-form-item prop="username">
@@ -327,7 +326,8 @@ $cursor: #e5e5e5;
   }
 }
 .login-container {
-  background: url(../../assets/loginback.jpg);
+  background: url(../../assets/loginbg1.png);
+  background: url(../../assets/loginbg2.png);
   background-size: 100% 100%;
 
   .el-form-item {
@@ -367,6 +367,7 @@ $light_gray: #eee;
 .login-container {
   min-height: 100%;
   width: 100%;
+  background-repeat: no-repeat;
   // background-color: $bg;
   overflow: hidden;
   position: relative;
@@ -397,19 +398,20 @@ $light_gray: #eee;
     }
     ::v-deep .submit-button {
       width: 100%;
-      height: 77px;
-      background-color: #3a6ffe;
-      border-radius: 2px;
+      height: 40px;
+      background-color: #cb1727;
+      border-radius: 0px;
       overflow: hidden;
-      font-size: 30px;
+      font-size: 22px;
       color: #ffffff;
-      margin-top: 20px;
+      margin-top: 24px;
     }
   }
 .tip{
+  margin-top: 24px;
   border-bottom: 1px solid #0F111A;
   width: 200px;
-  margin: 0 auto;
+  margin: 24px auto;
 }
 .tip:hover{
   color: #858585;

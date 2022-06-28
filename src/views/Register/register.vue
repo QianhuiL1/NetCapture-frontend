@@ -12,12 +12,7 @@
       >
         <div class="title-container">
           <div class="title">
-            <div class="titleImg">
-            <img :src="logo" alt="" style="width:60px "/>
-            </div>
-            <div class="titleText">
-              <span> 疫情流调系统</span>
-            </div>
+            <img :src="logo"/>
           </div>
         </div>
         <el-form-item prop="username">
@@ -153,7 +148,7 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
-   
+
     getCode() {
       getCodeImg().then(res => {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
@@ -182,7 +177,7 @@ export default {
             }
           })
         }
-      }); 
+      });
     },
     toLogin(){
       this.$router.push({path:'/'})
@@ -216,7 +211,7 @@ $cursor: #e5e5e5;
   }
 }
 .login-container {
-  background: url(../../assets/loginback.jpg);
+  background: url(../../assets/loginbg2.png);
   background-size: 100% 100%;
 
   .el-form-item {
@@ -256,6 +251,7 @@ $light_gray: #eee;
 .login-container {
   min-height: 100%;
   width: 100%;
+    background-repeat: no-repeat;
   // background-color: $bg;
   overflow: hidden;
   position: relative;
@@ -286,19 +282,20 @@ $light_gray: #eee;
     }
     ::v-deep .submit-button {
       width: 100%;
-      height: 77px;
-      background-color: #3a6ffe;
-      border-radius: 2px;
+      height: 40px;
+      background-color: #cb1727;
+      border-radius: 0px;
       overflow: hidden;
-      font-size: 30px;
+      font-size: 22px;
       color: #ffffff;
-      margin-top: 20px;
+      margin-top: 24px;
     }
   }
 .tip{
+  margin-top: 24px;
   border-bottom: 1px solid #0F111A;
   width: 200px;
-  margin: 0 auto;
+  margin: 24px auto;
 }
 .tip:hover{
   color: #858585;
@@ -333,17 +330,9 @@ $light_gray: #eee;
       font-size: 26px;
       // color: $light_gray;
       color: #666666;
-      height: 20px;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
-      margin-bottom: 80px;
-      display:flex;
-      flex-direction: row;
-      justify-content: center;
-    }
-    .titleText{
-      margin-top: 10px;
     }
   }
 
@@ -357,11 +346,8 @@ $light_gray: #eee;
     user-select: none;
   }
 .submit-button{
-  font-size: 20px;
   padding: 10px;
   margin-top: 10px;
-  width: 400px;
-  height: 50px
 }
   .thirdparty-button {
     position: absolute;
