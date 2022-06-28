@@ -66,6 +66,11 @@ export default {
             path: "/ci",
             component: () =>
                 import ("@/views/People/connect_ci.vue")
+        },
+        {
+            path: "/dept",
+            component: () =>
+                import ("@/views/system/dept")
         }
     ],
     // 去掉Vue地址的#

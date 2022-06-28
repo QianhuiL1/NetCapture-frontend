@@ -2,23 +2,16 @@
   <div class="home">
     <div>
       <!-- // 头部 -->
-      <header class="header" style="z-index: 2000l;">
-        <h1 style="font-size: 2em;" @click="goHome">
+      <header class="header" >
+        <h1 style="font-size: 2em;">
           <span>传染病流调信息化平台</span>
         </h1>
       </header>
-      <!-- 地图切换 -->
-      <ul class="menu">
+       <ul class="menu">
         <li
           class="menu-item"
           :class="[menuIndex == 'event' ? 'active' : '']"
-          @click="
-            menuIndex = 'event';
-            asideLeftSwitch = false;
-            asideRightSwitch = true;
-            clearAllMarker();
-            setEventMarker();
-          "
+          @click="setRegion"
         >
           重点地区
         </li>
@@ -33,7 +26,7 @@
             setBuildingMarker();
           "
         >
-          人员轨迹
+          轨迹路线
           <!-- loadMaterialMarker() -->
         </li>
         <li
@@ -46,725 +39,122 @@
             clearAllMarker();
           "
         >
-          疫情预测
+          趋势预测
         </li>
       </ul>
     </div>
-    <!-- 左侧框 -->
-    <aside v-show="asideLeftSwitch" class="aside">
-      <div v-if="menuIndex == 'event'" class="yingji_content">
-        <el-scrollbar>
-          <el-timeline>
-            <el-timeline-item
-              v-for="(log, index) in logList"
-              :key="index"
-              :timestamp="log.createTime"
-              placement="top"
-            >
-              <span v-if="log.type === 11"
-                ><el-link :href="log.message" target="_blank"
-                  >指挥中心：图片链接</el-link
-                ></span
-              >
-              <span v-else>
-                {{
-                  log.type === 5
-                    ? "指挥中心：" + log.message
-                    : log.type == 6
-                    ? "执行者：" + log.message
-                    : log.typeName
-                }}
-              </span>
-            </el-timeline-item>
-          </el-timeline>
-        </el-scrollbar>
-      </div>
-      <div v-else-if="menuIndex != 'meteorological'" class="jianzhu_content">
-        <div @click="toLeft">
-          <svg
-            class="left"
-            :class="{ 'is-active': isActive }"
-            t="1636629893737"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2549"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M272.9 512l265.4-339.1c4.1-5.2 0.4-12.9-6.3-12.9h-77.3c-4.9 0-9.6 2.3-12.6 6.1L186.8 492.3c-9.1 11.6-9.1 27.9 0 39.5l255.3 326.1c3 3.9 7.7 6.1 12.6 6.1H532c6.7 0 10.4-7.7 6.3-12.9L272.9 512z"
-              p-id="2550"
-              fill="#13227a"
-            />
-            <path
-              d="M576.9 512l265.4-339.1c4.1-5.2 0.4-12.9-6.3-12.9h-77.3c-4.9 0-9.6 2.3-12.6 6.1L490.8 492.3c-9.1 11.6-9.1 27.9 0 39.5l255.3 326.1c3 3.9 7.7 6.1 12.6 6.1H836c6.7 0 10.4-7.7 6.3-12.9L576.9 512z"
-              p-id="2551"
-              fill="#13227a"
-            />
-          </svg>
-        </div>
-        <el-tabs v-model="activeName" stretch @tab-click="handleTabClick">
-          <el-tab-pane label="点位列表" name="list">
-            <!-- 搜索框 -->
-            <el-input
-              v-model="buildingName"
-              placeholder="建筑查询"
-              class="input-with-select"
-            >
-              <el-button slot="append" icon="el-icon-search" />
-            </el-input>
-            <!-- 树 -->
-            <el-scrollbar style="height:calc( 100vh - 320px)">
-              <el-tree
-                :data="data"
-                :props="defaultProps"
-                @node-click="handleNodeClick"
-              />
-            </el-scrollbar>
-          </el-tab-pane>
-          <el-tab-pane label="视频直播" name="live">
-            <!-- 搜索框 -->
-            <el-input
-              v-model="buildingName"
-              placeholder="建筑查询"
-              class="input-with-select"
-            >
-              <el-button slot="append" icon="el-icon-search" />
-            </el-input>
-            <!-- 树 -->
-            <el-scrollbar style="height:calc( 100vh - 320px)">
-              <el-tree
-                :data="data"
-                :props="defaultProps"
-                @node-click="handleNodeClick"
-              />
-            </el-scrollbar>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-      <div v-else class="weather_content">
-        <el-tabs
-          v-model="weather"
-          type="card"
-          closable
-          @tab-remove="
-            asideLeftSwitch = false;
-            map.setZoom(12);
-          "
-        >
-          <el-tab-pane
-            :label="stationAddress"
-            name="weather"
-            style="height:70vh"
-          >
-            <!-- <el-scrollbar style="height:100%"> -->
-            <el-descriptions class="margin-top" :column="2" border>
-              <el-descriptions-item>
-                <template slot="label">
-                  路面温度
-                </template>
-                {{
-                  weatherCurrentData.SURTEMP_CURRENT_VALUE
-                    ? weatherCurrentData.SURTEMP_CURRENT_VALUE + "℃"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  天气气温
-                </template>
-                {{
-                  weatherCurrentData.AIRTEMP_CURRENT_VALUE
-                    ? weatherCurrentData.AIRTEMP_CURRENT_VALUE + "℃"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  累计降雨
-                </template>
-                {{
-                  weatherCurrentData.RAIN_CURRENT_VALUE
-                    ? weatherCurrentData.RAIN_CURRENT_VALUE + "mm"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  积水量
-                </template>
-                {{
-                  weatherCurrentData.WATERACCUMULATE_VALUE
-                    ? weatherCurrentData.WATERACCUMULATE_VALUE + "mm"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  能见度
-                </template>
-                {{
-                  weatherCurrentData.VISIBILITY_ONEMINUTE_VALUE
-                    ? weatherCurrentData.VISIBILITY_ONEMINUTE_VALUE / 1000 +
-                      "km"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  实时风速
-                </template>
-                {{
-                  weatherCurrentData.WIND_CURRENT_SPEEDVALUE
-                    ? weatherCurrentData.WIND_CURRENT_DIRVALUE +
-                      " " +
-                      weatherCurrentData.WIND_CURRENT_POWERVALUE +
-                      "级" +
-                      weatherCurrentData.WIND_CURRENT_SPEEDVALUE +
-                      "m/s"
-                    : "-"
-                }}
-              </el-descriptions-item>
-            </el-descriptions>
-            <div id="chart" style="width:37vw;height:50vh;" />
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-    </aside>
-    <!-- 右侧框 -->
-    <aside v-show="asideRightSwitch" class="asideRight weather">
-      <div v-if="menuIndex != 'meteorological'">
-        <div @click="toRight">
-          <svg
-            class="Right"
-            :class="{ 'is-active': isRightActive }"
-            t="1636629893737"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2549"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M533.2 492.3L277.9 166.1c-3-3.9-7.7-6.1-12.6-6.1H188c-6.7 0-10.4 7.7-6.3 12.9L447.1 512 181.7 851.1c-4.1 5.2-0.4 12.9 6.3 12.9h77.3c4.9 0 9.6-2.3 12.6-6.1l255.3-326.1c9.1-11.7 9.1-27.9 0-39.5z"
-              p-id="8365"
-            />
-            <path
-              d="M837.2 492.3L581.9 166.1c-3-3.9-7.7-6.1-12.6-6.1H492c-6.7 0-10.4 7.7-6.3 12.9L751.1 512 485.7 851.1c-4.1 5.2-0.4 12.9 6.3 12.9h77.3c4.9 0 9.6-2.3 12.6-6.1l255.3-326.1c9.1-11.7 9.1-27.9 0-39.5z"
-              p-id="8366"
-            />
-          </svg>
-        </div>
-      </div>
-      <!-- 现有事件展示框 -->
-      <div v-if="menuIndex === 'meteorological'" class="shijian_content">
-        <div class="right-header">
-          <p class="header-title">
-            更新时间<span>{{ staList.updateTime }}</span>
-          </p>
-          <div class="header-button">
-            <el-input
-              v-model="stationName"
-              placeholder="站点查询"
-              class="input-with-select"
-              @change="stationNameChange"
-            >
-              <el-button
-                slot="append"
-                icon="el-icon-search"
-                @click="stationNameClick"
-              />
-            </el-input>
-          </div>
-        </div>
-        <el-table
-          :data="staList.data"
-          height="50%"
-          :highlight-current-row="false"
-          @row-dblclick="handleWeatherClick"
-        >
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            width="55"
-          />
-          <el-table-column label="站名" align="center" prop="STANAME" />
-          <el-table-column
-            label="气温/℃"
-            align="center"
-            prop="AIRTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="路面温度/℃"
-            align="center"
-            prop="SURTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="降雨量/mm"
-            align="center"
-            prop="RAIN_SUM_VALUE"
-          />
-          <el-table-column
-            label="积水量/mm"
-            align="center"
-            prop="WATERACCUMULATE_VALUE"
-          />
-        </el-table>
-        <el-table
-          :data="staList.data_bridge"
-          height="50%"
-          style="margin-top: 12px"
-          :highlight-current-row="false"
-          @row-dblclick="handleWeatherClick"
-        >
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            width="55"
-          />
-          <el-table-column label="站名" align="center" prop="STANAME" />
-          <el-table-column
-            label="气温/℃"
-            align="center"
-            prop="AIRTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="路面温度/℃"
-            align="center"
-            prop="SURTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="降雨量/mm"
-            align="center"
-            prop="RAIN_SUM_VALUE"
-          />
-          <el-table-column
-            label="积水量/mm"
-            align="center"
-            prop="WATERACCUMULATE_VALUE"
-          />
-        </el-table>
-      </div>
-      <el-table
-        class="yingji_tablecontent"
-        v-if="menuIndex == 'event'"
-        :data="eventList"
-        height="100%"
-        @row-dblclick="handleClick"
-      >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" class="demo-table-expand">
-              <el-form-item label="录入时间">
-                <span>{{ props.row.createTime }}</span>
-              </el-form-item>
-              <el-form-item label="事件类型">
-                <span>{{ props.row.typeName }}</span>
-              </el-form-item>
-              <el-form-item label="事件内容">
-                <el-popover
-                  placement="top-start"
-                  width="200"
-                  trigger="hover"
-                  :content="props.row.description"
-                >
-                  <el-button slot="reference" size="small">查看</el-button>
-                </el-popover>
-              </el-form-item>
-              <el-form-item label="应急等级">
-                <span>{{ props.row.levelName }}</span>
-              </el-form-item>
-              <el-form-item label="处理进度">
-                <span>{{ props.row.currentStatusName }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="事件地址"
-          prop="address"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          label="事件类型"
-          prop="typeName"
-          width="90px"
-          align="center"
-        />
-        <el-table-column label="事件状态" width="90px" align="center">
-          <template slot-scope="props">
-            {{ props.row.currentStatusName }}
-          </template>
-        </el-table-column>
-        <el-table-column label="更新时间" width="170px" align="center">
-          <template slot-scope="props">
-            {{ props.row.updateTime }}
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 建筑检测的摄像头 -->
-      <div v-if="menuIndex === 'monitor'" class="shexiangtou">
-        <el-scrollbar>
-          <div v-for="camera in camera_info" :key="camera.id">
-            <span class="camera_title">{{ camera.name }}</span>
-            <div class="camera_box">
-              <el-image style="width: 100%;" :src="camera.url" fit="fit" />
-            </div>
-          </div>
-        </el-scrollbar>
-      </div>
-    </aside>
-
-    <!-- 数据面板 -->
-    <dataPanel v-if="menuIndex === 'dataPanel'" style="z-index: 1001;" />
-
-    <!-- 高德地图容器 -->
     <div id="map" ></div>
-    <!-- 告警音 -->
-    <audio id="audio" :src="alarm" />
-    <!-- 分派提示框 -->
-    <el-dialog title="事件分派" :visible.sync="confirmVisible" width="30%">
-      <div style="font-size:20px;text-align:center;">
-        <p>
-          <span>
-            请选择分派单位及时间
-            <!-- <span>
-              <b>{{ dept }}</b> </span> -->
-          </span>
-        </p>
-        <!-- <el-button type="text">选取二级部门</el-button> -->
-      </div>
-      <el-form>
-        <el-form-item label="发送对象" required>
-          <el-cascader
-            v-model="dept"
-            :props="deptProps"
-            :options="deptOptions"
-            placeholder="请选择通知对象"
-            clearable
-            style="width: 78%"
-          />
-        </el-form-item>
-        <el-form-item label="截止日期" required>
-          <el-date-picker
-            v-model="deadline"
-            type="date"
-            placeholder="选择日期"
-            style="width: 78%"
-          />
-        </el-form-item>
-      </el-form>
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="confirmVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmAssign">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
-
 <script>
-// import { page } from "@/api/event/basic";
-// import { webSocketURL } from "@/settings";
-// import {
-//   WeatherList,
-//   WeatherData,
-//   StaList as getStaList
-// } from "@/api/event/map";
-// import { mapGetters } from "vuex";
-// import dataPanel from "@/components/dataPancel";
-// import echarts from "echarts";
-// import { list as listGroup } from "@/api/system-setup/group.js";
-// import { parseTime } from "@/utils/tools";
-// import { addNotice } from "@/api/notice/notice";
-// import jpg1 from "@/assets/bridge1.jpeg";
-// import jpg2 from "@/assets/bridge2.jpeg";
-// import jpg3 from "@/assets/bridge3.jpeg";
-// import alarm from "@/assets/audio/alarm.mp3";
-// import { materialPage, getMaterialTree } from "@/api/thirdparty";
-// import { page as logPage } from "@/api/event/eventLog";
+import {
+  travelList,
+  travelAdd,
+  travelUpdate,
+  travelDelete,
+} from "../../api/People/travel/basic";
 const AMap = window.AMap;
 export default {
   name: "Map",
-  components: {
-    dataPanel
-  },
-  data() {
-    return {
-      popus:[],
-      markers:[],
-      alarm: alarm,
-      // 气象数据
-      stationName: "",
-      staList: {
-        updateTime: null,
-        data: [],
-        data_bridge: []
-      },
-      staListCache: {
-        data: [],
-        data_bridge: []
-      },
-      weatherInfo: {},
-      weatherData: {},
-      notice: {},
-      // 分派提示框
-      confirmVisible: false,
-      // 选中的部门
-      dept: "",
-      // 截止日期
-      deadline: null,
-      // 部门属性
-      deptProps: {
-        multiple: true,
-        value: "id",
-        label: "name",
-        children: "children"
-      },
-      deptOptions: [],
-      weather: "weather",
-      stationAddress: "实时监控",
-      weatherCurrentData: {
-        AIRTEMP_CURRENT_VALUE: null,
-        RAIN_CURRENT_VALUE: null,
-        RH_CURRENT_VALUE: null,
-        SUB10TEMP_CURRENT_VALUE: null,
-        VISIBILITY_ONEMINUTE_VALUE: null,
-        WIND_CURRENT_DIRVALUE: null,
-        WIND_CURRENT_POWERVALUE: null,
-        WIND_CURRENT_SPEEDVALUE: null
-      },
-      // 当前时间
-      currentTime: {
-        day: null,
-        hour: null
-      },
-      lastTime: {
-        day: null,
-        hour: null
-      },
-      weatherMaxList: [
-        {
-          typeName: "最小能见度",
-          address: "姑嫂立交桥",
-          time: "11日 18:56",
-          value: "1349m"
-        },
-        {
-          typeName: "最高路面温度",
-          address: "青菱立交桥",
-          time: "10日 14:11",
-          value: "15.5℃"
-        },
-        {
-          typeName: "最低路面温度",
-          address: "晴川桥",
-          time: "12日 05:26",
-          value: "7.6℃"
-        },
-        {
-          typeName: "最大风力",
-          address: "晴川桥",
-          time: "12日 13:43",
-          value: "3级 5m/s"
-        }
-      ],
-      // 当前菜单级别
-      menuIndex: "event",
-      // 地图对象
-      map: null,
-      // 检索关键字
-      search: "",
-      // 检索结果数据数据
-      searchInfoList: [],
-      // 事件列表
-      eventList: [],
-      // 建筑列表
-      buildingList: [
-        {
-          name: "武汉长江大桥",
-          leader: "tom",
-          phone: "18236666666",
-          status: "正常",
-          buildTime: "1957年10月15日",
-          longitude: 114.292858,
-          latitude: 30.54724
-        }
-      ],
-      // 气象节点信息
-      weatherList: [],
-      materialList: [],
-      // 气象报警信息
-      weatherWarnData: [],
-      staCode: "",
-      // 全局定时器
-      timer: null,
-      // 响应标签
-      activeName: "list",
-      // 筛选标签
-      queryParams: {
-        label: "",
-        eventType: "",
-        eventLevel: "",
-        source: 2,
-        total: 0,
-        _limit: 1000
-      },
-      isCollapse: false,
-      // left状态
-      isActive: false,
-      // right按钮状态
-      isRightActive: false,
-      // asideLeft开关
-      asideLeftSwitch: false,
-      // asideRight开关
-      asideRightSwitch: true,
-      // 左侧输入框绑定数据
-      buildingName: "",
-      // 树相关
-      data: [
-        {
-          label: "桥梁",
-          children: [
-            {
-              label: "武昌区",
-              children: [
-                {
-                  label: "武汉长江大桥"
-                },
-                {
-                  label: "武汉长江二桥"
-                }
-              ]
-            },
-            {
-              label: "洪山区",
-              children: []
-            }
-          ]
-        },
-        {
-          label: "隧道",
-          children: [
-            {
-              label: "武昌区"
-            },
-            {
-              label: "洪山区"
-            }
-          ]
-        },
-        {
-          label: "垃圾场",
-          children: [
-            {
-              label: "武昌区"
-            },
-            {
-              label: "洪山区"
-            }
-          ]
-        }
-      ],
-      defaultProps: {
-        children: "children",
-        label: "label"
-      },
-      // 暂时的摄像头图片
-      camera_info: [
-        {
-          id: 1,
-          url: jpg1,
-          name: "摄像头1"
-        },
-        {
-          id: 2,
-          url: jpg2,
-          name: "摄像头2"
-        },
-        {
-          id: 3,
-          url: jpg3,
-          name: "摄像头3"
-        }
-      ],
-      logList: [],
-      showYingji: false
-    };
-  },
-  computed: {
-    ...mapGetters(["permission_routes"])
-  },
-  watch: {
-    eventList: {
-      handler() {
-       this.flushMarker();
-      },
-      deep: true
-    },
-    menuIndex(newVal, oldVal) {
-      if (newVal === "monitor") {
-        const asideRight = document.querySelector(".asideRight");
-        if (asideRight.classList.contains("weather")) {
-          asideRight.classList.remove("weather");
-        }
-        const aside = document.querySelector(".aside");
-        if (aside.classList.contains("weather")) {
-          aside.classList.remove("weather");
-        }
-      } else if (newVal === "event") {
-        const aside = document.querySelector(".aside");
-        if (aside.classList.contains("weather")) {
-          aside.classList.remove("weather");
-        }
-        const asideRight = document.querySelector(".asideRight");
-        if (!asideRight.classList.contains("weather")) {
-          asideRight.classList.toggle("weather");
-        }
-        if (aside.classList.contains("close")) {
-          aside.classList.remove("close");
-        }
-      } else {
-        const asideRight = document.querySelector(".asideRight");
-        if (!asideRight.classList.contains("weather")) {
-          asideRight.classList.toggle("weather");
-        }
-        if (asideRight.classList.contains("close")) {
-          asideRight.classList.remove("close");
-        }
-        const aside = document.querySelector(".aside");
-        if (!aside.classList.contains("weather")) {
-          aside.classList.toggle("weather");
-        }
-      }
-    }
-  },
-  mounted() {
+   mounted() {
     // 初始化地图页面
-    this.initData();
+    //this.initData();
     this.initMap();
-    this.initWeatherData();
-    this.timer = setInterval(this.initWeatherData, 1000 * 60 * 10);
   },
-  beforeDestroy() {
-    clearInterval(this.timer);
+   data() {
+    return {
+      count: true,
+      peopleList: [],
+      map: null,
+      lineArr: [],
+      new_time: "",
+      new_time1: "",
+      new_address: "",
+      listID: "",
+      centerDialogAdd: false,
+      centerDialogEdit: false,
+      centerDialogDel: false,
+      formQuery: {
+        name: "",
+        id: "",
+        phone: "",
+        email: "",
+      },
+      spot: {
+        travelId: "",
+        address: "",
+        arriveTime: "",
+        leftTime: "",
+      },
+      isCommit: false,
+      loading: false,
+      tableData: [],
+      district:[],
+      districtOption:"",
+      cityType: [
+        {
+          value: "#EDCA3E",
+          label: "一级防控区"
+        },
+        {
+          value: "#9454D6",
+          label: "二级防控区",
+          }]
+          };
   },
   methods:{
-
+    initMap() {
+      this.map = new AMap.Map("map", {
+        resizeEnable: true,
+        zoom: 10,
+        mapStyle: "amap://styles/blue",
+        center: [116.491776,40.1287],
+      });
+      this.map.plugin(["AMap.DistrictSearch"], () => {
+        var opts = {
+          subdistrict: 0, //获取边界不需要返回下级行政区
+          extensions: "all", //返回行政区边界坐标组等具体信息
+          level: "district" //查询行政级别为 市
+        };
+          this.districtOption=new AMap.DistrictSearch(opts)
+        })
+    },
+    setRegion(){
+      travelList().then((response) => { 
+        for(var index in response.rows){
+          this.districtOption.search(response.rows[index].address, (status, result) => {
+            console.log(result)
+          this.showRegion(result, "#256edc")
+        });
+        }
+  })
+    },
+showRegion(result, color){
+  let bounds = result.districtList[0].boundaries;
+      if (bounds) {
+        for (let i = 0, l = bounds.length; i < l; i++) {
+          //生成行政区划polygon
+          let polygon = new AMap.Polygon({
+            map: this.map, // 指定地图对象
+            strokeWeight: 1, // 轮廓线宽度
+            path: bounds[i], //轮廓线的节点坐标数组
+            fillOpacity: 0.4, //透明度
+            fillColor: color, //填充颜色
+            strokeColor: "#256edc" //线条颜色
+          });
+          this.polygons.push(polygon);
+        }
+        // 地图自适应
+        this.map.setFitView();
+      }
+}
   }
 }
 </script>
 
+
 <style lang="scss" scoped>
 div {
-  #app {
-    width: 100vw;
-    overflow: hidden;
-  }
   ::v-deep .info-top {
     position: relative;
     height: 45px;
@@ -834,9 +224,9 @@ div {
 }
 .home {
   background-color: rgba(12, 35, 85, 0.8);
-  z-index: 1;
+  // z-index: 1;
   height: 100%;
-  overflow: HIdden;
+  // overflow: HIdden;
   .header {
     &:hover {
       cursor: pointer;
