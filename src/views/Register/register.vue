@@ -12,7 +12,7 @@
       >
         <div class="title-container">
           <div class="title">
-            <img :src="logo"/>
+            <img :src="logo" style="width:230px;height:110px;"/>
           </div>
         </div>
         <el-form-item prop="username">
@@ -164,7 +164,7 @@ export default {
           this.loading = true;
           register(this.registerForm).then(res => {
             const username = this.registerForm.username;
-            this.$alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
+            this.$alert("<font color='black'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
               dangerouslyUseHTMLString: true,
               type: 'success'
             }).then(() => {
@@ -241,17 +241,11 @@ $cursor: #e5e5e5;
     line-height: 35px;
   }
 }
-</style>
-
-<style lang="scss" scoped>
-$bg: #e5e5e5;
-$dark_gray: #889aa4;
-$light_gray: #eee;
 
 .login-container {
   min-height: 100%;
   width: 100%;
-    background-repeat: no-repeat;
+    // background-repeat: no-repeat;
   // background-color: $bg;
   overflow: hidden;
   position: relative;
@@ -267,19 +261,7 @@ $light_gray: #eee;
     padding: 16px 16px 50px;
     margin: 0 auto;
     overflow: hidden;
-    .title {
-      height: 90px;
-      line-height: 90px;
-      display: flex;
-      font-size: 40px;
-      font-weight: bold;
-      color: #454545;
-      justify-content: center;
-      margin: 0 0 50px;
-    }
-    img {
-      margin-right: 12px;
-    }
+
     ::v-deep .submit-button {
       width: 100%;
       height: 40px;
@@ -326,13 +308,19 @@ $light_gray: #eee;
 
   .title-container {
     position: relative;
+    margin: 0 auto;
     .title {
-      font-size: 26px;
+      font-size: 20px;
       // color: $light_gray;
       color: #666666;
-      margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
+      // display:flex;
+      margin: 0 auto;
+      // margin-bottom: 10px;
+      // width: 20px;
+      // height: 20px;
+      
     }
   }
 
@@ -346,8 +334,10 @@ $light_gray: #eee;
     user-select: none;
   }
 .submit-button{
+  font-size: 23px;
   padding: 10px;
   margin-top: 10px;
+  width: 300px;
 }
   .thirdparty-button {
     position: absolute;

@@ -165,15 +165,13 @@ export default {
   methods:{
     initTable(){
       this.loading=true
+      var tempArray=[]
       page(this.queryParams).then(response=>{
-        console.log(response)
       response.rows.forEach(item => {
-        console.log(item)
         var temp = {}
         temp.toAddress=item.toAddress
         temp.recordTime=item.recordTime
         temp.peopleId = item.peopleId
-
         getAreaById(item.toAncestors).then(re=>{
           temp.toAncestors = re.data.name
           getAreaById(item.fromAncestors).then(resp=>{
@@ -183,21 +181,20 @@ export default {
           temp.sex = res.data.sex
           temp.phonenumber=res.data.phonenumber
           temp.name = res.data.name
-          console.log(temp)
-          this.importTable.push(temp)
+          tempArray.push(temp)
+           this.loading=false
         })
         })        
         })
       });
     })
+      this.importTable=tempArray
       // this.sleep1(5000)
-      this.loading=false
     },
     handleAdd(){
       this.dialogVisible=true
     },
     handleChange(value){
-      console.log(value)
     },
     handleQuery(){
       this.importTable=[]
