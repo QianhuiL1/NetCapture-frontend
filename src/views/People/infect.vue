@@ -69,7 +69,6 @@
         @click="handleExport"
       >导出</el-button>
     <el-table  v-loading="loading"
-        id="statisTable"
         :data="infectList"
         :cell-style="cellStyle"
         border
@@ -341,22 +340,25 @@ this.getList()
       this.handleQuery();
     },
     handleExport(){
-      let xlsxParam = { raw: true }
-      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
-      var wbout = XLSX.write(wb, {
-        bookType: 'xlsx',
-        bookSST: true,
-        type: 'array'
+      let that = this
+      that.infectList.forEach(item=>{
+        if(item.type=='1'){
+          item.type='已审查'
+        }else{
+          item.type='未审查'
+        }
       })
-      try {
-        FileSaver.saveAs(
-          new Blob([wbout], { type: 'application/octet-stream' }),
-          "感染人员列表" + '.xlsx'
-        )
-      } catch (e) {
-        // if (typeof console !== 'undefined') console.log(e, wbout)
-      }
-      return wbout
+      require.ensure([],()=>{
+      const { export_json_to_excel } = require('@/excel/Export2Excel'); 
+      const tHeader = ['姓名','身份证号','联系电话','确诊日期','状态']; 
+      const filterVal =['name','peopleId','phonenumber','createTime','type']; 
+      const list = that.infectList;
+      const data = that.formatJson(filterVal, list);
+      export_json_to_excel(tHeader, data, '感染人员表');
+      })
+    },
+    formatJson (filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   },
 };

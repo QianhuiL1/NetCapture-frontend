@@ -279,22 +279,18 @@ handleDelete (id) {
     })
   }},
   handleExport(){
-      let xlsxParam = { raw: true }
-      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
-      var wbout = XLSX.write(wb, {
-        bookType: 'xlsx',
-        bookSST: true,
-        type: 'array'
+      let that = this
+      require.ensure([],()=>{
+      const { export_json_to_excel } = require('@/excel/Export2Excel'); 
+      const tHeader = ['姓名','身份证号','联系电话','家庭住址']; 
+      const filterVal =['name','peopleId','phonenumber','address']; 
+      const list = that.connectList;
+      const data = that.formatJson(filterVal, list);
+      export_json_to_excel(tHeader, data, '次密接人员表');
       })
-      try {
-        FileSaver.saveAs(
-          new Blob([wbout], { type: 'application/octet-stream' }),
-          "次密接人员列表" + '.xlsx'
-        )
-      } catch (e) {
-        // if (typeof console !== 'undefined') console.log(e, wbout)
-      }
-      return wbout
+    },
+    formatJson (filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   },
 };

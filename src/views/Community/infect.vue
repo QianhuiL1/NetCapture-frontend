@@ -116,9 +116,9 @@
         :style="{width:'100%'}"
         />
     </el-form-item>
-    <el-form-item label="身份证号" prop="name">
+    <el-form-item label="身份证号" prop="peopleId">
       <el-input
-        v-model="formData.name"
+        v-model="formData.peopleId"
         placeholder="请输入重点人员身份证号"
         clearable
         prefix-icon="el-icon-mobile"
@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import { searchByArea,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
+import { searchByArea,updatePersonInfo,searchByName, searchById } from "../../api/Person/basic";
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 
@@ -158,7 +158,20 @@ export default{
         peopleId: ''
       },
       infectTable:[],
-      formData:{},
+      formData:{
+        peopleId: '',
+        name: '',
+        sex: '',
+        phonenumber: '',
+        status:'',
+        ancestors:'',
+        address: '',
+        searchValue:'',
+        createBy:'',
+        createTime:'',
+        remark:'',
+        params:{}
+      },
       loading: false
     }
   },
@@ -239,13 +252,34 @@ export default{
       this.queryParams={}
     },
     handleAdd(){
+      this.formData.name=''
+      this.formData.peopleId=''
       this.dialogVisible=true
     },
     submitForm(){
-
+      if(this.formData.name==''){
+        this.$message.error('姓名不能为空!')
+      }else if(this.formData.peopleId==''){
+        this.$message.error('身份证号不能为空!');
+      }else{
+        searchById(this.formData.peopleId).then(res=>{
+          if(res.data.name!=this.formData.name){
+            this.$message.error('身份证号与姓名不符!');
+          }else{
+            this.formData=res.data
+            this.formData.status='3'
+            updatePersonInfo(this.formData).then(resp=>{
+              this.$message.success('修改成功');
+              this.dialogVisible= false
+              this.initTable()
+            })
+          }
+        })
+      }
     },
     resetForm(){
-
+      this.formData.name=''
+      this.formData.peopleId=''
     },
     handleExport(){
       var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'))

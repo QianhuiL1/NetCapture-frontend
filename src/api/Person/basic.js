@@ -38,7 +38,7 @@ export function searchByArea(data) {
 export function updatePersonInfo(data) {
     return request({
         url: prefix + '/',
-        method: 'post',
+        method: 'put',
         data: data
     })
 }

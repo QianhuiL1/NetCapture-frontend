@@ -58,10 +58,9 @@
                   type="primary"
                   size="mini"
                   @click="handleExport"
-                >导出</el-button>   
+                >导出</el-button>
               <el-table
                 :row-class-name="tableRowClassName"
-                id="statisTable"
                 :data="tableData"
                 v-loading="loading"
                 :default-sort="{ prop: 'date', order: 'ascending' }"
@@ -573,30 +572,23 @@ export default {
     handleCommit() {
       connectList(this.spot.recordId).then(this.$message.success("提交成功"));
     },
-  },
-  handleCommit(){
-for(var index in this.tableData){
-  
-}
-  },
-   handleExport(){
-      let xlsxParam = { raw: true }
-      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
-      var wbout = XLSX.write(wb, {
-        bookType: 'xlsx',
-        bookSST: true,
-        type: 'array'
+    handleExport(){
+      let that = this
+      console.log('开始导出')
+      console.log(that.tableData)
+      require.ensure([],()=>{
+      const { export_json_to_excel } = require('@/excel/Export2Excel'); 
+      const tHeader = ['到达时间','离开时间','地点']; 
+      const filterVal =['arriveTime','leftTime','address']; 
+      const list = that.tableData;
+      const data = that.formatJson(filterVal, list);
+      export_json_to_excel(tHeader, data, this.formQuery.id+'人员出行轨迹表');
       })
-      try {
-        FileSaver.saveAs(
-          new Blob([wbout], { type: 'application/octet-stream' }),
-          "重点人员轨迹" + '.xlsx'
-        )
-      } catch (e) {
-        // if (typeof console !== 'undefined') console.log(e, wbout)
-      }
-      return wbout
+    },
+    formatJson (filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
+  },
 };
 </script>
  

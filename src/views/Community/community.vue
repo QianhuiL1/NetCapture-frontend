@@ -55,7 +55,7 @@
           :show-overflow-tooltip="true"
           min-width="10%"
         />
-        <el-table-column label="性别" prop="ownSex" min-width="10%" >
+        <el-table-column label="性别" v-model="ownSex" min-width="10%" >
           <template slot-scope="scope">
             <span v-if="scope.row.sex=='0'">女</span>
             <span v-else>男</span>
@@ -63,7 +63,7 @@
           </el-table-column>
         <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
         <el-table-column label="联系电话" prop="phonenumber" min-width="20%" />
-        <el-table-column label="健康状态" prop="type" min-width="10%">
+        <el-table-column label="健康状态" v-model="type" min-width="10%">
           <template slot-scope="scope">
             <span v-if="scope.row.status=='0'">健康</span>
             <span v-else-if="scope.row.status=='1'">次密接</span>
@@ -228,23 +228,54 @@ export default{
     resetQuery(){ 
       this.queryParams={}
     },
+    // handleExport(){
+    //   let xlsxParam = { raw: true }
+    //   var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
+    //   var wbout = XLSX.write(wb, {
+    //     bookType: 'xlsx',
+    //     bookSST: true,
+    //     type: 'array'
+    //   })
+    //   try {
+    //     FileSaver.saveAs(
+    //       new Blob([wbout], { type: 'application/octet-stream' }),
+    //       "社区居民信息表" + '.xlsx'
+    //     )
+    //   } catch (e) {
+    //     // if (typeof console !== 'undefined') console.log(e, wbout)
+    //   }
+    //   return wbout
+    // }
     handleExport(){
-      let xlsxParam = { raw: true }
-      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
-      var wbout = XLSX.write(wb, {
-        bookType: 'xlsx',
-        bookSST: true,
-        type: 'array'
+      this.residentTable.forEach(item=>{
+        if(item.sex=='0'){
+          item.ownSex = '女'
+        }else{
+          item.ownSex = '男'
+        }
+        if(item.status=='0'){
+          item.type='健康'
+        }else if(item.status=='1'){
+          item.type='次密接'
+        }else if(item.status=='2'){
+          item.type='密接'
+        }else{
+          item.type='阳性'
+        }
       })
-      try {
-        FileSaver.saveAs(
-          new Blob([wbout], { type: 'application/octet-stream' }),
-          "社区居民信息表" + '.xlsx'
-        )
-      } catch (e) {
-        // if (typeof console !== 'undefined') console.log(e, wbout)
-      }
-      return wbout
+      let that = this
+      require.ensure([],()=>{
+      const { export_json_to_excel } = require('../../excel/Export2Excel'); 
+      //使用绝对路径引入Export2Excel.js
+      const tHeader = ['姓名','性别','身份证号','电话号码','状态','居住地址']; // 导出的表头名
+      const filterVal =['name','ownSex','peopleId','phonenumber','type','address']; // 导出的表头字段名
+      const list = that.residentTable;
+      const data = that.formatJson(filterVal, list);
+      export_json_to_excel(tHeader, data, '社区居民表');
+      })
+    },
+    formatJson (filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 }
