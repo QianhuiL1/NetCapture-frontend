@@ -1,10 +1,14 @@
 <template>
-  <el-menu :default-active="this.$route.path" :router ="true" class="el-menu-demo" mode="horizontal" background-color="#334157" text-color="#fff" active-text-color="#C8000A">
+  <el-menu :default-active="this.$route.path" :router ="true" class="el-menu-demo" mode="horizontal" background-color="#334157" text-color="#fff" active-text-color="#334157">
     <el-button class="buttonimg">
       <img class="showimg" :src="img" @click="doToggle()">
     </el-button>
     	<el-menu-item class="submenu-item" v-for="(tit,i) in titleList" :key="i" :index="tit.name">
-        <template>{{ tit.navItem }}</template>
+        <template>
+          <div class="item">
+            <span>{{ tit.navItem }}</span>
+          </div>
+          </template>
       </el-menu-item>
     <el-submenu index="4" class="submenu">
       <template slot="title">超级管理员</template>
@@ -53,12 +57,11 @@
   display:flex;
     /* width: 200px; */
     min-height: 4em;
-    border: none;
   }
  .el-menu-demo{
 	position: relative;
 	display: flex;
-  z-index: 2000;
+  z-index: 2000; 
  }
   .submenu {
     width:11em;
@@ -72,22 +75,27 @@
     font-size: 16px;
     font-weight: 540;
     width:16em;
-    height:4em;
+    display:flex;
+
+    /* height:4.5em; */
+ }
+ .item{
+  margin: 0 auto
  }
  .submenu-item:focus {
    background-color: rgb(30, 46, 65) !important;
 }
   .buttonimg {
-    height: 70px;
+    height: 61px;
     width:60px;
-    background-color: transparent;
+    background-color: #334157;
     border: none;
   }
  .buttonimg:hover {
-    background-color: transparent;
+    background-color: #293446;
   }
   .buttonimg:focus {
-    background-color: transparent;
+    background-color:  #293446;
   }
   .showimg {
     width: 25px;
