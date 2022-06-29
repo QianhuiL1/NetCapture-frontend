@@ -2,28 +2,26 @@
   <div class="home">
     <div>
       <!-- // 头部 -->
-      <header class="header" >
-        <h1 style="font-size: 2em;">
+      <header class="header">
+        <h1 style="font-size: 2em">
           <span>传染病流调信息化平台</span>
         </h1>
       </header>
-       <ul class="menu">
+      <ul class="menu">
         <li
           class="menu-item"
-          :class="[menuIndex == 'event' ? 'active' : '']"
-          @click="setRegion"
+          @click="
+            setRegion();
+            clearLine();
+          "
         >
           重点地区
         </li>
         <li
           class="menu-item"
-          :class="[menuIndex == 'monitor' ? 'active' : '']"
           @click="
-            menuIndex = 'monitor';
-            asideLeftSwitch = true;
-            asideRightSwitch = true;
-            clearAllMarker();
-            setBuildingMarker();
+            clearRegion();
+            setLine();
           "
         >
           轨迹路线
@@ -31,37 +29,34 @@
         </li>
         <li
           class="menu-item"
-          :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
-            menuIndex = 'dataPanel';
-            asideRightSwitch = false;
-            asideLeftSwitch = false;
-            clearAllMarker();
+            clearRegion();
+            clearLine();
           "
         >
           趋势预测
         </li>
       </ul>
     </div>
-    <div id="map" ></div>
+    <div id="map"></div>
   </div>
 </template>
 <script>
-import {
-  travelList,
-  travelAdd,
-  travelUpdate,
-  travelDelete,
-} from "../../api/People/travel/basic";
+import { travelList } from "../../api/People/travel/basic";
+import { regionList } from "../../api/Region/basic";
+
 const AMap = window.AMap;
 export default {
   name: "Map",
-   mounted() {
+  mounted() {
     // 初始化地图页面
     //this.initData();
     this.initMap();
   },
-   data() {
+  components: {
+    geoCoder: "",
+  },
+  data() {
     return {
       count: true,
       peopleList: [],
@@ -88,49 +83,91 @@ export default {
       },
       isCommit: false,
       loading: false,
-      tableData: [],
-      district:[],
-      districtOption:"",
+      travelData: [],
+      district: [],
+      districtOption: "",
       cityType: [
         {
           value: "#EDCA3E",
-          label: "一级防控区"
+          label: "一级防控区",
         },
         {
           value: "#9454D6",
           label: "二级防控区",
-          }]
-          };
+        },
+      ],
+      polygons: [],
+      polylines: [],
+      path: [],
+      Driving_obj: null,
+      texts: [],
+      points: [],
+    };
   },
-  methods:{
+  methods: {
     initMap() {
       this.map = new AMap.Map("map", {
         resizeEnable: true,
         zoom: 10,
         mapStyle: "amap://styles/blue",
-        center: [116.491776,40.1287],
+        center: [114.306434, 30.5988],
       });
-      this.map.plugin(["AMap.DistrictSearch"], () => {
-        var opts = {
-          subdistrict: 0, //获取边界不需要返回下级行政区
-          extensions: "all", //返回行政区边界坐标组等具体信息
-          level: "district" //查询行政级别为 市
-        };
-          this.districtOption=new AMap.DistrictSearch(opts)
-        })
+      this.map.plugin(["AMap.DistrictSearch"], () => {});
+      this.map.plugin(["AMap.InfoWindow"], () => {});
+      var opts = {
+        subdistrict: 0, //获取边界不需要返回下级行政区
+        extensions: "all", //返回行政区边界坐标组等具体信息
+        level: "biz_area", //查询行政级别为 商圈
+      };
+      this.districtOption = new AMap.DistrictSearch(opts);
+      AMap.plugin("AMap.Geocoder", function () {});
+      var geoOption = {
+        city: "全国",
+        citylimit: true,
+      };
+      this.geoCoder = new AMap.Geocoder(geoOption);
+      travelList().then((response) => {
+        this.travelData = response.rows;
+      });
     },
-    setRegion(){
-      travelList().then((response) => { 
-        for(var index in response.rows){
-          this.districtOption.search(response.rows[index].address, (status, result) => {
-            console.log(result)
-          this.showRegion(result, "#256edc")
-        });
+    setRegion() {
+      let this_ = this;
+      this.webRegion(2, "#ff0000", "#ff8000");
+      for (var index in this_.travelData) {
+        this.geoCoder.getLocation(
+          this_.travelData[index].address,
+          function (status, result) {
+            if (status === "complete" && result.geocodes.length) {
+              this_.districtOption.search(
+                result.geocodes[0].adcode,
+                (status, result) => {
+                  this_.showRegion(result, "#ffdd00", "#ffa600");
+                }
+              );
+            }
+          }
+        );
+      }
+    },
+    webRegion(status, color, stroke) {
+      let this_ = this;
+      regionList({ status: status }).then((response) => {
+        for (var index in response.rows) {
+          var code = response.rows[index].ancestorId.toString().split(",");
+          this_.districtOption.search(
+            code[code.length - 1],
+            (status, result) => {
+              this_.showRegion(result, color, stroke);
+            }
+          );
         }
-  })
+      });
     },
-showRegion(result, color){
-  let bounds = result.districtList[0].boundaries;
+    showRegion(result, color, stroke) {
+      const this_ = this;
+      var city = "";
+
+      let bounds = result.districtList[0].boundaries;
       if (bounds) {
         for (let i = 0, l = bounds.length; i < l; i++) {
           //生成行政区划polygon
@@ -138,18 +175,178 @@ showRegion(result, color){
             map: this.map, // 指定地图对象
             strokeWeight: 1, // 轮廓线宽度
             path: bounds[i], //轮廓线的节点坐标数组
-            fillOpacity: 0.4, //透明度
+            fillOpacity: 0.8, //透明度
             fillColor: color, //填充颜色
-            strokeColor: "#256edc" //线条颜色
+            strokeColor: stroke, //线条颜色
           });
           this.polygons.push(polygon);
+          var level = color == "#ff0000" ? "一级重点区域" : "二级重点区域";
+          polygon.content =
+            "<h4>区域编码：" +
+            result.districtList[0].adcode +
+            "</h4>" +
+            "<h4>具体地址：" +
+            result.districtList[0].name +
+            "</h4>" +
+            "<h4>区域级别：" +
+            level +
+            "</h4>";
+          polygon.on("click", showInfoP);
+          function showInfoP(e) {
+            var infoWindow = new AMap.InfoWindow({
+              offset: new AMap.Pixel(0, -30),
+            });
+            infoWindow.setContent(e.target.content);
+            infoWindow.open(this_.map, e.lnglat);
+          }
         }
         // 地图自适应
         this.map.setFitView();
       }
-}
-  }
-}
+    },
+    clearRegion() {
+      for (var index in this.polygons) {
+        if (this.polygons[index]) {
+          this.polygons[index].setMap(null);
+          this.polygons[index] = null;
+        }
+      }
+      this.polygons = [];
+    },
+    setLine() {
+      const tmp_this = this;
+      const map = this.map;
+      var lng = "";
+      var lat = "";
+      this.lineArr = [];
+      var point = 0;
+      var record = this.travelData[0].recordId;
+      for (const index in this.travelData) {
+        const spot = this.travelData[index].address;
+        const time = this.travelData[index].time;
+        this.geoCoder.getLocation(spot, function (status, result) {
+          if (tmp_this.travelData[index].recordId != record) {
+              tmp_this.initroad();
+              tmp_this.lineArr = [];
+              point = 0;
+              record = tmp_this.travelData[index].recordId;
+            }
+          if (status === "complete" && result.geocodes.length) {
+            var lnglat = result.geocodes[0].location;
+            lng = lnglat.lng;
+            lat = lnglat.lat;
+            point = point + 1;
+            tmp_this.lineArr.push([lng, lat]);
+            if (tmp_this.travelData.length-1 === parseInt(index)) {
+              tmp_this.initroad();
+              tmp_this.initLine();
+            }
+            var markerspot = new AMap.CircleMarker({
+              center: [lng, lat],
+              radius: 20, //3D视图下，CircleMarker半径不要超过64px 大小
+              strokeColor: "white", // 边框颜色
+              strokeWeight: 2,
+              strokeOpacity: 0.5,
+              fillColor: "#9b9a99", // 背景色
+              fillOpacity: 1, //透明度
+              zIndex: 1000,
+              bubble: true,
+              cursor: "pointer",
+              clickable: true,
+            });
+            map.add(markerspot);
+            tmp_this.points.push(markerspot);
+            var text = new AMap.Text({
+              text: point,
+              anchor: "center", // 设置文本标记锚点
+              // draggable: true, // 是否可移动文本
+              cursor: "pointer",
+              angle: 10,
+              style: {
+                // padding: ".75rem 1.25rem",
+                // "margin-bottom": "1rem",
+                // "border-radius": ".25rem",
+                "margin-top": "2px",
+                "background-color": "#9b9a99",
+                opacity: "1",
+                // width: "100%",
+                "border-width": 0,
+                // "box-shadow": "0 2px 6px 0 rgba(114, 124, 245, .5)",
+                "text-align": "center",
+                "font-size": "20px",
+                color: "#fff",
+              },
+              position: [lng, lat],
+            });
+            text.setMap(map);
+            tmp_this.texts.push(text);
+            map.setFitView();
+          }
+        });
+      }
+    },
+    initLine() {
+      var record = "";
+      const this_=this;
+      AMap.plugin("AMap.Driving", function () {});
+
+      record = this.travelData[0];
+      for (var index in this_.travelData) {
+        if (this_.travelData[index].recordId != record) {
+          this_.Driving_obj = new AMap.Driving({
+        map: this_.map,
+      });
+          this_.Driving_obj.search(this_.path, function (status, result) {
+            if (status === "complete") {
+              if (result.routes && result.routes.length) {
+                drawRoute(result.routes[0], f);
+              }
+            }
+          });
+          record = this_.travelData[index].recordId;
+          this_.path = [];
+        }
+        const spot = this_.travelData[index].address;
+        this_.path.push({ keyword: spot, city: "全国" });
+      }
+      this_.Driving_obj = new AMap.Driving({
+        map: this_.map,
+      });
+      this_.Driving_obj.search(this_.path, function (status, result) {
+        if (status === "complete") {
+          if (result.routes && result.routes.length) {
+            drawRoute(result.routes[0], f);
+          }
+        }
+      });
+    },
+    initroad() {
+      const this_ = this;
+      this.polyline = new AMap.Polyline({
+        map: this.map,
+        path: null,
+        showDir: true,
+        strokeColor: "#77DDFF", // 线颜色--浅蓝色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 2, // 线宽
+        // strokeStyle: "solid"  //线样式
+        lineJoin: "round", // 折线拐点的绘制样式
+      });
+      this.polyline.setPath(this_.lineArr);
+      this.polyline.show();
+      this.polylines.push(this_.polyline);
+      this.map.setFitView(); // 合适的视口
+    },
+    clearLine() {
+      const this_ = this;
+      //this.Driving_obj.clear();
+      this.map.clearMap();
+      this.map.remove(this_.polylines);
+      this.map.remove(this_.texts);
+      this.map.remove(this_.points);
+    },
+  },
+};
 </script>
 
 
@@ -497,28 +694,27 @@ div {
         }
       }
       .el-table__expanded-cell,
-      .el-form{
+      .el-form {
         background-color: rgba(0, 0, 0, 0);
-        .el-form-item{
+        .el-form-item {
           // margin-bottom: 0!important;
         }
-        .el-form-item__content{
+        .el-form-item__content {
           background-color: rgba(10, 88, 154, 0.6);
           color: #fff;
           padding-left: 10px;
         }
-        .el-form-item__content:hover{
+        .el-form-item__content:hover {
           background-color: rgba(75, 255, 255, 0.2);
         }
-        .el-form-item__label{
+        .el-form-item__label {
           padding-left: 10px;
           color: #fff;
         }
-        .el-button{
+        .el-button {
           padding: 3px 10px;
         }
       }
-      
     }
   }
   .shijian_content {

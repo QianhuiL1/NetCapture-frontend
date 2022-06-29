@@ -412,7 +412,7 @@ export default {
       var path = [];
       for (const index in this.tableData) {
         const spot = this.tableData[index].address;
-        path.push({ keyword: spot, city: "湖北" });
+        path.push({ keyword: spot, city: "全国" });
       }
       Driving_obj.search(path, function (status, result) {
         if (status === "complete") {
