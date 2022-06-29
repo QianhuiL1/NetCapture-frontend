@@ -62,7 +62,14 @@
     </div>
 <div class="center-content">
   <el-card class="table_content">
+    <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+      >导出</el-button>
     <el-table  v-loading="loading"
+        id="statisTable"
         :data="infectList"
         :cell-style="cellStyle"
         border
@@ -201,6 +208,9 @@
 import Pagination from "@/components/Pagination";
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import {trackList} from '../../api/People/track/basic';
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
+
 export default {
   name: "infectList",
   components: {
@@ -330,6 +340,24 @@ this.getList()
       this.queryDateRange = [];
       this.handleQuery();
     },
+    handleExport(){
+      let xlsxParam = { raw: true }
+      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
+      var wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'array'
+      })
+      try {
+        FileSaver.saveAs(
+          new Blob([wbout], { type: 'application/octet-stream' }),
+          "感染人员列表" + '.xlsx'
+        )
+      } catch (e) {
+        // if (typeof console !== 'undefined') console.log(e, wbout)
+      }
+      return wbout
+    }
   },
 };
 </script>

@@ -12,6 +12,13 @@
         >新增人员信息</el-button
       >
       </div>
+      <el-button
+              type="success"
+              icon="el-icon-check"
+              size="mini"
+              @click="handleCommit"
+              >提交</el-button
+            >
       </div>
     </el-card>
     <el-card class="table_content">
@@ -54,7 +61,14 @@
         </el-form-item>
       </el-form>
 <p></p>
+    <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+      >导出</el-button>
     <el-table  v-loading="loading"
+        id="statisTable"
         :data="connectList"
         :cell-style="cellStyle"
         border
@@ -69,9 +83,9 @@
         <el-table-column label="联系电话" prop="phonenumber" min-width="20%" />
           <el-table-column label="家庭住址" prop="address" min-width="30%">
         </el-table-column>    
-       <el-table-column label="操作" min-width="20%">
+      <el-table-column label="操作" min-width="20%">
       <template slot-scope="scope">
-             <el-button
+            <el-button
     size="medium"
     type="text"
     @click="handleEdit(scope.row)"
@@ -79,7 +93,7 @@
     <i class="el-icon-edit" style="color: #3388ff" />
     <span style="color: #223355"> 编辑</span>
   </el-button>
-     <el-button
+    <el-button
     size="medium"
     type="text"
     @click="handleDelete(scope.row.peopleId)"
@@ -98,7 +112,7 @@
         @pagination="getList1"
       />
 </el-card>
- <el-dialog title="编辑" :visible.sync="centerDialogEdit" width="30%">    
+ <el-dialog title="修改密接人员信息" :visible.sync="centerDialogEdit" width="30%">    
   <div class="inputTitle"><span>
       姓名：
       </span>
@@ -121,7 +135,7 @@
         <el-button type="primary" @click="edit">确 定</el-button>      
     </span>    
 </el-dialog>
-<el-dialog title="新增" :visible.sync="centerDialogAdd" width="30%">     
+<el-dialog title="新增密接人员" :visible.sync="centerDialogAdd" width="30%">     
   <div class="inputTitle"><span>
       姓名：
       </span>
@@ -148,9 +162,10 @@
 
 
 <script>
-import {List1,connectUpdate1,connectDelete1,connectAdd1} from '../../api/People/connect/base';
-import {List2,connectUpdate2,connectDelete2,connectAdd2} from '../../api/People/connect/basic';
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
+import { connectCreate } from '../../api/People/connect/base';
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 const ids = new Set()
 export default {
   name: "connectList",
@@ -267,8 +282,34 @@ handleDelete (id) {
       infectInfo(this.info.peopleId).then((response)=>{
       this.info=response.data
     })
-  }}
+  }},
+  handleCommit(){
+      for(var index in this.connectList){
+        connectCreate(this.connectList[index].address)
+      }
+      this.$message("提交成功")
   },
+  handleExport(){
+     let xlsxParam = { raw: true }
+      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
+      var wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'array'
+      })
+      try {
+        FileSaver.saveAs(
+          new Blob([wbout], { type: 'application/octet-stream' }),
+          "密接人员列表" + '.xlsx'
+        )
+      } catch (e) {
+        // if (typeof console !== 'undefined') console.log(e, wbout)
+      }
+      return wbout
+    }
+
+  },
+
   
 };
 </script>

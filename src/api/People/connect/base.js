@@ -1,12 +1,11 @@
 import request from '@/utils/request'
-const prefix = '/system/api/v1/dutyUser'
+const prefix = '/personInfo'
 
-// 获取密接人员记录
-export function List1(queryParams) {
+// 生成次密接人员记录
+export function connectCreate(address) {
     return request({
-        url: prefix + '/pageGroup',
-        method: 'get',
-        params: queryParams
+        url: prefix + '/updateSecondContact/' + address,
+        method: 'put'
     })
 }
 // 添加密接人员记录

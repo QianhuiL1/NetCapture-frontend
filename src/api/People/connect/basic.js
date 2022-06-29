@@ -1,17 +1,15 @@
 import request from '@/utils/request'
-const prefix = '/system/api/v1/dutyUser'
+const prefix = '/positiveTravel/updateContact'
 
-// 获取次密接人员记录
-export function List2(queryParams) {
+// 获取密接人员记录
+export function connectList(recordId) {
     return request({
-        url: prefix + '/pageGroup',
-        method: 'get',
-        params: queryParams
+        url: prefix + '/' + recordId,
+        method: 'put'
     })
 }
-
 // 添加密接人员记录
-export function connectAdd2(data) {
+export function connectAdd1(data) {
     return request({
         url: prefix + '/create',
         method: 'post',
@@ -19,8 +17,8 @@ export function connectAdd2(data) {
     })
 }
 
-// 修改次密接人员记录
-export function connectUpdate2(id, data) {
+// 修改密接人员记录
+export function connectUpdate1(id, data) {
     return request({
         url: prefix + '/' + id,
         method: 'put',
@@ -28,8 +26,8 @@ export function connectUpdate2(id, data) {
     })
 }
 
-// 删除次密接人员记录
-export function connectDelete2(id) {
+// 删除密接人员记录
+export function connectDelete1(id) {
     return request({
         url: prefix + '/' + id,
         method: 'delete'

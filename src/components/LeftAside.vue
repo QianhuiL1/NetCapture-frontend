@@ -37,11 +37,34 @@
 				<el-menu-item index="/ci">次密接人员列表</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		 <el-submenu index="/map">
+		 <el-submenu index="3">
 			<template slot="title">
 				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
 				<span>  疫情概况一览</span>
 			</template>
+			<el-menu-item-group>
+				<el-menu-item index="/map">重点地区</el-menu-item>
+			</el-menu-item-group>
+		</el-submenu>
+		<el-submenu index="4">
+			<template slot="title">
+				<i class="el-icon-s-home" style="font-size: 28px;"></i>
+				<span>  系统管理</span>
+			</template>
+			<el-menu-item-group>
+				<el-menu-item index="/dept">部门管理</el-menu-item>
+			</el-menu-item-group>
+		</el-submenu>
+		<el-submenu index="5">
+			<template slot="title">
+				<i class="el-icon-office-building" style="font-size: 28px;"></i>
+				<span>  社区</span>
+			</template>
+			<el-menu-item-group>
+				<el-menu-item index="/community">社区住户信息</el-menu-item>
+				<el-menu-item index="/communityInfect">重点人员上报</el-menu-item>
+				<el-menu-item index="/communityImport">旅居人员登记</el-menu-item>
+			</el-menu-item-group>
 		</el-submenu>
 	</el-menu>
 </template>
