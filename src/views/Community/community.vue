@@ -12,9 +12,9 @@
           @keyup.enter.native="handleQuery"
           />
       </el-form-item>
-      <el-form-item label="身份证号：" prop="id">
+      <el-form-item label="身份证号：" prop="peopleId">
         <el-input
-          v-model="queryParams.id"
+          v-model="queryParams.peopleId"
           placeholder="请输入身份证号"
           clearable
           @keyup.enter.native="handleQuery"
@@ -55,10 +55,22 @@
           :show-overflow-tooltip="true"
           min-width="10%"
         />
-        <el-table-column label="性别" prop="sex" min-width="10%" />
+        <el-table-column label="性别" prop="ownSex" min-width="10%" >
+          <template slot-scope="scope">
+            <span v-if="scope.row.sex=='0'">女</span>
+            <span v-else>男</span>
+          </template>
+          </el-table-column>
         <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
         <el-table-column label="联系电话" prop="phonenumber" min-width="20%" />
-        <el-table-column label="健康状态" prop="type" min-width="10%"></el-table-column>
+        <el-table-column label="健康状态" prop="type" min-width="10%">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status=='0'">健康</span>
+            <span v-else-if="scope.row.status=='1'">次密接</span>
+            <span v-else-if="scope.row.status=='2'">密接</span>
+            <span v-else>阳性</span>
+          </template>
+        </el-table-column>
         <el-table-column label="居住地址" prop="address" min-width="30%"></el-table-column>
         <el-table-column label="操作" min-width="10%">
           <template slot-scope="scope">
@@ -94,17 +106,17 @@
           @keyup.enter.native="handleEdit"
           />
       </el-form-item>
-      <el-form-item label="身份证号：" prop="id">
+      <el-form-item label="身份证号：" prop="peopleId">
         <el-input
-          v-model="editFormData.id"
+          v-model="editFormData.peopleId"
           placeholder="请输入身份证号"
           clearable
           @keyup.enter.native="handleEdit"
           />
       </el-form-item>
-      <el-form-item label="联系方式：" prop="phone">
+      <el-form-item label="联系方式：" prop="phonenumber">
         <el-input
-          v-model="editFormData.phone"
+          v-model="editFormData.phonenumber"
           placeholder="请输入联系方式"
           clearable
           @keyup.enter.native="handleEdit"
@@ -118,6 +130,10 @@
           @keyup.enter.native="handleEdit"
           />
       </el-form-item>
+      <el-form-item>
+        <el-button @click="dialogVisible = false">取 消</el-button>        
+        <el-button type="primary" @click="handleEdit">确 定</el-button>
+      </el-form-item>
       </el-form>
   </el-dialog>
 </div>
@@ -125,9 +141,10 @@
 
 <script>
 import Pagination from "@/components/Pagination";
-import { searchByArea } from "../../api/Person/basic";
+import { searchByArea,updatePersonInfo,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
+
 
 export default{
   name:'residentList',
@@ -136,37 +153,80 @@ export default{
   },
   data() {
     return {
-      editFormData:{},
-      residentTable:[
-        {name:'崔香雅',sex:'女',peopleId:350403198611111000,phonenumber:15605197233,type: '次密接',address:'涧池乡军家河村４组'}
-      ],
+      residentTable:[],
       param:{
         ancestors: "0,420000,420102"
       },
-      queryParams:{},
-      dialogVisible: false
+      queryParams:{
+        name: '',
+        peopleId: ''
+      },
+      dialogVisible: false,
+      editFormData: {
+        peopleId: '',
+        name: '',
+        sex: '',
+        phonenumber: '',
+        status:'',
+        ancestors:'',
+        address: '',
+        searchValue:'',
+        createBy:'',
+        createTime:'',
+        remark:'',
+        params:{}
+      },
+      rawId:''
     }
   },
   created() {
-
-    searchByArea(this.param.ancestors).then(res=>{
-      console.log(res)
-      
-    })
+    this.initTable()
   },
   methods:{
+    initTable(){
+      searchByArea(this.param.ancestors).then(res=>{
+      this.residentTable=res.rows
+    })
+    },
     handleQuery(){
-
+      if(this.queryParams.name==''&&this.queryParams.peopleId=='')
+      {
+        this.initTable()
+      }else if(this.queryParams.peopleId!=''){
+        searchById(this.queryParams.peopleId).then(res=>{
+          this.residentTable=[]
+          this.residentTable.push(res.data)
+        })
+      }else if(this.queryParams.name!=''){
+        searchByName(this.queryParams.name).then(response=>{
+          if(response.rows.length<1){
+            this.residentTable=[]
+          }else{
+            response.rows.forEach(item=>{
+              if(item.ancestors==this.param.ancestors){
+                this.residentTable=[]
+                this.residentTable.push(item)
+              }
+            })
+          }
+        })
+      }
     },
     handleClick(row){
       this.dialogVisible = true
-      this.editFormData.name=row.name
+      this.editFormData=row
+      this.rawId=row.peopleId
     },
     handleEdit(){
-
+      deletePersonInfo(this.rawId).then(item=>{
+        updatePersonInfo(this.editFormData).then(res=>{
+        this.$message.success('修改成功');
+        this.dialogVisible= false
+      })
+      })
     },
-    resetQuery(){
-
+    resetQuery(){ 
+      this.queryParams={}
     },
     handleExport(){
       let xlsxParam = { raw: true }

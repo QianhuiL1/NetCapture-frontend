@@ -20,25 +20,25 @@
           @keyup.enter.native="handleQuery"
           />
       </el-form-item>
-      <el-form-item label="身份证号：" prop="id">
+      <el-form-item label="身份证号：" prop="peopleId">
         <el-input
-          v-model="queryParams.id"
+          v-model="queryParams.peopleId"
           placeholder="请输入身份证号"
           clearable
           @keyup.enter.native="handleQuery"
           />
       </el-form-item>
-      <el-form-item lable="状态：">
+      <el-form-item lable="状态：" prop="type">
         <el-select 
           v-model="queryParams.type"
           placeholder="请选择人员状态"
-          @change="getInfectList"
+          @change="handleQuery"
           >
           <el-option
             v-for="(item,$index) in typeArr"
             :key="$index"
             :label="item.name"
-            :value="item.key"
+            :value="item.value"
             />
           </el-select>
       </el-form-item>
@@ -77,11 +77,23 @@
           :show-overflow-tooltip="true"
           min-width="20%"
           />
-          <el-table-column label="性别" prop="sex" min-width="10%"/>
-          <el-table-column label="身份证号" prop="peopleId" min-width="10%"/>
+          <el-table-column label="性别" prop="ownsex" min-width="10%">
+            <template slot-scope="scope">
+            <span v-if="scope.row.sex=='0'">女</span>
+            <span v-else>男</span>
+          </template>
+          </el-table-column>
+          <el-table-column label="身份证号" prop="peopleId" min-width="20%"/>
           <el-table-column label="状态" prop="type"
-          min-widht="10%"/>
-          <el-table-column label="联系电话" prop="phone"
+          min-width="10%">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status=='0'">健康</span>
+            <span v-else-if="scope.row.status=='1'">次密接</span>
+            <span v-else-if="scope.row.status=='2'">密接</span>
+            <span v-else>阳性</span>
+          </template>
+          </el-table-column>
+          <el-table-column label="联系电话" prop="phonenumber"
           min-width="20%"/>
           <el-table-column label="居住地址" prop="address"
           min-width="30%"/>
@@ -123,38 +135,111 @@
 </template>
 
 <script>
+import { searchByArea,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 
 export default{
   name: 'infectTable',
-  created(){
-  },
   data() {
     return {
+      param:{
+        ancestors: "0,420000,420102"
+      },
       dialogVisible: false,
       typeArr:[
         {name:'阳性',value:'阳性'},
         {name:'密接',value:'密接'},
         {name:'次密接',value:'次密接'}
       ],
-      queryParams:{},
+      queryParams:{
+        name: '',
+        type: '',
+        peopleId: ''
+      },
       infectTable:[],
       formData:{},
+      loading: false
     }
   },
+  created(){
+    this.getInfectList()
+  },
   methods:{
-    handleAdd(){
-      this.dialogVisible=true
+    getInfectList(){
+      this.loading=true
+      var temp = []
+      searchByArea(this.param.ancestors).then(res=>{
+        res.rows.forEach(item=>{
+          if(item.status!='0'){
+            temp.push(item)
+          }
+        })
+        this.infectTable=temp
+        this.loading=false
+      })
     },
     handleQuery(){
-
-    },
-    getInfectList(){
-
+      this.loading =true
+      if(this.queryParams.name!=''){
+        console.log('姓名不为空')
+        searchByName(this.queryParams.name).then(res=>{
+          console.log(res)
+          if(res.rows.length<1){
+            this.infectTable=[]
+          }else{
+            res.rows.forEach(item=>{
+              if(item.ancestors==this.param.ancestors){
+                if(item.status!='0'){
+                  this.infectTable=[]
+                  this.infectTable.push(item)
+                }
+              }
+            })
+          }
+        })
+      }else if(this.queryParams.peopleId!=''){
+        console.log('id不为空')
+        searchById(this.queryParams.peopleId).then(res=>{
+          this.infectTable=[]
+          if(res.data.ancestors==this.param.ancestors){
+            if(res.data.status!='0'){
+              this.infectTable.push(res.data)
+            }
+          }
+        })
+      }else if(this.queryParams.type!=''){
+        var temp = []
+        searchByArea(this.param.ancestors).then(res=>{
+          res.rows.forEach(item=>{
+            if(this.queryParams.type=='次密接'){
+              if(item.status=='1'){
+                temp.push(item)
+              }
+            }else if(this.queryParams.type=='密接'){
+              if(item.status=='2'){
+                temp.push(item)
+              }
+            }else{
+              if(item.status=='3'){
+                temp.push(item)
+              }
+            }
+          })
+          this.infectTable=temp
+        })
+        console.log('type不为空')
+      }else{
+        console.log('都为空')
+        this.getInfectList()
+      }
+      this.loading =false
     },
     resetQuery(){
-
+      this.queryParams={}
+    },
+    handleAdd(){
+      this.dialogVisible=true
     },
     submitForm(){
 

@@ -56,10 +56,22 @@
           :show-overflow-tooltip="true"
           min-width="10%"
         />
-        <el-table-column label="性别" prop="sex" min-width="10%" />
+        <el-table-column label="性别" prop="ownsex" min-width="10%" >
+          <template slot-scope="scope">
+            <span v-if="scope.row.sex=='0'">女</span>
+            <span v-else>男</span>
+          </template>
+        </el-table-column>
         <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
         <el-table-column label="联系电话" prop="phonenumber" min-width="20%" />
-        <el-table-column label="状态" prop="status" min-width="10%"></el-table-column>
+        <el-table-column label="状态" prop="type" min-width="10%">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status=='0'">健康</span>
+            <span v-else-if="scope.row.status=='1'">次密接</span>
+            <span v-else-if="scope.row.status=='2'">密接</span>
+            <span v-else>阳性</span>
+          </template>
+        </el-table-column>
         <el-table-column label="现居地" prop="toAncestors" min-width="20%"></el-table-column>
         <el-table-column label="详细地址" prop="toAddress" min-width="20%"></el-table-column>
         <el-table-column label="来源地" prop="fromAncestors" min-width="20%"></el-table-column>
@@ -152,6 +164,7 @@ export default {
   },
   methods:{
     initTable(){
+      this.loading=true
       page(this.queryParams).then(response=>{
         console.log(response)
       response.rows.forEach(item => {
@@ -160,37 +173,25 @@ export default {
         temp.toAddress=item.toAddress
         temp.recordTime=item.recordTime
         temp.peopleId = item.peopleId
+
         getAreaById(item.toAncestors).then(re=>{
-          console.log(re.data.name)
           temp.toAncestors = re.data.name
           getAreaById(item.fromAncestors).then(resp=>{
           temp.fromAncestors=resp.data.name
-          // item.peopleId
-          searchDetail("350403198611111000").then(res=>{
-            console.log('能到这里吗')
+          searchDetail(item.peopleId).then(res=>{
+          temp.status=res.data.status
+          temp.sex = res.data.sex
           temp.phonenumber=res.data.phonenumber
           temp.name = res.data.name
-          temp.sex= res.data.sex=="1"?"女":"男"
-          if(res.data.status=="0"){
-            temp.status = "健康"
-          }else if(res.data.status=="1"){
-            temp.status ="次密接"
-          }else if (res.data.status=="2"){
-            temp.status="密接"
-          }else{
-            temp.status="阳性"
-          }
           console.log(temp)
           this.importTable.push(temp)
         })
-        })
-          
+        })        
         })
       });
-    }).then(resp=>{
-      this.loading = false
-    }
-    )
+    })
+      // this.sleep1(5000)
+      this.loading=false
     },
     handleAdd(){
       this.dialogVisible=true
@@ -200,7 +201,6 @@ export default {
     },
     handleQuery(){
       this.importTable=[]
-      var id = ""
       if(this.queryParams.id==''){
         this.initTable()
       }else{
@@ -238,6 +238,14 @@ export default {
         }
       })
       }
+    },
+    sleep1(numberMillis){
+    var now = new Date();
+    var exitTime = now.getTime() + numberMillis;
+    while (true) {
+    now = new Date();
+    if (now.getTime() > exitTime) return;
+    }
     },
     resetQuery(){
       this.queryParams={}

@@ -18,10 +18,35 @@ export function searchById(id) {
     })
 }
 
+// 通过姓名查询普通人员记录
+export function searchByName(data) {
+    return request({
+        url: prefix + '/listByName/' + data,
+        method: 'get'
+    })
+}
+
 // 根据区号查询普通人员信息列表
 export function searchByArea(data) {
     return request({
         url: prefix + '/listByAncestors/' + data,
         method: 'get'
+    })
+}
+
+// 修改人员信息
+export function updatePersonInfo(data) {
+    return request({
+        url: prefix + '/',
+        method: 'post',
+        data: data
+    })
+}
+
+// 删除一条人员信息
+export function deletePersonInfo(id) {
+    return request({
+        url: prefix + '/' + id,
+        method: 'delete'
     })
 }
