@@ -2,7 +2,8 @@
 	<el-menu :router="true" :default-active="$route.path" class="el-menu-vertical-demo" background-color="#FBFBFF"
 	 text-color="#1E1E1E" active-text-color="#EFEFEF" :collapse="collapsed">
 		<div class="logobox">
-			<img class="logoimg" src="../../public/logo.png" alt="">
+			<img class="logoimg" src="../assets/littlelogo.png" alt="">
+			<div class="tim"><span>疫情流调系统</span></div>
 		</div>
 		<el-submenu index="1">
 			<template slot="title">
@@ -28,7 +29,7 @@
 		</el-submenu>
 		 <el-submenu index="3">
 			<template slot="title">
-				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
+				<i class="el-icon-eleme" style="font-size: 28px;"></i>
 				<span>  疫情概况一览</span>
 			</template>
 			<el-menu-item-group>
@@ -37,7 +38,7 @@
 		</el-submenu>
 		<el-submenu index="4">
 			<template slot="title">
-				<i class="el-icon-s-home" style="font-size: 28px;"></i>
+				<i class="el-icon-star-off" style="font-size: 28px;"></i>
 				<span>  部门管理</span>
 			</template>
 			<el-menu-item-group>
@@ -85,24 +86,64 @@
 	}
 
 	.logobox {
-		height: 80px;
+		height: 60px;
 		display: flex;
 		flex-direction: row;
 	}
 	.logoimg {
-		margin: 0 auto;
+		margin-left: 3px;
+		padding: 2px;
 	}
 	.tim{
 		margin-top: 23px;
-		font-size: 25px;
+		font-size: 18px;
 		font-weight: 550;
-		color:#FFFFFF;
+		color:#1E1E1E;
 	}
 	.el-menu-item.is-active {
    background-color: #DD5043 !important;
 	 border-top-left-radius: 18px;
 	 border-bottom-left-radius: 18px;
 }
-
+.el-icon-s-home{
+        background: url('../assets/epidemic.png') center center no-repeat;
+        background-size: 25px;
+    }
+    .el-icon-s-home:before {
+        font-size: 16px;
+        visibility: hidden;
+    }
+	.el-icon-s-marketing{
+        background: url('../assets/trace.png') center center no-repeat;
+        background-size: 25px;
+	}
+	.el-icon-s-marketing:before {
+        font-size: 16px;
+        visibility: hidden;
+    }
+.el-icon-eleme{
+			background: url('../assets/general.png') center center no-repeat;
+      background-size: 25px;
+}
+.el-icon-eleme::before{
+			font-size: 16px;
+			visibility: hidden;
+}
+.el-icon-star-off{
+			background: url('../assets/department.png') center center no-repeat;
+      background-size: 25px;
+}
+.el-icon-star-off:before{
+			font-size: 16px;
+			visibility: hidden;
+}
+.el-icon-office-building{
+		background: url('../assets/community.png') center center no-repeat;
+    background-size: 25px;
+}
+.el-icon-office-building:before{
+			font-size: 16px;
+			visibility: hidden;
+}
 
 </style>

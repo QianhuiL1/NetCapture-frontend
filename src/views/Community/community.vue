@@ -81,7 +81,7 @@
               type="text"
               @click="handleClick(scope.row)"
             >
-              <i class="el-icon-edit" style="color: #3388ff" />
+              <i class="el-icon-edit" />
               <span style="color: #223355"> 修改信息</span>
             </el-button>
         </template>
@@ -277,7 +277,9 @@ export default{
 .table_content{
   padding: 10px 5px 0px 0px;
 }
-
+.el-icon-edit{
+  color: red;
+}
 
 
 </style>

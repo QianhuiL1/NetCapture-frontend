@@ -10,12 +10,12 @@
     <div class="tendencyCard">
       <div class="lmap">
           <template>
-            <div id="map" style="width: 700px; height: 500px;"></div>
+            <div id="map" style="width:700px; height: 500px;margin: 0 auto"></div>
           </template>
           </div>
           <div class="rmap">
             <template>
-            <div id="ownAckChart" style="width: 600px; height: 500px;margin:auto"></div>
+            <div id="ownAckChart" style="width: 550px; height: 500px"></div>
             </template>
           </div>
       </div>
@@ -131,17 +131,13 @@ export default {
     },
     initMap(){
       page().then(res=>{
-        console.log(res)
         res.rows.forEach(item=>{
           this.initialArray.forEach(it=>{
             if(it.name==item.province){
-              console.log(it.name)
-              console.log(item.confirm)
               it.value=item.confirm
             }
           })
         })
-        console.log(this.initialArray)
         echarts.registerMap('滁州', cZjson);
         var chart = echarts.init(document.getElementById('map'));
         let option = {
@@ -162,10 +158,11 @@ export default {
             formatter: '{b}<br/>新增确诊 {c} 例'
             },
             toolbox:{
-              show: true,
+              show: false,
               orient: 'vertical',
-              left:'right',
-              top:'center',
+              x:'left',
+              y:'center',
+              padding: 5
             },
             series:[
             	{
@@ -185,13 +182,6 @@ export default {
             		data: this.initialArray
             	}
             ],
-            grid: {
-              x: 50,
-              y: 50,
-              x2: 50,
-              y2: 50,
-              borderWidth: 10
-            }
         };
         chart.setOption(option);
       })
@@ -343,7 +333,7 @@ export default {
   margin-top: 10px;
   display:flex;
   flex-direction:row;
-  justify-content: space-between;
+  justify-content: center;
 }
 .title2{
   color:#1E1E1E;

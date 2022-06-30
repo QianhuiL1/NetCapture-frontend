@@ -111,4 +111,7 @@ export default {
 .pagination-container.hidden {
   display: none;
 }
+::v-deep .el-pagination.is-background .el-pager li:not(.disabled).active {
+    background-color: #ff2832;
+}
 </style>

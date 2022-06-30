@@ -221,7 +221,6 @@ export default {
         if(res.total<1){
           // 若查询为空
         }else{
-          console.log('查询不为空')
           var temp = {}
           temp.toAddress=res.rows[0].toAddress
           temp.recordTime=res.rows[0].recordTime

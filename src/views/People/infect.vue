@@ -183,8 +183,6 @@
 import Pagination from "@/components/Pagination";
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import {trackList} from '../../api/People/track/basic';
-import FileSaver from 'file-saver'
-import XLSX from 'xlsx'
 
 export default {
   name: "infectList",
