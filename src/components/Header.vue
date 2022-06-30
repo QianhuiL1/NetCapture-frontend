@@ -54,14 +54,14 @@
 	.main-aside-collapsed {
 		width: 60px !important;
 		height: 100%;
-		background-color: #D22519;
+		background-color: #FBFBFF;
 		padding: 0px;
 	}
 
 	.main-aside {
 		width: 220px!important;
 		height: 100%;
-		background-color: #D22519;
+		background-color: #FBFBFF;
 		padding: 0px;
 	}
 

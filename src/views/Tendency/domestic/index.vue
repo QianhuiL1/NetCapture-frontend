@@ -44,6 +44,8 @@
 import echarts from 'echarts'
 import "echarts/map/js/china.js"
 import $ from 'jquery'
+import {page} from '../../../api/Data/basic'
+let cZjson = require("../area/area.json")
 
 export default {
   data() {
@@ -75,52 +77,89 @@ export default {
           area:'上海市静安区共和新路街道谈家桥路163弄',
           danger: '中风险'
         }
+      ],
+      initialArray:[
+        {name:'北京',value:0},
+        {name:'天津',value:0},
+        {name:'上海',value:0},
+        {name:'重庆',value:0},
+        {name:'广东',value:0},
+        {name:'福建',value:0},
+        {name:'广西',value:0},
+        {name:'贵州',value:0},
+        {name:'甘肃',value:0},
+        {name:'海南',value:0},
+        {name:'安徽',value:0},
+        {name:'河南',value:0},
+        {name:'黑龙江',value:0},
+        {name:'湖北',value:0},
+        {name:'湖南',value:0},
+        {name:'河北',value:0},
+        {name:'江苏',value:0},
+        {name:'江西',value:0},
+        {name:'吉林',value:0},
+        {name:'辽宁',value:0},
+        {name:'宁夏',value: 0},
+        {name:'内蒙古',value:0},
+        {name:'青海',value:0},
+        {name:'山东',value:0},
+        {name:'山西',value:0},
+        {name:'陕西',value:0},
+        {name:'四川',value:0},
+        {name:'台湾',value:0},
+        {name:'西藏',value: 0},
+        {name:'新疆',value:0},
+        {name:'云南',value:0},
+        {name:'浙江',value: 0},
+        {name:'香港',value:0},
+        {name:'澳门',value:0},
       ]
     }
   },
   component: {
   },
   mounted(){
-    this.getMap()
     this.getOwnAck()
   },
   created() {
-
+    this.initMap()
+    this.getOwnAck()
   },
   methods: {
     getHelp(){
       this.dialogVisible= true
     },
-    timeChange(){
-      console.log(this.period)
-    },
-    getMap(){
-      $.get('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json', function (cZjson) {
+    initMap(){
+      page().then(res=>{
+        console.log(res)
+        res.rows.forEach(item=>{
+          this.initialArray.forEach(it=>{
+            if(it.name==item.province){
+              console.log(it.name)
+              console.log(item.confirm)
+              it.value=item.confirm
+            }
+          })
+        })
+        console.log(this.initialArray)
         echarts.registerMap('滁州', cZjson);
         var chart = echarts.init(document.getElementById('map'));
         let option = {
             title: {
-                text: '中国疫情趋势',
+                text: '中国今日疫情趋势',
                 x:'center'
             },
-            // grid: {
-            //   x:10,
-            //   y:10,
-            //   x2:20,
-            //   y2:20,
-            //   borderWidth:1
-            // },
             dataRange:{
             	min:0,
-            	max:100,
+            	max:20,
             	text:['高','低'],
             	realtime:true,
             	calculable:true,
             	color:['#C80E1E','#FA3939','#FBEED2']
             },
             tooltip: {
-            trigger: 'item',
-            formatter: '{b}<br/>新增 {c}   例'
+            trigger: 'item', 
+            formatter: '{b}<br/>新增确诊 {c} 例'
             },
             toolbox:{
               show: true,
@@ -133,51 +172,17 @@ export default {
             		name:'国内疫情趋势',
             		type:'map',
             		map:'滁州',
-                zoom: 1.2,   //这里是关键，一定要放在 series中
+                zoom: 1.2,
                 roam: true,
-                // roam: 'scale',
-                // roam:'move',
+                scaleLimit: { 
+                  min: 1,
+                  max: 3
+                },
             		layoutCenter: ['50%', '50%'],
             		itemStyle:{
             			emphasis:{label:{show:false}}
             		},
-            		data:[
-            			{name:'北京市',value:30},
-            			{name:'天津市',value:20},
-            			{name:'上海市',value:40},
-            			{name:'重庆市',value:40},
-            			{name:'广东省',value:10},
-            			{name:'福建省',value:20},
-            			{name:'广东省',value:10},
-                  {name:'广西壮族自治区',value:0},
-                  {name:'贵州省',value:0},
-                  {name:'甘肃省',value:0},
-                  {name:'海南省',value:10},
-                  {name:'安徽省',value:10},
-                  {name:'河南省',value:10},
-                  {name:'黑龙江省',value:0},
-                  {name:'湖北省',value:10},
-                  {name:'湖南省',value: 0},
-                  {name:'河北省',value:10},
-                  {name:'江苏省',value:0},
-                  {name:'江西省',value:5},
-                  {name:'吉林省',value:5},
-                  {name:'辽宁省',value:7},
-                  {name:'宁夏回族自治区',value: 2},
-                  {name:'内蒙古自治区',value:3},
-                  {name:'青海省',value:3},
-                  {name:'山东省',value:3},
-                  {name:'山西省',value:3},
-                  {name:'陕西省',value:3},
-                  {name:'四川省',value:6},
-                  {name:'台湾省',value:6},
-                  {name:'西藏自治区',value: 2},
-                  {name:'新疆维吾尔自治区',value:3},
-                  {name:'云南省',value:3},
-                  {name:'浙江省',value: 2},
-                  {name:'香港自治区',value:10},
-                  {name:'澳门自治区',value:2},
-            		]
+            		data: this.initialArray
             	}
             ],
             grid: {
@@ -189,7 +194,7 @@ export default {
             }
         };
         chart.setOption(option);
-      });
+      })
     },
     getOwnAck() {
       console.log('输出一下')

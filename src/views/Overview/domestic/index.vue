@@ -262,7 +262,6 @@ export default {
       this.initCharts()
     },
     initCharts(){
-
       this.ownAddChart= echarts.init(document.getElementById('ownAddChart'))
       this.ownAddOption = {
         xAxis: {

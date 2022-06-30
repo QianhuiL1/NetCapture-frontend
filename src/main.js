@@ -17,6 +17,7 @@ import "./assets/icons/iconfont.css";
 import echarts from 'echarts'
 import './assets/icons/index.js'
 Vue.prototype.$echarts = echarts
+import screenfull from 'screenfull'
 
 Vue.use(VueRouter);
 import VueAMap from 'vue-amap';
