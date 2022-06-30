@@ -88,7 +88,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
-import { getCodeImg,register } from '@/api/login'
+import { getCodeImg,register } from '../../api/login'
 
 export default {
   name: 'Register',

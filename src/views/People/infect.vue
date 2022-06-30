@@ -4,7 +4,7 @@
     <div class="center-content">
       <el-card class="table_content">
         <el-form ref="queryForm" :model="queryParams" :inline="true" size="small">
-        <el-form-item label="姓名:" prop="name">
+        <el-form-item label="姓名:" prop="name" style="float: left;margin-left:50px;">
           <el-input
             v-model="queryParams.name"
             placeholder="请输入人员姓名"
@@ -12,7 +12,7 @@
             @keyup.enter.native="handleQuery"
           />
         </el-form-item>
-        <el-form-item label="身份证号:" prop="id">
+        <el-form-item label="身份证号:" prop="id" style="float: left;margin-left:50px;">
           <el-input
             v-model="queryParams.id"
             placeholder="请输入身份证号"
@@ -20,22 +20,7 @@
             @keyup.enter.native="handleQuery"
           />
         </el-form-item>
-        <el-form-item label="审核状态:">
-          <el-select
-            v-model="queryParams.type"
-            placeholder="请选择审核状态"
-            clearable
-            @change="handleStatusSelect"
-          >
-            <el-option
-              v-for="(item, $index) in  TypeOptions"
-              :key="$index"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="日期:">
+        <el-form-item label="日期:" style="float: left;margin-left:50px;">
           <el-date-picker
             v-model="queryDateRange"
             type="daterange"
@@ -56,18 +41,20 @@
           <el-button size="mini" icon="el-icon-refresh" @click="resetQuery"
             >重置</el-button
           >
+          <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+        plain
+      >导出</el-button>
         </el-form-item>
       </el-form>
       </el-card>
     </div>
 <div class="center-content">
   <el-card class="table_content">
-    <el-button
-        icon="el-icon-share"
-        type="primary"
-        size="mini"
-        @click="handleExport"
-      >导出</el-button>
+    
     <el-table  v-loading="loading"
         :data="infectList"
         :cell-style="cellStyle"
@@ -86,18 +73,7 @@
             <template slot-scope="scope">
             <span>{{ scope.row.date }}</span>
           </template></el-table-column>
-          <el-table-column label="状态" prop="type" min-width="5%">
-          <template slot-scope="scope">
-            <span
-              ><i
-                class="iconfont icon-dian"
-                :style="
-                  scope.row.type === 1 ? 'color:#11C79B' : 'color:#FF6161'
-                "
-              />{{ scope.row.type === 1 ? "已审查" : " 未审查" }}</span
-            >
-          </template>
-        </el-table-column>    
+            
         <el-table-column label="操作" min-width="15%">
           <template slot-scope="scope">
             <el-button
@@ -238,6 +214,7 @@ this.getList()
           timestamp: "2018-04-11",
         },
       ],
+      total:1,
       queryParams: {
         name: "",
         peopleId:'',
@@ -329,6 +306,7 @@ this.getList()
       infectList(this.queryParams).then((response) => {
         this.loading = false;
         this.infectList = response.rows;
+        this.total=response.rows.length
       });
     },
     resetQuery() {

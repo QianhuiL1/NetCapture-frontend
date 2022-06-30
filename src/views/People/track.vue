@@ -33,6 +33,7 @@
               placeholder="请输入身份证号"
             />电话号码：
             <el-input
+            :maxlength="11"
               v-model="formQuery.phone"
               clearable
               style="width: 300px; margin: 10px"
@@ -51,14 +52,14 @@
               size="mini"
               @click="handleCommit"
               >提交</el-button
-            >
-            <div class="con-list">
-                <el-button
+            > <el-button
                   icon="el-icon-share"
                   type="primary"
                   size="mini"
                   @click="handleExport"
-                >导出</el-button>
+                  plain
+                >导出</el-button>  
+            <div class="con-list">   
               <el-table
                 :row-class-name="tableRowClassName"
                 :data="tableData"
@@ -122,6 +123,14 @@
                   </template>
                 </el-table-column>
               </el-table>
+              <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="_page"
+        :limit.sync="_limit"
+        style="float: right; margin: 20px"
+        @pagination="getList1"
+      />
             </div>
           </div>
         </el-card>
@@ -242,9 +251,12 @@ import { connectList } from "../../api/People/connect/basic";
 const AMap = window.AMap;
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
+import Pagination from '../../components/Pagination'
+
 export default {
   components: {
     geoCoder: "",
+    Pagination
   },
   created() {
     this.queryPeople();
@@ -259,6 +271,9 @@ export default {
   },
   data() {
     return {
+       _page: 1,
+        _limit: 10,
+      total: 1,
       count: true,
       peopleList: [],
       map: null,
@@ -473,6 +488,7 @@ export default {
           trackList({ peopleId: this.formQuery.id }).then((res) => {
             this.loading = false;
             this.tableData = res.rows;
+            this.total = res.rows.length
             this.spot.recordId = Math.random() * 10000000;
             for (var index in res.rows) {
               this.tableData[index].arriveTime = res.rows[index].time;
@@ -485,10 +501,12 @@ export default {
         } else {
           this.loading = false;
           this.tableData = response.rows;
+          this.total = response.rows.length
           this.spot.recordId = response.rows[0].recordId
           this.initMap();
         }
       });
+      this.loading = false
     },
     commitTravel() {
       setTimeout(() => {

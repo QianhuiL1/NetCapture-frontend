@@ -1,18 +1,27 @@
 <template>
 <div class="home_container">
-  <div class="center-content">
-    <el-row>
+  <el-card class="table_content">  
+      <div class="center_content">
+      <div class="theme">
+        <span>
+      旅居人员上报记录
+      </span>
+      </div>
+      <div>
       <el-button
         icon="el-icon-plus"
         type="primary"
         size="small"
         @click="handleAdd"
         >上报旅居人员</el-button>
-    </el-row>
+      </div>
+      </div>
+    </el-card>
+      <div class="center-content">
     <el-card class="table_content">
       <el-form ref="queryForm" :model="queryParams"
       :inline="true" size="medium">
-      <el-form-item label="身份证号" prop="id">
+      <el-form-item label="身份证号" prop="id" style="float: left;margin-left:50px;">
         <el-input
           v-model="queryParams.id"
           placeholder="请输入旅居人员身份证号"
@@ -30,19 +39,19 @@
           >
           <el-button size="mini" icon="el-icon-refresh" @click="resetQuery"
             >重置</el-button
-          >
+          ><el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+        plain
+      >导出</el-button>
         </el-form-item>
       </el-form>
     </el-card>
   </div>
   <div class="center-content">
     <el-card class="table_content">
-      <el-button
-        icon="el-icon-share"
-        type="primary"
-        size="mini"
-        @click="handleExport"
-      >导出</el-button>
       <el-table
        v-loading="loading"
        id="statisTable"
@@ -78,14 +87,14 @@
         <el-table-column label="登记时间" prop="recordTime"
         min-width="20%"></el-table-column>
        </el-table>
-        <!-- <pagination
+        <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="queryParams._page"
         :limit.sync="queryParams._limit"
         style="float: right; margin: 20px"
         @pagination="getList"
-      /> -->
+      />
     </el-card>
   </div>
   <el-dialog title="旅居人员上报" :visible.sync="dialogVisible" width="40%">
@@ -143,20 +152,24 @@ import {getAreaById} from '../../api/Ancestor/base'
 let pcas = require("./pcas/pcas-code.json")
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
+import Pagination from '../../components/Pagination'
 
 export default {
   name:'importNew',
   components:{
+    Pagination
   },
   data() {
     return {
       dialogVisible: false,
-      queryParams:{id: ''},
+      queryParams:{id: '',_page: 1,
+        _limit: 10,},
       formData:{},
       importTable: [],
       loading: false,
       options: pcas,
-      selectedArea: ''
+      selectedArea: '',
+      total:1,
     }
   },
   created() {
@@ -167,6 +180,8 @@ export default {
       this.loading=true
       var tempArray=[]
       page(this.queryParams).then(response=>{
+        console.log(response)
+        this.total=response.rows.length
       response.rows.forEach(item => {
         var temp = {}
         temp.toAddress=item.toAddress
@@ -305,14 +320,51 @@ export default {
 .home_container {
   padding: 2px 5px;
   line-height: 1;
-  height: 100%;
 }
-.center-content {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
+  .first-content {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+.center_content{
+    margin-top: 3px;
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
 }
-
-
+  .theme{
+    color:#1E1E1E;
+    font-size: 20px;
+    font-weight: 550;
+    padding:0px;
+  }
+  .inputTitle{
+    font-size: 15px;
+    font-weight: 500;
+    float:left;
+    padding: 2px
+  }
+.el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+.el-card {
+  margin-bottom: 10px;
+  ::v-deep .el-card__body {
+    padding: 10px;
+  }
+  ::v-deep .el-form-item {
+    margin-bottom: 0px;
+  }
+}
+.el-container-1 {
+  display: block;
+  height: 363px;
+  ::v-deep .el-scrollbar__wrap {
+    overflow-x: hidden !important;
+  }
+}
+.file {
+  color: #1890ff;
+}
 
 </style>

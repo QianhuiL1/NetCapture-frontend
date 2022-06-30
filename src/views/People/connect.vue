@@ -12,18 +12,11 @@
         >新增人员信息</el-button
       >
       </div>
-      <el-button
-              type="success"
-              icon="el-icon-check"
-              size="mini"
-              @click="handleCommit"
-              >提交</el-button
-            >
       </div>
     </el-card>
     <el-card class="table_content">
         <el-form ref="queryForm" :model="queryParams" :inline="true" size="small">
-        <el-form-item label="姓名:" prop="name">
+        <el-form-item label="姓名:" prop="name" style="float: left;margin-left:50px;">
           <el-input
             v-model="queryParams.name"
             placeholder="请输入人员姓名"
@@ -31,7 +24,7 @@
             @keyup.enter.native="getList1"
           />
         </el-form-item>
-        <el-form-item label="身份证号:" prop="id">
+        <el-form-item label="身份证号:" prop="id" style="float: left;margin-left:50px;">
           <el-input
             v-model="queryParams.peopleId"
             placeholder="请输入身份证号"
@@ -39,7 +32,7 @@
             @keyup.enter.native="getList1"
           />
         </el-form-item>
-        <el-form-item label="家庭住址:">
+        <el-form-item label="家庭住址:" style="float: left;margin-left:50px;"> 
           <el-input
             v-model="queryParams.address"
             placeholder="请输入家庭住址"
@@ -58,15 +51,16 @@
           <el-button size="mini" icon="el-icon-refresh" @click="resetQuery"
             >重置</el-button
           >
-        </el-form-item>
-      </el-form>
-<p></p>
-    <el-button
+          <el-button
         icon="el-icon-share"
         type="primary"
         size="mini"
         @click="handleExport"
+        plain
       >导出</el-button>
+        </el-form-item>
+      </el-form>
+    
     <el-table  v-loading="loading"
         :data="connectList"
         :cell-style="cellStyle"
@@ -135,6 +129,7 @@
     </span>    
 </el-dialog>
 <el-dialog title="新增密接人员" :visible.sync="centerDialogAdd" width="30%">     
+  <el-form :model="info" :rules="rules">
   <div class="inputTitle"><span>
       姓名：
       </span>
@@ -155,6 +150,7 @@
         <el-button @click="centerDialogAdd = false; listID=''">取 消</el-button>        
         <el-button type="primary" @click="add">确 定</el-button>      
     </span>    
+  </el-form>
 </el-dialog>
     </div>
 </template>
@@ -163,12 +159,18 @@
 <script>
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import { connectCreate } from '../../api/People/connect/base';
-
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
+import Pagination from '../../components/Pagination'
 const ids = new Set()
 export default {
   name: "connectList",
   created(){
     this.getList1()
+    this.handleCommit()
+  },
+  components: {
+    Pagination
   },
   data() {
     return {
@@ -192,9 +194,20 @@ centerDialogDel: false,
         address:'',
         status: 2,
       },
+      total: 1,
       queryDateRange: [],
       connectList: [],
-
+rules: {
+        mobile: [{
+          required: true,
+          message: '请输入手机号',
+          trigger: 'blur'
+        }, {
+          pattern: /^1(3|4|5|7|8|9)\d{9}$/,
+          message: '手机号格式错误',
+          trigger: 'blur'
+        }],
+      },
         connectList1: [],
       value: "",
     };
@@ -267,6 +280,7 @@ handleDelete (id) {
       infectList(this.queryParams).then((response) => {
         this.loading = false;
         this.connectList = response.rows;
+        this.total = response.rows.length
       });
     },
     resetQuery() {
@@ -285,7 +299,6 @@ handleDelete (id) {
       for(var index in this.connectList){
         connectCreate(this.connectList[index].address)
       }
-      this.$message("提交成功")
   },
   handleExport(){
       let that = this

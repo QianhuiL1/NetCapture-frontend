@@ -1,6 +1,6 @@
 <template>
   <div
-    class="login-container":style="backgorund"
+    class="login-container" :style="backgorund"
   >
     <el-card class="box-card">
       <el-form

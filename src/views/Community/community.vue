@@ -31,18 +31,20 @@
           <el-button size="mini" icon="el-icon-refresh" @click="resetQuery"
             >重置</el-button
           >
+           <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        plain
+        @click="handleExport"
+      >导出</el-button>
         </el-form-item>
       </el-form>
     </el-card>
   </div>
   <div class="center-content">
     <el-card class="table_content">
-      <el-button
-        icon="el-icon-share"
-        type="primary"
-        size="mini"
-        @click="handleExport"
-      >导出</el-button>
+     
       <el-table
         id="statisTable"
        :data="residentTable"

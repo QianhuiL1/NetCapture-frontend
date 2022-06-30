@@ -49,16 +49,16 @@
 		<el-submenu index="4">
 			<template slot="title">
 				<i class="el-icon-s-home" style="font-size: 28px;"></i>
-				<span>  系统管理</span>
+				<span>  部门管理</span>
 			</template>
 			<el-menu-item-group>
-				<el-menu-item index="/dept">部门管理</el-menu-item>
+				<el-menu-item index="/dept">部门通讯录</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
 		<el-submenu index="5">
 			<template slot="title">
 				<i class="el-icon-office-building" style="font-size: 28px;"></i>
-				<span>  社区</span>
+				<span>  社区管理</span>
 			</template>
 			<el-menu-item-group>
 				<el-menu-item index="/community">社区住户信息</el-menu-item>

@@ -24,17 +24,8 @@
             setLine();
           "
         >
-          轨迹路线
+          重点轨迹
           <!-- loadMaterialMarker() -->
-        </li>
-        <li
-          class="menu-item"
-          @click="
-            clearRegion();
-            clearLine();
-          "
-        >
-          趋势预测
         </li>
       </ul>
     </div>
@@ -466,8 +457,8 @@ div {
       background-color: rgba(26, 72, 125, 0.2);
       font-size: 18px;
       &:hover,
-      &.active {
-        color: #4bffff;
+      &.active{
+        color: #4bffff !important;
         border: 1px solid #4bffff;
         background-color: rgba(75, 255, 255, 0.2);
         border-radius: 6px;
@@ -478,6 +469,7 @@ div {
     z-index: 10;
   }
 }
+
 /* 标题样式 */
 .header {
   .header__title {
