@@ -113,6 +113,7 @@
             min-width="20%"
           />
           <el-table-column label="居住地址" prop="address" min-width="30%" />
+          <el-table-column label="状态更新时间" prop="address" min-width="20%"/>
         </el-table>
         <pagination
         v-show="total > 0"

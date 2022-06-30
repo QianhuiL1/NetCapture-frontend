@@ -10,7 +10,9 @@
       <ul class="menu">
         <li
           class="menu-item"
+          :class="[menuIndex == 'region' ? 'active' : '']"
           @click="
+          menuIndex = 'region';
             setRegion();
             clearLine();
           "
@@ -19,7 +21,9 @@
         </li>
         <li
           class="menu-item"
+          :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
+          menuIndex = 'track';
             clearRegion();
             setLine();
           "
@@ -41,14 +45,16 @@ export default {
   name: "Map",
   mounted() {
     // 初始化地图页面
-    //this.initData();
+    this.initData();
     this.initMap();
+    this.setRegion()
   },
   components: {
     geoCoder: "",
   },
   data() {
     return {
+      menuIndex:"region",
       count: true,
       peopleList: [],
       map: null,
@@ -96,6 +102,11 @@ export default {
     };
   },
   methods: {
+    initData(){
+travelList().then((response) => {
+        this.travelData = response.rows;
+      });
+    },
     initMap() {
       this.map = new AMap.Map("map", {
         resizeEnable: true,
@@ -117,9 +128,7 @@ export default {
         citylimit: true,
       };
       this.geoCoder = new AMap.Geocoder(geoOption);
-      travelList().then((response) => {
-        this.travelData = response.rows;
-      });
+      
     },
     setRegion() {
       let this_ = this;

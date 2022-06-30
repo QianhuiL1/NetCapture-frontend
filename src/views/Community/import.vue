@@ -81,9 +81,10 @@
             <span v-else>阳性</span>
           </template>
         </el-table-column>
+        <el-table-column label="来源地" prop="fromAncestors" min-width="20%"></el-table-column>
+        <el-table-column label="交通方式" prop="fromAncestors" min-width="20%"></el-table-column>
         <el-table-column label="现居地" prop="toAncestors" min-width="20%"></el-table-column>
         <el-table-column label="详细地址" prop="toAddress" min-width="20%"></el-table-column>
-        <el-table-column label="来源地" prop="fromAncestors" min-width="20%"></el-table-column>
         <el-table-column label="登记时间" prop="recordTime"
         min-width="20%"></el-table-column>
        </el-table>

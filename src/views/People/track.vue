@@ -347,6 +347,8 @@ export default {
       const tmp_this = this;
       var lng = "";
       var lat = "";
+      
+      
       this.lineArr = [];
       for (const index in this.tableData) {
         const spot = this.tableData[index].address;
@@ -361,21 +363,9 @@ export default {
               tmp_this.initroad();
               tmp_this.initLine();
             }
-            var markerspot = new AMap.CircleMarker({
-              center: [lng, lat],
-              radius: 20, //3D视图下，CircleMarker半径不要超过64px 大小
-              strokeColor: "white", // 边框颜色
-              strokeWeight: 2,
-              strokeOpacity: 0.5,
-              fillColor: "#9b9a99", // 背景色
-              fillOpacity: 1, //透明度
-              zIndex: 1000,
-              bubble: true,
-              cursor: "pointer",
-              clickable: true,
-            });
+         tmp_this.set(lng,lat)
+        
             let index1 = parseInt(index) + 1;
-            map.add(markerspot);
             var text = new AMap.Text({
               text: index1,
               anchor: "center", // 设置文本标记锚点
@@ -387,37 +377,60 @@ export default {
                 // "margin-bottom": "1rem",
                 // "border-radius": ".25rem",
                 "margin-top": "2px",
-                "background-color": "#9b9a99",
-                opacity: "1",
+                "background-color": "#cccccc",
+                opacity: "0.7",
                 // width: "100%",
                 "border-width": 0,
-                // "box-shadow": "0 2px 6px 0 rgba(114, 124, 245, .5)",
+                "box-shadow": "0 2px 6px 0 rgba(114, 124, 245, .5)",
                 "text-align": "center",
                 "font-size": "20px",
-                color: "#fff",
+                "font-weight": "500",
+                color: "#000000",
               },
               position: [lng, lat],
             });
             text.setMap(map);
-            //         var marker = new AMap.Marker({
-            //           position: null
-            //         });
-            //         map.add(marker);
-            //         marker.setPosition([lng,lat])
-            //         marker.show()
-            //         var infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -30) });
-            //         marker.content = "第" + index1 + "个轨迹点"+"<br>"+"具体时间: "+time+"<br>"+"详细地址: "+spot;
-            //         marker.on("click", markerClick);
-            //         //marker.emit("click", { target: marker });
-            //         function markerClick(e) {
-            //         infoWindow.setContent(e.target.content);
-            //         infoWindow.open(map, e.target.getPosition());
-            // }
             map.setFitView();
           }
         });
       }
     },
+    set(lng, lat){
+      var markerspot = null
+      const map = this.map;
+      var isAdd = false;
+      var radius = 20
+setInterval(()=>{
+          // 修改半径
+          if(radius == 20){
+            isAdd = true;
+          } 
+          if(radius == 50){
+            isAdd = false;
+          }
+          if(isAdd){
+            radius+=2;
+          } else {
+            radius-=2;
+          }
+          markerspot && map.remove(markerspot)
+          markerspot = new AMap.CircleMarker({
+              center: [lng, lat],
+              radius: radius, 
+              strokeColor: "white", // 边框颜色
+              strokeWeight: 2,
+              strokeOpacity: 0.5,
+              fillColor: "#cccccc", // 背景色
+              fillOpacity: 0.7, //透明度
+              zIndex: 1000,
+              bubble: true,
+              cursor: "pointer",
+              clickable: true,
+            });
+            map.add(markerspot);
+        },50)
+    },
+
     initLine() {
       let Driving_obj = new AMap.Driving({
         map: this.map,

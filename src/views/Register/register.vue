@@ -15,9 +15,9 @@
             <img :src="logo" style="width:230px;height:110px;"/>
           </div>
         </div>
-        <el-form-item prop="username">
+        <el-form-item prop="nickname">
           <el-input
-            v-model="registerForm.username"
+            v-model="registerForm.nickname"
             placeholder="用户名"
             type="text"
             auto-complete="off"
@@ -25,7 +25,7 @@
             <template slot="prepend"><svg-icon icon-class="user"/></template>
           </el-input>
         </el-form-item>
-          <el-form-item prop="password" style="margin-top: 40px">
+        <el-form-item prop="password" style="margin-top: 40px">
             <el-input
               v-model="registerForm.password"
               auto-complete="off"
@@ -34,7 +34,7 @@
               @keyup.enter.native="handleRegister"
             >
               <template slot="prepend"
-                ><svg-icon icon-class="password"
+                ><svg-icon icon-class="eye"
               /></template>
             </el-input>
             </el-form-item>
@@ -47,10 +47,62 @@
               @keyup.enter.native="handleRegister"
             >
               <template slot="prepend"
-                ><svg-icon icon-class="password"
+                ><svg-icon icon-class="eye-open"
               /></template>
             </el-input>
           </el-form-item>
+        <el-form-item prop="username">
+          <el-input
+            v-model="registerForm.username"
+            placeholder="身份证号"
+            type="text"
+            auto-complete="off"
+          >
+            <template slot="prepend"><svg-icon icon-class="dict"/></template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="phonenumber">
+          <el-input
+            v-model="registerForm.phonenumber"
+            placeholder="电话号码"
+            type="text"
+            auto-complete="off"
+          >
+            <template slot="prepend"><svg-icon icon-class="build"/></template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="email">
+          <el-input
+            v-model="registerForm.email"
+            placeholder="邮箱"
+            type="text"
+            auto-complete="off"
+          >
+            <template slot="prepend"><svg-icon icon-class="mail"/></template>
+          </el-input>
+        </el-form-item>
+  <el-form-item prop="sex">
+    <template > <svg-icon icon-class="sex" style="width:2em; height:2em; float:left; margin-left:20px;"/></template>
+        <el-radio-group v-model="registerForm.sex" size="medium" class="radio">
+          <el-radio v-for="(item, index) in sexOption" :key="index" :label="item.value"
+            >{{item.label}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item prop="deptId">
+          <el-input
+            v-model="registerForm.deptId"
+            placeholder="部门号"
+            type="text"
+            auto-complete="off"
+          ><template slot="prepend"><svg-icon icon-class="switch"/></template>
+          </el-input></el-form-item>
+          <el-form-item prop="role">
+    <template > <svg-icon icon-class="rate" style="width:2em; height:2em; float:left; margin-left:20px;"/></template>
+        <el-radio-group v-model="registerForm.roleId" size="medium" class="radio">
+          <el-radio v-for="(item, index) in roleOption" :key="index" :label="item.value"
+            >{{item.label}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
           <el-form-item prop="code" v-if="captchaOnOff">
         <el-input
           v-model="registerForm.code"
@@ -111,6 +163,20 @@ export default {
         code: "",
         uuid: ""
       },
+       sexOption: [{
+        "label": "男",
+        "value": 1
+      }, {
+        "label": "女",
+        "value": 0
+      }],
+      roleOption: [{
+        "label": "社区工作人员",
+        "value": 4
+      }, {
+        "label": "疾控工作人员",
+        "value": 3
+      }],
       registerRules: {
         username: [
           { required: true, trigger: "blur", message: "请输入您的账号" },
@@ -148,7 +214,6 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
-
     getCode() {
       getCodeImg().then(res => {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
@@ -297,7 +362,11 @@ $cursor: #e5e5e5;
       }
     }
   }
-
+.radio{
+  float:left;
+  margin-bottom: 15px;
+  margin-left:20px;
+}
   .svg-container {
     padding: 6px 5px 6px 15px;
     // color: $dark_gray;
