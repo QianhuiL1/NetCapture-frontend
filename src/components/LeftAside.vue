@@ -13,6 +13,7 @@
 			<el-menu-item-group>
 				<el-menu-item index="/home">疫情速报</el-menu-item>
 				<el-menu-item index="/home1">疫情趋势</el-menu-item>
+				<el-menu-item index="/map">疫情概况</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
     <el-submenu index="2">
@@ -27,16 +28,7 @@
 				<el-menu-item index="/ci">次密接人员列表</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		 <el-submenu index="3">
-			<template slot="title">
-				<i class="el-icon-eleme" style="font-size: 28px;"></i>
-				<span>  疫情概况一览</span>
-			</template>
-			<el-menu-item-group>
-				<el-menu-item index="/map">重点地区</el-menu-item>
-			</el-menu-item-group>
-		</el-submenu>
-		<el-submenu index="4">
+		<el-submenu index="3">
 			<template slot="title">
 				<i class="el-icon-star-off" style="font-size: 28px;"></i>
 				<span>  部门管理</span>
@@ -45,7 +37,7 @@
 				<el-menu-item index="/dept">部门通讯录</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="5">
+		<el-submenu index="4">
 			<template slot="title">
 				<i class="el-icon-office-building" style="font-size: 28px;"></i>
 				<span>  社区管理</span>

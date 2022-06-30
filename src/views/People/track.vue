@@ -259,7 +259,10 @@ export default {
     Pagination
   },
   created() {
-    this.queryPeople();
+    setTimeout(() => {
+    if(this.$route.params.peopleId === undefined){
+      this.queryPeople();
+    }},1000);
   },
   mounted() {
     this.formQuery.name = this.$route.params.peopleName;
@@ -347,8 +350,6 @@ export default {
       const tmp_this = this;
       var lng = "";
       var lat = "";
-      
-      
       this.lineArr = [];
       for (const index in this.tableData) {
         const spot = this.tableData[index].address;
