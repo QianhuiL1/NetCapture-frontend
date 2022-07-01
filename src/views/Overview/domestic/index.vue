@@ -94,7 +94,6 @@
 
 <script>
 import echarts from 'echarts'
-import { getFromNet } from '../../../api/network/base'
 
 export default {
   data() {
