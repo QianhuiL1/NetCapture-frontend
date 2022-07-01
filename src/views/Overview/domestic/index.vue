@@ -139,7 +139,6 @@ export default {
         otherAddOption:{},
         ownAddChart: '',
         otherAddChart: '',
-<<<<<<< HEAD
         dangerData:[
           {
             level: '高风险',
@@ -168,8 +167,6 @@ export default {
           }
         ],
         // NativeEpidemicData: require()
-=======
->>>>>>> 229517f0f24a7062eb849069050a362e3912d12c
 
     }
   },
@@ -192,10 +189,7 @@ export default {
       this.initCharts()
     },
     initCharts(){
-<<<<<<< HEAD
       //初始化新增本土趋势折线图
-=======
->>>>>>> 229517f0f24a7062eb849069050a362e3912d12c
       this.ownAddChart= echarts.init(document.getElementById('ownAddChart'))
       this.ownAddOption = {
         xAxis: {
