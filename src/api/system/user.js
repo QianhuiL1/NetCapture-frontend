@@ -10,13 +10,6 @@ export function listUser(query) {
     })
 }
 
-export function getUserByName(username) {
-    return request({
-        url: '/system/user/list/listByUsername/' + username,
-        method: 'get',
-    })
-}
-
 // 查询用户详细
 export function getUser(userId) {
     return request({
@@ -24,7 +17,13 @@ export function getUser(userId) {
         method: 'get'
     })
 }
-
+// 查询用户详细
+export function getUserByName(username) {
+    return request({
+        url: '/system/user/list/listByUsername/' + username,
+        method: 'get',
+    })
+}
 // 新增用户
 export function addUser(data) {
     return request({

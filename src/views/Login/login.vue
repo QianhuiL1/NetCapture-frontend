@@ -93,7 +93,6 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
-import store from '../../store'
 import {getUser,getUserByName,getAuthRole} from '../../api/system/user'
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
@@ -124,8 +123,8 @@ export default {
     return {
       logo: require('../../../public/logo.png'),
       loginForm: {
-        username: "admin",
-        password: "admin123",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: "",
@@ -229,6 +228,10 @@ export default {
     handleLogin(){
             this.$refs.loginForm.validate(valid => {
         if (valid) {
+          getUserByName(this.loginForm.username).then((res) => {
+                getAuthRole(res.rows[0].userId).then((response) => {
+                  this.loginForm.roleId=response.user.roles[0].roleId
+                })})
           this.loading = true;
           if (this.loginForm.rememberMe) {
             Cookies.set("username", this.loginForm.username, { expires: 30 });

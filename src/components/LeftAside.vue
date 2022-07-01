@@ -49,6 +49,7 @@
 		</el-submenu>
 	</el-menu>
 </template>
+
 <script>
 
   // 导出模块
@@ -58,7 +59,7 @@
 	created(){
 		this.getRole()
 	},
-    data:function(){
+	data(){
       return {
 		  role:"",
 		  id:"",
@@ -72,12 +73,11 @@
 				if(this.n == 50){
 					clearInterval(this.id)
 				}
-			console.log(this.$store.state)
 			this.role=(this.$store.state.user.roles)
 			},1000)
 		},
     }
-  };
+	}
 </script>
 <style>
 	.el-menu-vertical-demo:not(.el-menu--collapse) {

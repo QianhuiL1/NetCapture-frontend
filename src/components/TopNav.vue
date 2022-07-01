@@ -152,10 +152,17 @@ import screenfull from "screenfull"
 	},
     data: function() {
       return {
+<<<<<<< HEAD
         id:"",
         n:0,
         //peopleId:this.$store.state.user.name.split(',')[0],
         username:this.$store.state.user.name.split(',')[1],
+=======
+        // peopleId:this.$store.state.user.name.split(',')[0],
+        id:"",
+        n:0,
+        username:"",
+>>>>>>> 0594db9 (刷新)
           collapsed:false,
           activeIndex: '1',
         activeIndex2: '1',
@@ -216,14 +223,22 @@ import screenfull from "screenfull"
     },
     methods: {
       getName(){
+<<<<<<< HEAD
 			this.id=setInterval(()=>{
+=======
+this.id=setInterval(()=>{
+>>>>>>> 0594db9 (刷新)
 				this.n=this.n+1
 				if(this.n == 50){
 					clearInterval(this.id)
 				}
 			this.username=this.$store.state.user.name.split(',')[1]
 			},1000)
+<<<<<<< HEAD
 		},
+=======
+      },
+>>>>>>> 0594db9 (刷新)
       exit: function() {
         this.$confirm('确定要退出吗?', '提示', {
           confirmButtonText: '确定',

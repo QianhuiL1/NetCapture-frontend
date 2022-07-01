@@ -4,9 +4,9 @@ import { getUser, getUserByName, getAuthRole } from '../../api/system/user'
 const user = {
     state: {
         token: getToken(),
-        name: '',
+        name: '' || localStorage.getItem('name'),
         avatar: '',
-        roles: [],
+        roles: '' || localStorage.getItem('roles'),
         permissions: []
     },
 
@@ -16,12 +16,14 @@ const user = {
         },
         SET_NAME: (state, name) => {
             state.name = name
+            localStorage.setItem('name', name)
         },
         SET_AVATAR: (state, avatar) => {
             state.avatar = avatar
         },
         SET_ROLES: (state, roles) => {
             state.roles = roles
+            localStorage.setItem('roles', roles)
         },
         SET_PERMISSIONS: (state, permissions) => {
             state.permissions = permissions
@@ -45,7 +47,6 @@ const user = {
                             commit('SET_NAME', userInfo.username + "," + response.user.nickName)
                             commit('SET_TOKEN', res.token)
                             commit('SET_ROLES', role)
-                            console.log(role)
                             resolve()
                         }).catch(error => {
                             reject(error)
