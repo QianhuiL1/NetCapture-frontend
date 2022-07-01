@@ -44,8 +44,8 @@ const user = {
                     return new Promise((resolve, reject) => {
                         login(username, password, code, uuid).then(res => {
                             setToken(res.token)
-                            commit('SET_NAME', userInfo.username + "," + response.user.nickName)
                             commit('SET_TOKEN', res.token)
+                            commit('SET_NAME', userInfo.username + "," + response.user.nickName)
                             commit('SET_ROLES', role)
                             resolve()
                         }).catch(error => {

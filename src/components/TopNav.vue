@@ -231,6 +231,7 @@ this.id=setInterval(()=>{
           type: 'warning'
         }).then(() => {
              this.$router.push('/');
+             //this.$router.go(0)
         }).catch(() => {});
       },
       doToggle:function(){

@@ -248,7 +248,10 @@ export default {
           this.$store.dispatch("Login", this.loginForm).then(() => {
              getUserByName(this.loginForm.username).then((res) => {
                 getAuthRole(res.rows[0].userId).then((response) => {
-            this.$router.push({ path: "/map" }).catch(()=>{});
+            this.$router.push({ name:"map",
+          params:{
+            name:this.loginForm.username
+          } }).catch(()=>{});
                 })})
           }).catch(() => {
             this.loading = false;

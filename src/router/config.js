@@ -35,6 +35,7 @@ export default {
                 import ("@/views/Register/register.vue")
         },
         {
+            name: "map",
             path: "/map",
             component: () =>
                 import ("@/views/Region/map")

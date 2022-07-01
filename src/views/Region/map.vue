@@ -62,6 +62,9 @@ export default {
   name: "Map",
   mounted() {
     // 初始化地图页面
+    // if(this.$route.params.name != undefined){
+    //   this.$router.go(0)
+    // }
     this.initData();
     this.initMap();
     this.setRegion()
@@ -120,9 +123,6 @@ export default {
     };
   },
   methods: {
-    getMenuIndex(){
-      console.log(this.menuIndex)
-    },
     initData(){
 travelList().then((response) => {
         this.travelData = response.rows;
