@@ -67,7 +67,6 @@
     
     <el-table  v-loading="loading"
         :data="infectList"
-        :cell-style="cellStyle"
         border
         highlight-current-row 
         ref="EventTable">

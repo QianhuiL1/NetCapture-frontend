@@ -73,7 +73,6 @@
     
     <el-table  v-loading="loading"
         :data="connectList"
-        :cell-style="cellStyle"
         border
         highlight-current-row >
       <el-table-column
@@ -236,6 +235,7 @@ for (let i = 0; i < this.selectedOptions.length; i++) {
         if (i === 0) { this.queryParams.province = CodeToText[this.selectedOptions[i]] }
         if (i === 1) { this.queryParams.city = CodeToText[this.selectedOptions[i]] }
         if (i === 2) { this.queryParams.country = CodeToText[this.selectedOptions[i]] }
+        
       }
       this.getList1();
 },

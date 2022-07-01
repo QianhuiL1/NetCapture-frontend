@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const prefix = '/system/ancestor'
+const prefix = '/ancestor'
 
 // 获取区域列表
 export function regionList(queryParams) {

@@ -79,7 +79,6 @@
         v-loading="loading"
         id="statisTable"
         :data="connectList"
-        :cell-style="cellStyle"
         border
         highlight-current-row
       >

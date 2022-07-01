@@ -93,7 +93,8 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
-import {getUser,listUser} from '../../api/system/user'
+import store from '../../store'
+import {getUser,getUserByName,getAuthRole} from '../../api/system/user'
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
@@ -127,7 +128,7 @@ export default {
         password: "admin123",
         rememberMe: false,
         code: "",
-        uuid: ""
+        uuid: "",
       },
       loginRules: {
         username: [
@@ -172,7 +173,6 @@ export default {
     this.getCode();
     this.getCookie();
     window.addEventListener('storage', this.afterQRScan)
-    this.getImage()
   },
   mounted() {
     if (this.loginForm.username === '') {
@@ -240,16 +240,10 @@ export default {
             Cookies.remove('rememberMe');
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
-// listUser(this.loginForm).then((res) => {
-//   for(var index in res.rows){
-//     if(res.rows[index].username === this.loginForm.username){
-// getUser(res.rows[index].userId).then((response) => {
-//  this.role = response.roleId
-// })
-//     }
-//   }
-// })
-            this.$router.push({ path: "/map" }).catch(()=>{});
+             getUserByName(this.loginForm.username).then((res) => {
+                getAuthRole(res.rows[0].userId).then((response) => {
+            this.$router.push({ path: "/home" }).catch(()=>{});
+                })})
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {

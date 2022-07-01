@@ -15,7 +15,7 @@
 				<el-menu-item index="/map">疫情概况</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-    <el-submenu index="2">
+    <el-submenu index="2" v-if="role == 1||role == 3">
 			<template slot="title">
 				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
 				<span>  重点人员追踪</span>
@@ -27,16 +27,16 @@
 				<el-menu-item index="/ci">次密接人员列表</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="3">
+		<el-submenu index="3" v-if="role == 1||role == 3">
 			<template slot="title">
 				<i class="el-icon-star-off" style="font-size: 28px;"></i>
-				<span>  部门管理</span>
+				<span>  区级管理</span>
 			</template>
 			<el-menu-item-group>
 				<el-menu-item index="/dept">部门通讯录</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="4">
+		<el-submenu index="4" v-if="role == 1||role == 4">
 			<template slot="title">
 				<i class="el-icon-office-building" style="font-size: 28px;"></i>
 				<span>  社区管理</span>
@@ -50,10 +50,34 @@
 	</el-menu>
 </template>
 <script>
-	export default {
+
+  // 导出模块
+  export default {
     name:'LeftAside',
     props:['collapsed'],
-	}
+	created(){
+		this.getRole()
+	},
+    data:function(){
+      return {
+		  role:"",
+		  id:"",
+		  n:0,
+      }
+    },
+    methods:{
+		getRole(){
+			this.id=setInterval(()=>{
+				this.n=this.n+1
+				if(this.n == 50){
+					clearInterval(this.id)
+				}
+			console.log(this.$store.state)
+			this.role=(this.$store.state.user.roles)
+			},1000)
+		},
+    }
+  };
 </script>
 <style>
 	.el-menu-vertical-demo:not(.el-menu--collapse) {

@@ -16,7 +16,7 @@
     </el-button>
     </div>
     <el-submenu index="4" class="submenu">
-      <template slot="title">超级管理员</template>
+      <template slot="title"><span style="font-size:20px;">{{ username }}</span></template>
       <el-menu-item index="4-1">设置</el-menu-item>
       <el-menu-item index="4-2">个人中心</el-menu-item>
       <el-menu-item @click="exit()" index="/home1">退出</el-menu-item>
@@ -28,10 +28,15 @@
 import screenfull from "screenfull"
   export default {
     name: 'TopNav',
+    created(){
+		this.getName()
+	},
     data: function() {
       return {
-        collapsed:false,
-        activeIndex: '1',
+        peopleId:this.$store.state.user.name.split(',')[0],
+        username:this.$store.state.user.name.split(',')[1],
+          collapsed:false,
+          activeIndex: '1',
         activeIndex2: '1',
         titleList:[
           {name:'home1', navItem:'国内疫情'},
