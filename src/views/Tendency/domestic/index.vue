@@ -21,21 +21,76 @@
       </div>
     </el-card>
   </div>
-    <div class="box">
-      <el-card class="table_content">
-      <div class="title2">
-        <span>全国风险区播报</span>
+    <div class="center-content">
+    <el-col :span="12">
+      <el-card class="table_content table_content_all">
+        <div slot="header">
+          <span>疫情速报</span>
         </div>
-        <el-table :data="dangerArea" strpe style="width:100%" height="250">
-        <el-table-column prop="area" label="地区" align="center"></el-table-column>
-        <el-table-column prop="danger" label="风险" align="center"></el-table-column>
+        <el-table
+          v-loading="loading"
+          :data="quickInfo"
+          :cell-style="cellStyle"
+          highlight-current-row>
+          <el-table-column
+          align="center"
+            label="地区"
+            prop="area"
+            :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+          <el-table-column
+            align="center"
+            label="新增本土"
+            prop="ownAdd"
+            :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+          <el-table-column
+            align="center"
+            label="新增无症状"
+            prop="healthyAdd"
+            :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+            <el-table-column
+            align="center"
+            label="风险区域"
+            prop="dangerArea"
+            :show-overflow-tooltip="true"
+            >
+            </el-table-column>
         </el-table>
-        <el-pagination
-          background
-          layout="prev,pager,next"
-          :total="50">
-          </el-pagination>
       </el-card>
+      </el-col>
+      <el-col :span="12">
+      <el-card class="table_content table_content_all">
+        <div slot="header">
+          <span>风险地区</span>
+        </div>
+        <el-table
+          v-loading="loading"
+          :data="dangerData"
+          :cell-style="cellStyle"
+          highlight-current-row
+          >
+          <el-table-column
+            align="center"
+            label="风险等级"
+            prop="level"
+           :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+          <el-table-column
+            align="center"
+            label="地区"
+            prop="area"
+           :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+        </el-table>
+      </el-card>
+      </el-col>
     </div>
 </div>
 </template>
@@ -113,7 +168,34 @@ export default {
         {name:'浙江',value: 0},
         {name:'香港',value:0},
         {name:'澳门',value:0},
-      ]
+      ],
+      dangerData:[
+          {
+            level: '高风险',
+            area: '内蒙古锡林郭勒盟'
+          },{
+            level:'高风险',
+            area:'北京市昌平区'
+          },
+          {
+            level:'中风险',
+            area:'上海市闵行区'
+          }
+        ],
+        quickInfo:[
+          {
+            area: '北京市',
+            ownAdd: 2,
+            healthyAdd:7,
+            dangerArea:'经济开发区'
+          },
+          {
+            area:'上海市',
+            ownAdd: 0,
+            healthyAdd: 5,
+            dangerArea:'七宝镇航华四村'
+          }
+        ]
     }
   },
   component: {
@@ -177,6 +259,11 @@ export default {
                 },
             		layoutCenter: ['50%', '50%'],
             		itemStyle:{
+                  normal: {
+                    borderColor: '#1E1E1E',
+                    borderWidth: 0.5,
+                    shaddowColor: '#ECF0F1'
+                  },
             			emphasis:{label:{show:false}}
             		},
             		data: this.initialArray
@@ -296,7 +383,7 @@ export default {
   .center-content {
     margin-top: 20px;
     display: flex;
-    flex-direction: column;
+    background-color: transparent!important;
   }
   .table_content{
     display:flex;
@@ -348,5 +435,8 @@ export default {
 .box{
     display: flex;
     flex-direction:column;
+}
+::v-deep .el-pagination.is-background .el-pager li:not(.disabled).active {
+    background-color: #ff2832;
 }
 </style>
