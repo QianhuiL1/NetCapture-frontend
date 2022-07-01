@@ -1,19 +1,14 @@
 <template>
   <div class="home_container">
-  <div class="center-content">
-    <el-card class="table_content table_content_all">
-        <div class="theme">
-          <span>新型冠状病毒肺炎</span>
-          </div>
-        <div class="image" @click="getHelp">
-        </div>
-    </el-card>
-    </div>
     <div class="center-content">
     <el-card  class="table_content table_content_all">
       <div class="box">
+        <div class="theme">
       <div class="title">
         <span>国内疫情</span>
+        </div>
+        <div class="image" @click="getHelp">
+        </div>
         </div>
           <div class="content-top">
             <div class="event-content">
@@ -78,77 +73,6 @@
       </el-card>
      </el-col>
     </div>
-  <div class="center-content">
-    <el-col :span="12">
-      <el-card class="table_content table_content_all">
-        <div slot="header">
-          <span>疫情速报</span>
-        </div>
-        <el-table
-          v-loading="loading"
-          :data="quickInfo"
-          :cell-style="cellStyle"
-          highlight-current-row>
-          <el-table-column
-          align="center"
-            label="地区"
-            prop="area"
-            :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-          <el-table-column
-            align="center"
-            label="新增本土"
-            prop="ownAdd"
-            :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-          <el-table-column
-            align="center"
-            label="新增无症状"
-            prop="healthyAdd"
-            :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-            <el-table-column
-            align="center"
-            label="风险区域"
-            prop="dangerArea"
-            :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-        </el-table>
-      </el-card>
-      </el-col>
-      <el-col :span="12">
-      <el-card class="table_content table_content_all">
-        <div slot="header">
-          <span>风险地区</span>
-        </div>
-        <el-table
-          v-loading="loading"
-          :data="dangerData"
-          :cell-style="cellStyle"
-          highlight-current-row
-          >
-          <el-table-column
-            align="center"
-            label="风险等级"
-            prop="level"
-           :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-          <el-table-column
-            align="center"
-            label="地区"
-            prop="area"
-           :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-        </el-table>
-      </el-card>
-      </el-col>
-    </div>
     <el-dialog title="疫情数据说明"  :visible.sync="dialogVisible" width="45%" :model="helpItems">
       <div
         v-for="(item,index) in helpItems"
@@ -170,7 +94,6 @@
 
 <script>
 import echarts from 'echarts'
-
 
 export default {
   data() {
@@ -216,6 +139,7 @@ export default {
         otherAddOption:{},
         ownAddChart: '',
         otherAddChart: '',
+<<<<<<< HEAD
         dangerData:[
           {
             level: '高风险',
@@ -244,6 +168,8 @@ export default {
           }
         ],
         // NativeEpidemicData: require()
+=======
+>>>>>>> 229517f0f24a7062eb849069050a362e3912d12c
 
     }
   },
@@ -254,6 +180,9 @@ export default {
   },
   created() {
     // this.handleInit()
+    // getFromNet('2022053016').then(res=>{
+    //   console.log(res)
+    // })
   },
   methods: {
     getHelp(){
@@ -263,7 +192,10 @@ export default {
       this.initCharts()
     },
     initCharts(){
+<<<<<<< HEAD
       //初始化新增本土趋势折线图
+=======
+>>>>>>> 229517f0f24a7062eb849069050a362e3912d12c
       this.ownAddChart= echarts.init(document.getElementById('ownAddChart'))
       this.ownAddOption = {
         xAxis: {
@@ -405,11 +337,12 @@ export default {
   }
 }
 .title{
-  color:#C8102E;
-  font-size: 20px;
+  // color:#C8102E;
+  // font-size: 20px;
+  // padding:3px;
+  // font-weight: 550;
   padding:3px;
-  font-weight: 550;
-  border-bottom: 1px solid #CCCCCC
+  // border-bottom: 1px solid #CCCCCC;
 }
 .title span{
   float:left;
@@ -437,11 +370,14 @@ export default {
     font-weight: 550;
     padding:3px;
     float:left;
+    display:flex;
+    flex-direction: row;
   }
     .image {
     width: 20px;
     height: 20px;
-    margin-left: 180px;
+    margin-left: 5px;
+    margin-top: 2px;
     background-image:url(../../../assets/help.png);
     background-size:100% 100%;
     cursor: pointer;
@@ -492,4 +428,5 @@ export default {
 .rChart{
   margin: auto;
 }
+
 </style>

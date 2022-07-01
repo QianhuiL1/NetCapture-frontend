@@ -4,7 +4,7 @@
       <!-- // 头部 -->
       <header class="header">
         <h1 style="font-size: 2em">
-          <span>传染病流调信息化平台</span>
+          <span></span>
         </h1>
       </header>
       <ul class="menu">
@@ -31,9 +31,22 @@
           重点轨迹
           <!-- loadMaterialMarker() -->
         </li>
+        <li
+          class="menu-item"
+          :class="[menuIndex == 'dataPanel' ? 'active' : '']"
+          @click="
+          menuIndex = 'dataPanel';
+            clearRegion();
+            setLine();
+          "
+        >
+          数据面板
+          <!-- loadMaterialMarker() -->
+        </li>
       </ul>
     </div>
     <div id="map"></div>
+    
   </div>
 </template>
 <script>
@@ -111,7 +124,7 @@ travelList().then((response) => {
       this.map = new AMap.Map("map", {
         resizeEnable: true,
         zoom: 10,
-        mapStyle: "amap://styles/blue",
+        mapStyle: "amap://styles/white",
         center: [114.306434, 30.5988],
       });
       this.map.plugin(["AMap.DistrictSearch"], () => {});
@@ -141,7 +154,7 @@ travelList().then((response) => {
               this_.districtOption.search(
                 result.geocodes[0].adcode,
                 (status, result) => {
-                  this_.showRegion(result, "#ffdd00", "#ffa600");
+                  this_.showRegion(result, "#ffa31a", "#ffa31a");
                 }
               );
             }
@@ -166,7 +179,6 @@ travelList().then((response) => {
     showRegion(result, color, stroke) {
       const this_ = this;
       var city = "";
-
       let bounds = result.districtList[0].boundaries;
       if (bounds) {
         for (let i = 0, l = bounds.length; i < l; i++) {
@@ -175,7 +187,7 @@ travelList().then((response) => {
             map: this.map, // 指定地图对象
             strokeWeight: 1, // 轮廓线宽度
             path: bounds[i], //轮廓线的节点坐标数组
-            fillOpacity: 0.8, //透明度
+            fillOpacity: 0.4, //透明度
             fillColor: color, //填充颜色
             strokeColor: stroke, //线条颜色
           });
@@ -432,6 +444,7 @@ div {
       margin: 0;
       position: relative;
       z-index: 2000;
+      height:150px;
       background: url("~@/assets/topbg.png");
       background-repeat: no-repeat;
       background-size: 100%;
@@ -439,7 +452,7 @@ div {
       text-align: center;
       & > span {
         display: inline-block;
-        background: linear-gradient(180deg, #fff, #b6f0ed, #0ff);
+        background: linear-gradient(180deg, #fff, #d66565, rgb(252, 80, 80));
         background-clip: text-box;
         color: transparent;
         -webkit-background-clip: text;
@@ -460,16 +473,16 @@ div {
       line-height: 45px;
       padding: 0 20px;
       cursor: pointer;
-      color: #4b92e4;
+      color: #e44b4b;
       border-radius: 6px;
-      border: 1px solid #4b92e4;
-      background-color: rgba(26, 72, 125, 0.2);
+      border: 1px solid #e44b4b;
+      background-color: rgba(125, 26, 26, 0.2);
       font-size: 18px;
       &:hover,
       &.active{
-        color: #4bffff !important;
-        border: 1px solid #4bffff;
-        background-color: rgba(75, 255, 255, 0.2);
+        color: #ff4b4b !important;
+        border: 1px solid #ff4b4b;
+        background-color: rgba(255, 75, 75, 0.432);
         border-radius: 6px;
       }
     }
@@ -697,9 +710,6 @@ div {
       .el-table__expanded-cell,
       .el-form {
         background-color: rgba(0, 0, 0, 0);
-        .el-form-item {
-          // margin-bottom: 0!important;
-        }
         .el-form-item__content {
           background-color: rgba(10, 88, 154, 0.6);
           color: #fff;

@@ -40,6 +40,16 @@
             @keyup.enter.native="getList1"
           />
         </el-form-item>
+         <el-form-item label="地区：" prop="city">
+                  <el-cascader
+                    v-model="selectedOptions"
+                    :options="options"
+                    filterable
+                    clearable
+                    style="width: 250px"
+                    @change="handleQuery"
+                  />
+                </el-form-item>
         <el-form-item style="float: right">
           <el-button
             type="primary"
@@ -162,6 +172,7 @@ import { connectCreate } from '../../api/People/connect/base';
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 import Pagination from '../../components/Pagination'
+import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
 const ids = new Set()
 export default {
   name: "connectList",
@@ -174,6 +185,10 @@ export default {
   },
   data() {
     return {
+            // 将省市区数据赋给级联选择器
+      options: regionData,
+      // 存放用户选择后省市区的信息
+      selectedOptions: [],
       ids:ids,
         centerDialogAdd: false,      
 centerDialogEdit: false,      
@@ -215,6 +230,14 @@ rules: {
   methods: {
       change (e) {
     this.$forceUpdate()
+},
+handleQuery(){
+for (let i = 0; i < this.selectedOptions.length; i++) {
+        if (i === 0) { this.queryParams.province = CodeToText[this.selectedOptions[i]] }
+        if (i === 1) { this.queryParams.city = CodeToText[this.selectedOptions[i]] }
+        if (i === 2) { this.queryParams.country = CodeToText[this.selectedOptions[i]] }
+      }
+      this.getList1();
 },
 handleEdit (row) {   
     this.centerDialogEdit = true   

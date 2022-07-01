@@ -247,3 +247,9 @@ aside {
 .popper {
     padding: 0px !important;
 }
+
+.el-button.el-button--primary {
+    background-color: red !important;
+    border-color: red !important;
+    color: white
+}

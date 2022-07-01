@@ -113,7 +113,7 @@
             min-width="20%"
           />
           <el-table-column label="居住地址" prop="address" min-width="30%" />
-          <el-table-column label="状态更新时间" prop="address" min-width="20%"/>
+          <el-table-column label="状态更新时间" prop="infectTime" min-width="20%"/>
         </el-table>
         <pagination
         v-show="total > 0"
@@ -213,7 +213,7 @@ export default {
     }
   },
   created() {
-    this.getInfectList();
+     this.getInfectList();
   },
   methods: {
     getInfectList() {
@@ -222,6 +222,8 @@ export default {
       searchByArea(this.param.ancestors).then((res) => {
         res.rows.forEach((item) => {
           if (item.status != "0") {
+            item.infectTime=this.formatDate(item.positiveTime)
+            console.log(item.infectTime)
             temp.push(item);
           }
         });
@@ -287,7 +289,11 @@ export default {
       this.loading = false;
     },
     resetQuery() {
-      this.queryParams = {};
+      this.queryParams = {
+        name:'',
+        peopleId: '',
+        type: ''
+      }
     },
     handleAdd(){
       this.formData.name=''
@@ -336,6 +342,17 @@ export default {
       }
       return wbout;
     },
+    formatDate(value) {
+			// 计算日期相关值
+			let time =new Date(value);
+			let Y = time.getFullYear();
+			let M = time.getMonth() + 1;
+			let D = time.getDate();
+			let h = time.getHours();
+			let m = time.getMinutes();
+			let s = time.getSeconds();
+			return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+		}
   },
 };
 </script>

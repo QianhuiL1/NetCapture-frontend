@@ -81,7 +81,7 @@
               type="text"
               @click="handleClick(scope.row)"
             >
-              <i class="el-icon-edit" style="color: #3388ff" />
+              <i class="el-icon-edit" />
               <span style="color: #223355"> 修改信息</span>
             </el-button>
         </template>
@@ -144,8 +144,6 @@
 <script>
 import Pagination from "@/components/Pagination";
 import { searchByArea,updatePersonInfo,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
-import FileSaver from 'file-saver'
-import XLSX from 'xlsx'
 
 
 export default{
@@ -230,24 +228,6 @@ export default{
     resetQuery(){ 
       this.queryParams={}
     },
-    // handleExport(){
-    //   let xlsxParam = { raw: true }
-    //   var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'),xlsxParam)
-    //   var wbout = XLSX.write(wb, {
-    //     bookType: 'xlsx',
-    //     bookSST: true,
-    //     type: 'array'
-    //   })
-    //   try {
-    //     FileSaver.saveAs(
-    //       new Blob([wbout], { type: 'application/octet-stream' }),
-    //       "社区居民信息表" + '.xlsx'
-    //     )
-    //   } catch (e) {
-    //     // if (typeof console !== 'undefined') console.log(e, wbout)
-    //   }
-    //   return wbout
-    // }
     handleExport(){
       this.residentTable.forEach(item=>{
         if(item.sex=='0'){
@@ -297,7 +277,9 @@ export default{
 .table_content{
   padding: 10px 5px 0px 0px;
 }
-
+.el-icon-edit{
+  color: red;
+}
 
 
 </style>

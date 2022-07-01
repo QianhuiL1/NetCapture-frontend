@@ -93,6 +93,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
+import {getUser,listUser} from '../../api/system/user'
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
@@ -145,6 +146,7 @@ export default {
       redirect: undefined,
       otherQuery: {},
       imageData: '',
+      role:0,
       scale: 1,
       // 验证码开关
       captchaOnOff: true,
@@ -238,6 +240,15 @@ export default {
             Cookies.remove('rememberMe');
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
+// listUser(this.loginForm).then((res) => {
+//   for(var index in res.rows){
+//     if(res.rows[index].username === this.loginForm.username){
+// getUser(res.rows[index].userId).then((response) => {
+//  this.role = response.roleId
+// })
+//     }
+//   }
+// })
             this.$router.push({ path: "/home" }).catch(()=>{});
           }).catch(() => {
             this.loading = false;
