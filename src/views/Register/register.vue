@@ -18,14 +18,14 @@
         <el-form-item prop="nickname">
           <el-input
             v-model="registerForm.nickname"
-            placeholder="用户名"
+            placeholder="姓名"
             type="text"
             auto-complete="off"
           >
             <template slot="prepend"><svg-icon icon-class="user"/></template>
           </el-input>
         </el-form-item>
-        <el-form-item prop="password" style="margin-top: 40px">
+        <el-form-item prop="password">
             <el-input
               v-model="registerForm.password"
               auto-complete="off"
@@ -38,7 +38,7 @@
               /></template>
             </el-input>
             </el-form-item>
-            <el-form-item prop="confirmPassword" style="margin-top: 40px">
+            <el-form-item prop="confirmPassword">
             <el-input
               v-model="registerForm.confirmPassword"
               type="password"
@@ -96,7 +96,16 @@
             auto-complete="off"
           ><template slot="prepend"><svg-icon icon-class="switch"/></template>
           </el-input></el-form-item>
-          <el-form-item prop="role">
+          <!-- <el-form-item prop="deptId">
+                  <el-cascader
+                    v-model="selectedOptions"
+                    :options="options"
+                    filterable
+                    clearable
+                    style="width: 250px"
+                  ><template slot="prepend"><svg-icon icon-class="switch"/></template></el-cascader>
+                </el-form-item>-->
+          <el-form-item prop="roleId"> 
     <template > <svg-icon icon-class="rate" style="width:2em; height:2em; float:left; margin-left:20px;"/></template>
         <el-radio-group v-model="registerForm.roleId" size="medium" class="radio">
           <el-radio v-for="(item, index) in roleOption" :key="index" :label="item.value"
@@ -138,14 +147,43 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-import { mapGetters } from 'vuex'
+import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
 import { getCodeImg,register } from '../../api/login'
 
 export default {
   name: 'Register',
   // components: { SocialSign },
   data() {
+    const validateId = (rule, value, callback) => {
+      var verify =/(^\d{15}$)|(^\d{17}(\d|X|x)$)/;
+      if(value==''){
+        callback(new Error('请输入身份证号'))
+      }else if(!verify.test(this.registerForm.username)){
+callback(new Error('身份证号格式不正确'))
+      }else{
+        callback()
+      }
+    }
+    const validateMail = (rule, value, callback) => {
+      var verify =/^\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/;
+      if(value==''){
+        callback(new Error('请输入邮箱'))
+      }else if(!verify.test(this.registerForm.email)){
+callback(new Error('邮箱号格式不正确'))
+      }else{
+        callback()
+      }
+    }
+    const validatePhone = (rule, value, callback) => {
+      var verify =/^1[3456789]\d{9}$/;
+      if(value==''){
+        callback(new Error('请输入手机号码'))
+      }else if(!verify.test(this.registerForm.phonenumber)){
+callback(new Error('手机号码格式不正确'))
+      }else{
+        callback()
+      }
+    }
      const equalToPassword = (rule, value, callback) => {
       if (this.registerForm.password !== value) {
         callback(new Error("两次输入的密码不一致"));
@@ -154,6 +192,10 @@ export default {
       }
     };
     return {
+            // 将省市区数据赋给级联选择器
+      options: regionData,
+      // 存放用户选择后省市区的信息
+      selectedOptions: [],
       logo: require('../../../public/logo.png'),
       codeUrl: "",
       registerForm: {
@@ -178,9 +220,21 @@ export default {
         "value": 3
       }],
       registerRules: {
-        username: [
+        phonenumber:[
+          { required: true, trigger: "blur", message: "请输入您的手机号" },
+          { required: true, validator: validatePhone, trigger: "blur" }
+        ],
+        // email: [
+        //   { required: true, trigger: "blur", message: "请输入您的邮箱" },
+        //   { required: true, validator: validateMail, trigger: "blur" }
+        // ],
+        nickname: [
           { required: true, trigger: "blur", message: "请输入您的账号" },
-          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
+          { min: 2, max: 20, message: '用户姓名长度必须介于 2 和 20 之间', trigger: 'blur' }
+        ],
+        username: [
+          { required: true, trigger: "blur", message: "请输入您的身份证号" },
+          { required: true, validator: validateId, trigger: "blur"}
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" },
@@ -200,11 +254,11 @@ export default {
     this.getCode();
   },
   mounted() {
-        if (this.loginForm.username === '') {
-      this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
-    }
+    //     if (this.loginForm.username === '') {
+    //   this.$refs.username.focus()
+    // } else if (this.loginForm.password === '') {
+    //   this.$refs.password.focus()
+    // }
     window.onresize = () => {
       this.getScale()
     }
@@ -257,7 +311,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 
 $bg: #e5e5e5;
 $light_gray: #fff;
@@ -299,7 +353,7 @@ $cursor: #e5e5e5;
     border: none;
     background-color: rgba(0, 0, 0, 0);
     font-size: 24px;
-    line-height: 50px;
+    line-height: 30px;
     color: #666666;
   }
   .el-form-item__error {
@@ -316,7 +370,7 @@ $cursor: #e5e5e5;
   position: relative;
   .box-card {
     // background-color: rgba(126, 144, 166);
-    width: 500px;
+    width: 800px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -338,6 +392,9 @@ $cursor: #e5e5e5;
       margin-top: 24px;
     }
   }
+::v-deep .el-radio__label{
+font-size:20px !important;
+}
 .tip{
   margin-top: 24px;
   border-bottom: 1px solid #0F111A;
@@ -432,3 +489,15 @@ $cursor: #e5e5e5;
   }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+

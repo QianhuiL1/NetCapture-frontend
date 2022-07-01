@@ -129,7 +129,6 @@ export default {
         rememberMe: false,
         code: "",
         uuid: "",
-        roleId:""
       },
       loginRules: {
         username: [
@@ -246,7 +245,7 @@ export default {
           this.$store.dispatch("Login", this.loginForm).then(() => {
              getUserByName(this.loginForm.username).then((res) => {
                 getAuthRole(res.rows[0].userId).then((response) => {
-            this.$router.push({ path: "/home" }).catch(()=>{});
+            this.$router.push({ path: "/map" }).catch(()=>{});
                 })})
           }).catch(() => {
             this.loading = false;

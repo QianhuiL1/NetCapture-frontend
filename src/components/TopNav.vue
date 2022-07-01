@@ -152,12 +152,12 @@ import screenfull from "screenfull"
 	},
     data: function() {
       return {
-        peopleId:this.$store.state.user.name.split(',')[0],
+        id:"",
+        n:0,
+        //peopleId:this.$store.state.user.name.split(',')[0],
         username:this.$store.state.user.name.split(',')[1],
-        collapsed:false,
-        activeIndex: '1',
-        activeName: 'userInfo',
-        rootDeptName:'',
+          collapsed:false,
+          activeIndex: '1',
         activeIndex2: '1',
         titleList:[
           {name:'home1', navItem:'国内疫情'},
@@ -215,6 +215,15 @@ import screenfull from "screenfull"
       }
     },
     methods: {
+      getName(){
+			this.id=setInterval(()=>{
+				this.n=this.n+1
+				if(this.n == 50){
+					clearInterval(this.id)
+				}
+			this.username=this.$store.state.user.name.split(',')[1]
+			},1000)
+		},
       exit: function() {
         this.$confirm('确定要退出吗?', '提示', {
           confirmButtonText: '确定',
