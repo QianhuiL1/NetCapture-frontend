@@ -1,6 +1,6 @@
 <template>
   <div
-    class="login-container"
+    class="login-container" :style="backgorund"
   >
     <el-card class="box-card">
       <el-form
@@ -13,8 +13,7 @@
       >
         <div class="title-container">
           <div class="title">
-            <img :src="logo" alt="" />
-            疫情流调系统
+            <img :src="logo"/>
           </div>
         </div>
         <el-form-item prop="username">
@@ -71,8 +70,6 @@
         <template slot="prepend">
           <svg-icon icon-class="validCode"/>
         </template>
-          <!-- <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon
-          input-icon" /> -->
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
@@ -96,6 +93,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
+import {getUser,listUser} from '../../api/system/user'
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
@@ -148,6 +146,7 @@ export default {
       redirect: undefined,
       otherQuery: {},
       imageData: '',
+      role:0,
       scale: 1,
       // 验证码开关
       captchaOnOff: true,
@@ -241,6 +240,15 @@ export default {
             Cookies.remove('rememberMe');
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
+// listUser(this.loginForm).then((res) => {
+//   for(var index in res.rows){
+//     if(res.rows[index].username === this.loginForm.username){
+// getUser(res.rows[index].userId).then((response) => {
+//  this.role = response.roleId
+// })
+//     }
+//   }
+// })
             this.$router.push({ path: "/home" }).catch(()=>{});
           }).catch(() => {
             this.loading = false;
@@ -327,7 +335,8 @@ $cursor: #e5e5e5;
   }
 }
 .login-container {
-  background: url(../../assets/loginback.jpg);
+  background: url(../../assets/loginbg1.png);
+  background: url(../../assets/loginbg2.png);
   background-size: 100% 100%;
 
   .el-form-item {
@@ -367,6 +376,7 @@ $light_gray: #eee;
 .login-container {
   min-height: 100%;
   width: 100%;
+  background-repeat: no-repeat;
   // background-color: $bg;
   overflow: hidden;
   position: relative;
@@ -397,19 +407,20 @@ $light_gray: #eee;
     }
     ::v-deep .submit-button {
       width: 100%;
-      height: 77px;
-      background-color: #3a6ffe;
-      border-radius: 2px;
+      height: 40px;
+      background-color: #cb1727;
+      border-radius: 0px;
       overflow: hidden;
-      font-size: 30px;
+      font-size: 22px;
       color: #ffffff;
-      margin-top: 20px;
+      margin-top: 24px;
     }
   }
 .tip{
+  margin-top: 24px;
   border-bottom: 1px solid #0F111A;
   width: 200px;
-  margin: 0 auto;
+  margin: 24px auto;
 }
 .tip:hover{
   color: #858585;

@@ -14,6 +14,19 @@ export default {
             path: '/',
             component: () =>
                 import ("@/views/Login/login.vue")
+        }, {
+            path: '/community',
+            component: () =>
+                import ("@/views/Community/community.vue")
+        }, {
+            path: '/communityInfect',
+            component: () =>
+                import ("@/views/Community/infect.vue")
+        },
+        {
+            path: '/communityImport',
+            component: () =>
+                import ("@/views/Community/import.vue")
         },
         {
             name: "register",
@@ -66,6 +79,11 @@ export default {
             path: "/ci",
             component: () =>
                 import ("@/views/People/connect_ci.vue")
+        },
+        {
+            path: "/dept",
+            component: () =>
+                import ("@/views/system/dept")
         }
     ],
     // 去掉Vue地址的#

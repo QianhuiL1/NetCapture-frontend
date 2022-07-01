@@ -12,17 +12,12 @@
       >
         <div class="title-container">
           <div class="title">
-            <div class="titleImg">
-            <img :src="logo" alt="" style="width:60px "/>
-            </div>
-            <div class="titleText">
-              <span> 疫情流调系统</span>
-            </div>
+            <img :src="logo" style="width:230px;height:110px;"/>
           </div>
         </div>
-        <el-form-item prop="username">
+        <el-form-item prop="nickname">
           <el-input
-            v-model="registerForm.username"
+            v-model="registerForm.nickname"
             placeholder="用户名"
             type="text"
             auto-complete="off"
@@ -30,7 +25,7 @@
             <template slot="prepend"><svg-icon icon-class="user"/></template>
           </el-input>
         </el-form-item>
-          <el-form-item prop="password" style="margin-top: 40px">
+        <el-form-item prop="password" style="margin-top: 40px">
             <el-input
               v-model="registerForm.password"
               auto-complete="off"
@@ -39,7 +34,7 @@
               @keyup.enter.native="handleRegister"
             >
               <template slot="prepend"
-                ><svg-icon icon-class="password"
+                ><svg-icon icon-class="eye"
               /></template>
             </el-input>
             </el-form-item>
@@ -52,10 +47,62 @@
               @keyup.enter.native="handleRegister"
             >
               <template slot="prepend"
-                ><svg-icon icon-class="password"
+                ><svg-icon icon-class="eye-open"
               /></template>
             </el-input>
           </el-form-item>
+        <el-form-item prop="username">
+          <el-input
+            v-model="registerForm.username"
+            placeholder="身份证号"
+            type="text"
+            auto-complete="off"
+          >
+            <template slot="prepend"><svg-icon icon-class="dict"/></template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="phonenumber">
+          <el-input
+            v-model="registerForm.phonenumber"
+            placeholder="电话号码"
+            type="text"
+            auto-complete="off"
+          >
+            <template slot="prepend"><svg-icon icon-class="build"/></template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="email">
+          <el-input
+            v-model="registerForm.email"
+            placeholder="邮箱"
+            type="text"
+            auto-complete="off"
+          >
+            <template slot="prepend"><svg-icon icon-class="mail"/></template>
+          </el-input>
+        </el-form-item>
+  <el-form-item prop="sex">
+    <template > <svg-icon icon-class="sex" style="width:2em; height:2em; float:left; margin-left:20px;"/></template>
+        <el-radio-group v-model="registerForm.sex" size="medium" class="radio">
+          <el-radio v-for="(item, index) in sexOption" :key="index" :label="item.value"
+            >{{item.label}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item prop="deptId">
+          <el-input
+            v-model="registerForm.deptId"
+            placeholder="部门号"
+            type="text"
+            auto-complete="off"
+          ><template slot="prepend"><svg-icon icon-class="switch"/></template>
+          </el-input></el-form-item>
+          <el-form-item prop="role">
+    <template > <svg-icon icon-class="rate" style="width:2em; height:2em; float:left; margin-left:20px;"/></template>
+        <el-radio-group v-model="registerForm.roleId" size="medium" class="radio">
+          <el-radio v-for="(item, index) in roleOption" :key="index" :label="item.value"
+            >{{item.label}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
           <el-form-item prop="code" v-if="captchaOnOff">
         <el-input
           v-model="registerForm.code"
@@ -93,7 +140,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { mapGetters } from 'vuex'
-import { getCodeImg,register } from '@/api/login'
+import { getCodeImg,register } from '../../api/login'
 
 export default {
   name: 'Register',
@@ -116,6 +163,20 @@ export default {
         code: "",
         uuid: ""
       },
+       sexOption: [{
+        "label": "男",
+        "value": 1
+      }, {
+        "label": "女",
+        "value": 0
+      }],
+      roleOption: [{
+        "label": "社区工作人员",
+        "value": 4
+      }, {
+        "label": "疾控工作人员",
+        "value": 3
+      }],
       registerRules: {
         username: [
           { required: true, trigger: "blur", message: "请输入您的账号" },
@@ -153,7 +214,6 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
-   
     getCode() {
       getCodeImg().then(res => {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
@@ -169,7 +229,7 @@ export default {
           this.loading = true;
           register(this.registerForm).then(res => {
             const username = this.registerForm.username;
-            this.$alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
+            this.$alert("<font color='black'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
               dangerouslyUseHTMLString: true,
               type: 'success'
             }).then(() => {
@@ -182,7 +242,7 @@ export default {
             }
           })
         }
-      }); 
+      });
     },
     toLogin(){
       this.$router.push({path:'/'})
@@ -216,7 +276,7 @@ $cursor: #e5e5e5;
   }
 }
 .login-container {
-  background: url(../../assets/loginback.jpg);
+  background: url(../../assets/loginbg2.png);
   background-size: 100% 100%;
 
   .el-form-item {
@@ -246,16 +306,11 @@ $cursor: #e5e5e5;
     line-height: 35px;
   }
 }
-</style>
-
-<style lang="scss" scoped>
-$bg: #e5e5e5;
-$dark_gray: #889aa4;
-$light_gray: #eee;
 
 .login-container {
   min-height: 100%;
   width: 100%;
+    // background-repeat: no-repeat;
   // background-color: $bg;
   overflow: hidden;
   position: relative;
@@ -271,34 +326,23 @@ $light_gray: #eee;
     padding: 16px 16px 50px;
     margin: 0 auto;
     overflow: hidden;
-    .title {
-      height: 90px;
-      line-height: 90px;
-      display: flex;
-      font-size: 40px;
-      font-weight: bold;
-      color: #454545;
-      justify-content: center;
-      margin: 0 0 50px;
-    }
-    img {
-      margin-right: 12px;
-    }
+
     ::v-deep .submit-button {
       width: 100%;
-      height: 77px;
-      background-color: #3a6ffe;
-      border-radius: 2px;
+      height: 40px;
+      background-color: #cb1727;
+      border-radius: 0px;
       overflow: hidden;
-      font-size: 30px;
+      font-size: 22px;
       color: #ffffff;
-      margin-top: 20px;
+      margin-top: 24px;
     }
   }
 .tip{
+  margin-top: 24px;
   border-bottom: 1px solid #0F111A;
   width: 200px;
-  margin: 0 auto;
+  margin: 24px auto;
 }
 .tip:hover{
   color: #858585;
@@ -318,7 +362,11 @@ $light_gray: #eee;
       }
     }
   }
-
+.radio{
+  float:left;
+  margin-bottom: 15px;
+  margin-left:20px;
+}
   .svg-container {
     padding: 6px 5px 6px 15px;
     // color: $dark_gray;
@@ -329,21 +377,19 @@ $light_gray: #eee;
 
   .title-container {
     position: relative;
+    margin: 0 auto;
     .title {
-      font-size: 26px;
+      font-size: 20px;
       // color: $light_gray;
       color: #666666;
-      height: 20px;
-      margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
-      margin-bottom: 80px;
-      display:flex;
-      flex-direction: row;
-      justify-content: center;
-    }
-    .titleText{
-      margin-top: 10px;
+      // display:flex;
+      margin: 0 auto;
+      // margin-bottom: 10px;
+      // width: 20px;
+      // height: 20px;
+      
     }
   }
 
@@ -357,11 +403,10 @@ $light_gray: #eee;
     user-select: none;
   }
 .submit-button{
-  font-size: 20px;
+  font-size: 23px;
   padding: 10px;
   margin-top: 10px;
-  width: 400px;
-  height: 50px
+  width: 300px;
 }
   .thirdparty-button {
     position: absolute;

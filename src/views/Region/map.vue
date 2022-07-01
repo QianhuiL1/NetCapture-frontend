@@ -2,769 +2,368 @@
   <div class="home">
     <div>
       <!-- // 头部 -->
-      <header class="header" style="z-index: 2000l;">
-        <h1 style="font-size: 2em;" @click="goHome">
-          <span>传染病流调信息化平台</span>
+      <header class="header">
+        <h1 style="font-size: 2em">
+          <span></span>
         </h1>
       </header>
-      <!-- 地图切换 -->
       <ul class="menu">
         <li
           class="menu-item"
-          :class="[menuIndex == 'event' ? 'active' : '']"
+          :class="[menuIndex == 'region' ? 'active' : '']"
           @click="
-            menuIndex = 'event';
-            asideLeftSwitch = false;
-            asideRightSwitch = true;
-            clearAllMarker();
-            setEventMarker();
+          menuIndex = 'region';
+            setRegion();
+            clearLine();
           "
         >
           重点地区
         </li>
         <li
           class="menu-item"
-          :class="[menuIndex == 'monitor' ? 'active' : '']"
+          :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
-            menuIndex = 'monitor';
-            asideLeftSwitch = true;
-            asideRightSwitch = true;
-            clearAllMarker();
-            setBuildingMarker();
+          menuIndex = 'track';
+            clearRegion();
+            setLine();
           "
         >
-          人员轨迹
+          重点轨迹
           <!-- loadMaterialMarker() -->
         </li>
         <li
           class="menu-item"
           :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
-            menuIndex = 'dataPanel';
-            asideRightSwitch = false;
-            asideLeftSwitch = false;
-            clearAllMarker();
+          menuIndex = 'dataPanel';
+            clearRegion();
+            setLine();
           "
         >
-          疫情预测
+          数据面板
+          <!-- loadMaterialMarker() -->
         </li>
       </ul>
     </div>
-    <!-- 左侧框 -->
-    <aside v-show="asideLeftSwitch" class="aside">
-      <div v-if="menuIndex == 'event'" class="yingji_content">
-        <el-scrollbar>
-          <el-timeline>
-            <el-timeline-item
-              v-for="(log, index) in logList"
-              :key="index"
-              :timestamp="log.createTime"
-              placement="top"
-            >
-              <span v-if="log.type === 11"
-                ><el-link :href="log.message" target="_blank"
-                  >指挥中心：图片链接</el-link
-                ></span
-              >
-              <span v-else>
-                {{
-                  log.type === 5
-                    ? "指挥中心：" + log.message
-                    : log.type == 6
-                    ? "执行者：" + log.message
-                    : log.typeName
-                }}
-              </span>
-            </el-timeline-item>
-          </el-timeline>
-        </el-scrollbar>
-      </div>
-      <div v-else-if="menuIndex != 'meteorological'" class="jianzhu_content">
-        <div @click="toLeft">
-          <svg
-            class="left"
-            :class="{ 'is-active': isActive }"
-            t="1636629893737"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2549"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M272.9 512l265.4-339.1c4.1-5.2 0.4-12.9-6.3-12.9h-77.3c-4.9 0-9.6 2.3-12.6 6.1L186.8 492.3c-9.1 11.6-9.1 27.9 0 39.5l255.3 326.1c3 3.9 7.7 6.1 12.6 6.1H532c6.7 0 10.4-7.7 6.3-12.9L272.9 512z"
-              p-id="2550"
-              fill="#13227a"
-            />
-            <path
-              d="M576.9 512l265.4-339.1c4.1-5.2 0.4-12.9-6.3-12.9h-77.3c-4.9 0-9.6 2.3-12.6 6.1L490.8 492.3c-9.1 11.6-9.1 27.9 0 39.5l255.3 326.1c3 3.9 7.7 6.1 12.6 6.1H836c6.7 0 10.4-7.7 6.3-12.9L576.9 512z"
-              p-id="2551"
-              fill="#13227a"
-            />
-          </svg>
-        </div>
-        <el-tabs v-model="activeName" stretch @tab-click="handleTabClick">
-          <el-tab-pane label="点位列表" name="list">
-            <!-- 搜索框 -->
-            <el-input
-              v-model="buildingName"
-              placeholder="建筑查询"
-              class="input-with-select"
-            >
-              <el-button slot="append" icon="el-icon-search" />
-            </el-input>
-            <!-- 树 -->
-            <el-scrollbar style="height:calc( 100vh - 320px)">
-              <el-tree
-                :data="data"
-                :props="defaultProps"
-                @node-click="handleNodeClick"
-              />
-            </el-scrollbar>
-          </el-tab-pane>
-          <el-tab-pane label="视频直播" name="live">
-            <!-- 搜索框 -->
-            <el-input
-              v-model="buildingName"
-              placeholder="建筑查询"
-              class="input-with-select"
-            >
-              <el-button slot="append" icon="el-icon-search" />
-            </el-input>
-            <!-- 树 -->
-            <el-scrollbar style="height:calc( 100vh - 320px)">
-              <el-tree
-                :data="data"
-                :props="defaultProps"
-                @node-click="handleNodeClick"
-              />
-            </el-scrollbar>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-      <div v-else class="weather_content">
-        <el-tabs
-          v-model="weather"
-          type="card"
-          closable
-          @tab-remove="
-            asideLeftSwitch = false;
-            map.setZoom(12);
-          "
-        >
-          <el-tab-pane
-            :label="stationAddress"
-            name="weather"
-            style="height:70vh"
-          >
-            <!-- <el-scrollbar style="height:100%"> -->
-            <el-descriptions class="margin-top" :column="2" border>
-              <el-descriptions-item>
-                <template slot="label">
-                  路面温度
-                </template>
-                {{
-                  weatherCurrentData.SURTEMP_CURRENT_VALUE
-                    ? weatherCurrentData.SURTEMP_CURRENT_VALUE + "℃"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  天气气温
-                </template>
-                {{
-                  weatherCurrentData.AIRTEMP_CURRENT_VALUE
-                    ? weatherCurrentData.AIRTEMP_CURRENT_VALUE + "℃"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  累计降雨
-                </template>
-                {{
-                  weatherCurrentData.RAIN_CURRENT_VALUE
-                    ? weatherCurrentData.RAIN_CURRENT_VALUE + "mm"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  积水量
-                </template>
-                {{
-                  weatherCurrentData.WATERACCUMULATE_VALUE
-                    ? weatherCurrentData.WATERACCUMULATE_VALUE + "mm"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  能见度
-                </template>
-                {{
-                  weatherCurrentData.VISIBILITY_ONEMINUTE_VALUE
-                    ? weatherCurrentData.VISIBILITY_ONEMINUTE_VALUE / 1000 +
-                      "km"
-                    : "-"
-                }}
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <template slot="label">
-                  实时风速
-                </template>
-                {{
-                  weatherCurrentData.WIND_CURRENT_SPEEDVALUE
-                    ? weatherCurrentData.WIND_CURRENT_DIRVALUE +
-                      " " +
-                      weatherCurrentData.WIND_CURRENT_POWERVALUE +
-                      "级" +
-                      weatherCurrentData.WIND_CURRENT_SPEEDVALUE +
-                      "m/s"
-                    : "-"
-                }}
-              </el-descriptions-item>
-            </el-descriptions>
-            <div id="chart" style="width:37vw;height:50vh;" />
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-    </aside>
-    <!-- 右侧框 -->
-    <aside v-show="asideRightSwitch" class="asideRight weather">
-      <div v-if="menuIndex != 'meteorological'">
-        <div @click="toRight">
-          <svg
-            class="Right"
-            :class="{ 'is-active': isRightActive }"
-            t="1636629893737"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2549"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M533.2 492.3L277.9 166.1c-3-3.9-7.7-6.1-12.6-6.1H188c-6.7 0-10.4 7.7-6.3 12.9L447.1 512 181.7 851.1c-4.1 5.2-0.4 12.9 6.3 12.9h77.3c4.9 0 9.6-2.3 12.6-6.1l255.3-326.1c9.1-11.7 9.1-27.9 0-39.5z"
-              p-id="8365"
-            />
-            <path
-              d="M837.2 492.3L581.9 166.1c-3-3.9-7.7-6.1-12.6-6.1H492c-6.7 0-10.4 7.7-6.3 12.9L751.1 512 485.7 851.1c-4.1 5.2-0.4 12.9 6.3 12.9h77.3c4.9 0 9.6-2.3 12.6-6.1l255.3-326.1c9.1-11.7 9.1-27.9 0-39.5z"
-              p-id="8366"
-            />
-          </svg>
-        </div>
-      </div>
-      <!-- 现有事件展示框 -->
-      <div v-if="menuIndex === 'meteorological'" class="shijian_content">
-        <div class="right-header">
-          <p class="header-title">
-            更新时间<span>{{ staList.updateTime }}</span>
-          </p>
-          <div class="header-button">
-            <el-input
-              v-model="stationName"
-              placeholder="站点查询"
-              class="input-with-select"
-              @change="stationNameChange"
-            >
-              <el-button
-                slot="append"
-                icon="el-icon-search"
-                @click="stationNameClick"
-              />
-            </el-input>
-          </div>
-        </div>
-        <el-table
-          :data="staList.data"
-          height="50%"
-          :highlight-current-row="false"
-          @row-dblclick="handleWeatherClick"
-        >
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            width="55"
-          />
-          <el-table-column label="站名" align="center" prop="STANAME" />
-          <el-table-column
-            label="气温/℃"
-            align="center"
-            prop="AIRTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="路面温度/℃"
-            align="center"
-            prop="SURTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="降雨量/mm"
-            align="center"
-            prop="RAIN_SUM_VALUE"
-          />
-          <el-table-column
-            label="积水量/mm"
-            align="center"
-            prop="WATERACCUMULATE_VALUE"
-          />
-        </el-table>
-        <el-table
-          :data="staList.data_bridge"
-          height="50%"
-          style="margin-top: 12px"
-          :highlight-current-row="false"
-          @row-dblclick="handleWeatherClick"
-        >
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            width="55"
-          />
-          <el-table-column label="站名" align="center" prop="STANAME" />
-          <el-table-column
-            label="气温/℃"
-            align="center"
-            prop="AIRTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="路面温度/℃"
-            align="center"
-            prop="SURTEMP_CURRENT_VALUE"
-          />
-          <el-table-column
-            label="降雨量/mm"
-            align="center"
-            prop="RAIN_SUM_VALUE"
-          />
-          <el-table-column
-            label="积水量/mm"
-            align="center"
-            prop="WATERACCUMULATE_VALUE"
-          />
-        </el-table>
-      </div>
-      <el-table
-        class="yingji_tablecontent"
-        v-if="menuIndex == 'event'"
-        :data="eventList"
-        height="100%"
-        @row-dblclick="handleClick"
-      >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" class="demo-table-expand">
-              <el-form-item label="录入时间">
-                <span>{{ props.row.createTime }}</span>
-              </el-form-item>
-              <el-form-item label="事件类型">
-                <span>{{ props.row.typeName }}</span>
-              </el-form-item>
-              <el-form-item label="事件内容">
-                <el-popover
-                  placement="top-start"
-                  width="200"
-                  trigger="hover"
-                  :content="props.row.description"
-                >
-                  <el-button slot="reference" size="small">查看</el-button>
-                </el-popover>
-              </el-form-item>
-              <el-form-item label="应急等级">
-                <span>{{ props.row.levelName }}</span>
-              </el-form-item>
-              <el-form-item label="处理进度">
-                <span>{{ props.row.currentStatusName }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="事件地址"
-          prop="address"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          label="事件类型"
-          prop="typeName"
-          width="90px"
-          align="center"
-        />
-        <el-table-column label="事件状态" width="90px" align="center">
-          <template slot-scope="props">
-            {{ props.row.currentStatusName }}
-          </template>
-        </el-table-column>
-        <el-table-column label="更新时间" width="170px" align="center">
-          <template slot-scope="props">
-            {{ props.row.updateTime }}
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 建筑检测的摄像头 -->
-      <div v-if="menuIndex === 'monitor'" class="shexiangtou">
-        <el-scrollbar>
-          <div v-for="camera in camera_info" :key="camera.id">
-            <span class="camera_title">{{ camera.name }}</span>
-            <div class="camera_box">
-              <el-image style="width: 100%;" :src="camera.url" fit="fit" />
-            </div>
-          </div>
-        </el-scrollbar>
-      </div>
-    </aside>
-
-    <!-- 数据面板 -->
-    <dataPanel v-if="menuIndex === 'dataPanel'" style="z-index: 1001;" />
-
-    <!-- 高德地图容器 -->
-    <div id="map" ></div>
-    <!-- 告警音 -->
-    <audio id="audio" :src="alarm" />
-    <!-- 分派提示框 -->
-    <el-dialog title="事件分派" :visible.sync="confirmVisible" width="30%">
-      <div style="font-size:20px;text-align:center;">
-        <p>
-          <span>
-            请选择分派单位及时间
-            <!-- <span>
-              <b>{{ dept }}</b> </span> -->
-          </span>
-        </p>
-        <!-- <el-button type="text">选取二级部门</el-button> -->
-      </div>
-      <el-form>
-        <el-form-item label="发送对象" required>
-          <el-cascader
-            v-model="dept"
-            :props="deptProps"
-            :options="deptOptions"
-            placeholder="请选择通知对象"
-            clearable
-            style="width: 78%"
-          />
-        </el-form-item>
-        <el-form-item label="截止日期" required>
-          <el-date-picker
-            v-model="deadline"
-            type="date"
-            placeholder="选择日期"
-            style="width: 78%"
-          />
-        </el-form-item>
-      </el-form>
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="confirmVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmAssign">确 定</el-button>
-      </span>
-    </el-dialog>
+    <div id="map"></div>
+    
   </div>
 </template>
-
 <script>
-// import { page } from "@/api/event/basic";
-// import { webSocketURL } from "@/settings";
-// import {
-//   WeatherList,
-//   WeatherData,
-//   StaList as getStaList
-// } from "@/api/event/map";
-// import { mapGetters } from "vuex";
-// import dataPanel from "@/components/dataPancel";
-// import echarts from "echarts";
-// import { list as listGroup } from "@/api/system-setup/group.js";
-// import { parseTime } from "@/utils/tools";
-// import { addNotice } from "@/api/notice/notice";
-// import jpg1 from "@/assets/bridge1.jpeg";
-// import jpg2 from "@/assets/bridge2.jpeg";
-// import jpg3 from "@/assets/bridge3.jpeg";
-// import alarm from "@/assets/audio/alarm.mp3";
-// import { materialPage, getMaterialTree } from "@/api/thirdparty";
-// import { page as logPage } from "@/api/event/eventLog";
+import { travelList } from "../../api/People/travel/basic";
+import { regionList } from "../../api/Region/basic";
+
 const AMap = window.AMap;
 export default {
   name: "Map",
-  components: {
-    dataPanel
-  },
-  data() {
-    return {
-      popus:[],
-      markers:[],
-      alarm: alarm,
-      // 气象数据
-      stationName: "",
-      staList: {
-        updateTime: null,
-        data: [],
-        data_bridge: []
-      },
-      staListCache: {
-        data: [],
-        data_bridge: []
-      },
-      weatherInfo: {},
-      weatherData: {},
-      notice: {},
-      // 分派提示框
-      confirmVisible: false,
-      // 选中的部门
-      dept: "",
-      // 截止日期
-      deadline: null,
-      // 部门属性
-      deptProps: {
-        multiple: true,
-        value: "id",
-        label: "name",
-        children: "children"
-      },
-      deptOptions: [],
-      weather: "weather",
-      stationAddress: "实时监控",
-      weatherCurrentData: {
-        AIRTEMP_CURRENT_VALUE: null,
-        RAIN_CURRENT_VALUE: null,
-        RH_CURRENT_VALUE: null,
-        SUB10TEMP_CURRENT_VALUE: null,
-        VISIBILITY_ONEMINUTE_VALUE: null,
-        WIND_CURRENT_DIRVALUE: null,
-        WIND_CURRENT_POWERVALUE: null,
-        WIND_CURRENT_SPEEDVALUE: null
-      },
-      // 当前时间
-      currentTime: {
-        day: null,
-        hour: null
-      },
-      lastTime: {
-        day: null,
-        hour: null
-      },
-      weatherMaxList: [
-        {
-          typeName: "最小能见度",
-          address: "姑嫂立交桥",
-          time: "11日 18:56",
-          value: "1349m"
-        },
-        {
-          typeName: "最高路面温度",
-          address: "青菱立交桥",
-          time: "10日 14:11",
-          value: "15.5℃"
-        },
-        {
-          typeName: "最低路面温度",
-          address: "晴川桥",
-          time: "12日 05:26",
-          value: "7.6℃"
-        },
-        {
-          typeName: "最大风力",
-          address: "晴川桥",
-          time: "12日 13:43",
-          value: "3级 5m/s"
-        }
-      ],
-      // 当前菜单级别
-      menuIndex: "event",
-      // 地图对象
-      map: null,
-      // 检索关键字
-      search: "",
-      // 检索结果数据数据
-      searchInfoList: [],
-      // 事件列表
-      eventList: [],
-      // 建筑列表
-      buildingList: [
-        {
-          name: "武汉长江大桥",
-          leader: "tom",
-          phone: "18236666666",
-          status: "正常",
-          buildTime: "1957年10月15日",
-          longitude: 114.292858,
-          latitude: 30.54724
-        }
-      ],
-      // 气象节点信息
-      weatherList: [],
-      materialList: [],
-      // 气象报警信息
-      weatherWarnData: [],
-      staCode: "",
-      // 全局定时器
-      timer: null,
-      // 响应标签
-      activeName: "list",
-      // 筛选标签
-      queryParams: {
-        label: "",
-        eventType: "",
-        eventLevel: "",
-        source: 2,
-        total: 0,
-        _limit: 1000
-      },
-      isCollapse: false,
-      // left状态
-      isActive: false,
-      // right按钮状态
-      isRightActive: false,
-      // asideLeft开关
-      asideLeftSwitch: false,
-      // asideRight开关
-      asideRightSwitch: true,
-      // 左侧输入框绑定数据
-      buildingName: "",
-      // 树相关
-      data: [
-        {
-          label: "桥梁",
-          children: [
-            {
-              label: "武昌区",
-              children: [
-                {
-                  label: "武汉长江大桥"
-                },
-                {
-                  label: "武汉长江二桥"
-                }
-              ]
-            },
-            {
-              label: "洪山区",
-              children: []
-            }
-          ]
-        },
-        {
-          label: "隧道",
-          children: [
-            {
-              label: "武昌区"
-            },
-            {
-              label: "洪山区"
-            }
-          ]
-        },
-        {
-          label: "垃圾场",
-          children: [
-            {
-              label: "武昌区"
-            },
-            {
-              label: "洪山区"
-            }
-          ]
-        }
-      ],
-      defaultProps: {
-        children: "children",
-        label: "label"
-      },
-      // 暂时的摄像头图片
-      camera_info: [
-        {
-          id: 1,
-          url: jpg1,
-          name: "摄像头1"
-        },
-        {
-          id: 2,
-          url: jpg2,
-          name: "摄像头2"
-        },
-        {
-          id: 3,
-          url: jpg3,
-          name: "摄像头3"
-        }
-      ],
-      logList: [],
-      showYingji: false
-    };
-  },
-  computed: {
-    ...mapGetters(["permission_routes"])
-  },
-  watch: {
-    eventList: {
-      handler() {
-       this.flushMarker();
-      },
-      deep: true
-    },
-    menuIndex(newVal, oldVal) {
-      if (newVal === "monitor") {
-        const asideRight = document.querySelector(".asideRight");
-        if (asideRight.classList.contains("weather")) {
-          asideRight.classList.remove("weather");
-        }
-        const aside = document.querySelector(".aside");
-        if (aside.classList.contains("weather")) {
-          aside.classList.remove("weather");
-        }
-      } else if (newVal === "event") {
-        const aside = document.querySelector(".aside");
-        if (aside.classList.contains("weather")) {
-          aside.classList.remove("weather");
-        }
-        const asideRight = document.querySelector(".asideRight");
-        if (!asideRight.classList.contains("weather")) {
-          asideRight.classList.toggle("weather");
-        }
-        if (aside.classList.contains("close")) {
-          aside.classList.remove("close");
-        }
-      } else {
-        const asideRight = document.querySelector(".asideRight");
-        if (!asideRight.classList.contains("weather")) {
-          asideRight.classList.toggle("weather");
-        }
-        if (asideRight.classList.contains("close")) {
-          asideRight.classList.remove("close");
-        }
-        const aside = document.querySelector(".aside");
-        if (!aside.classList.contains("weather")) {
-          aside.classList.toggle("weather");
-        }
-      }
-    }
-  },
   mounted() {
     // 初始化地图页面
     this.initData();
     this.initMap();
-    this.initWeatherData();
-    this.timer = setInterval(this.initWeatherData, 1000 * 60 * 10);
+    this.setRegion()
   },
-  beforeDestroy() {
-    clearInterval(this.timer);
+  components: {
+    geoCoder: "",
   },
-  methods:{
+  data() {
+    return {
+      menuIndex:"region",
+      count: true,
+      peopleList: [],
+      map: null,
+      lineArr: [],
+      new_time: "",
+      new_time1: "",
+      new_address: "",
+      listID: "",
+      centerDialogAdd: false,
+      centerDialogEdit: false,
+      centerDialogDel: false,
+      formQuery: {
+        name: "",
+        id: "",
+        phone: "",
+        email: "",
+      },
+      spot: {
+        travelId: "",
+        address: "",
+        arriveTime: "",
+        leftTime: "",
+      },
+      isCommit: false,
+      loading: false,
+      travelData: [],
+      district: [],
+      districtOption: "",
+      cityType: [
+        {
+          value: "#EDCA3E",
+          label: "一级防控区",
+        },
+        {
+          value: "#9454D6",
+          label: "二级防控区",
+        },
+      ],
+      polygons: [],
+      polylines: [],
+      path: [],
+      Driving_obj: null,
+      texts: [],
+      points: [],
+    };
+  },
+  methods: {
+    initData(){
+travelList().then((response) => {
+        this.travelData = response.rows;
+      });
+    },
+    initMap() {
+      this.map = new AMap.Map("map", {
+        resizeEnable: true,
+        zoom: 10,
+        mapStyle: "amap://styles/white",
+        center: [114.306434, 30.5988],
+      });
+      this.map.plugin(["AMap.DistrictSearch"], () => {});
+      this.map.plugin(["AMap.InfoWindow"], () => {});
+      var opts = {
+        subdistrict: 0, //获取边界不需要返回下级行政区
+        extensions: "all", //返回行政区边界坐标组等具体信息
+        level: "biz_area", //查询行政级别为 商圈
+      };
+      this.districtOption = new AMap.DistrictSearch(opts);
+      AMap.plugin("AMap.Geocoder", function () {});
+      var geoOption = {
+        city: "全国",
+        citylimit: true,
+      };
+      this.geoCoder = new AMap.Geocoder(geoOption);
+      
+    },
+    setRegion() {
+      let this_ = this;
+      this.webRegion(2, "#ff0000", "#ff8000");
+      for (var index in this_.travelData) {
+        this.geoCoder.getLocation(
+          this_.travelData[index].address,
+          function (status, result) {
+            if (status === "complete" && result.geocodes.length) {
+              this_.districtOption.search(
+                result.geocodes[0].adcode,
+                (status, result) => {
+                  this_.showRegion(result, "#ffa31a", "#ffa31a");
+                }
+              );
+            }
+          }
+        );
+      }
+    },
+    webRegion(status, color, stroke) {
+      let this_ = this;
+      regionList({ status: status }).then((response) => {
+        for (var index in response.rows) {
+          var code = response.rows[index].ancestorId.toString().split(",");
+          this_.districtOption.search(
+            code[code.length - 1],
+            (status, result) => {
+              this_.showRegion(result, color, stroke);
+            }
+          );
+        }
+      });
+    },
+    showRegion(result, color, stroke) {
+      const this_ = this;
+      var city = "";
+      let bounds = result.districtList[0].boundaries;
+      if (bounds) {
+        for (let i = 0, l = bounds.length; i < l; i++) {
+          //生成行政区划polygon
+          let polygon = new AMap.Polygon({
+            map: this.map, // 指定地图对象
+            strokeWeight: 1, // 轮廓线宽度
+            path: bounds[i], //轮廓线的节点坐标数组
+            fillOpacity: 0.4, //透明度
+            fillColor: color, //填充颜色
+            strokeColor: stroke, //线条颜色
+          });
+          this.polygons.push(polygon);
+          var level = color == "#ff0000" ? "一级重点区域" : "二级重点区域";
+          polygon.content =
+            "<h4>区域编码：" +
+            result.districtList[0].adcode +
+            "</h4>" +
+            "<h4>具体地址：" +
+            result.districtList[0].name +
+            "</h4>" +
+            "<h4>区域级别：" +
+            level +
+            "</h4>";
+          polygon.on("click", showInfoP);
+          function showInfoP(e) {
+            var infoWindow = new AMap.InfoWindow({
+              offset: new AMap.Pixel(0, -30),
+            });
+            infoWindow.setContent(e.target.content);
+            infoWindow.open(this_.map, e.lnglat);
+          }
+        }
+        // 地图自适应
+        this.map.setFitView();
+      }
+    },
+    clearRegion() {
+      for (var index in this.polygons) {
+        if (this.polygons[index]) {
+          this.polygons[index].setMap(null);
+          this.polygons[index] = null;
+        }
+      }
+      this.polygons = [];
+    },
+    setLine() {
+      const tmp_this = this;
+      const map = this.map;
+      var lng = "";
+      var lat = "";
+      this.lineArr = [];
+      var point = 0;
+      var record = this.travelData[0].recordId;
+      for (const index in this.travelData) {
+        const spot = this.travelData[index].address;
+        const time = this.travelData[index].time;
+        this.geoCoder.getLocation(spot, function (status, result) {
+          if (tmp_this.travelData[index].recordId != record) {
+              tmp_this.initroad();
+              tmp_this.lineArr = [];
+              point = 0;
+              record = tmp_this.travelData[index].recordId;
+            }
+          if (status === "complete" && result.geocodes.length) {
+            var lnglat = result.geocodes[0].location;
+            lng = lnglat.lng;
+            lat = lnglat.lat;
+            point = point + 1;
+            tmp_this.lineArr.push([lng, lat]);
+            if (tmp_this.travelData.length-1 === parseInt(index)) {
+              tmp_this.initroad();
+              tmp_this.initLine();
+            }
+            var markerspot = new AMap.CircleMarker({
+              center: [lng, lat],
+              radius: 20, //3D视图下，CircleMarker半径不要超过64px 大小
+              strokeColor: "white", // 边框颜色
+              strokeWeight: 2,
+              strokeOpacity: 0.5,
+              fillColor: "#9b9a99", // 背景色
+              fillOpacity: 1, //透明度
+              zIndex: 1000,
+              bubble: true,
+              cursor: "pointer",
+              clickable: true,
+            });
+            map.add(markerspot);
+            tmp_this.points.push(markerspot);
+            var text = new AMap.Text({
+              text: point,
+              anchor: "center", // 设置文本标记锚点
+              // draggable: true, // 是否可移动文本
+              cursor: "pointer",
+              angle: 10,
+              style: {
+                // padding: ".75rem 1.25rem",
+                // "margin-bottom": "1rem",
+                // "border-radius": ".25rem",
+                "margin-top": "2px",
+                "background-color": "#9b9a99",
+                opacity: "1",
+                // width: "100%",
+                "border-width": 0,
+                // "box-shadow": "0 2px 6px 0 rgba(114, 124, 245, .5)",
+                "text-align": "center",
+                "font-size": "20px",
+                color: "#fff",
+              },
+              position: [lng, lat],
+            });
+            text.setMap(map);
+            tmp_this.texts.push(text);
+            map.setFitView();
+          }
+        });
+      }
+    },
+    initLine() {
+      var record = "";
+      const this_=this;
+      AMap.plugin("AMap.Driving", function () {});
 
-  }
-}
+      record = this.travelData[0];
+      for (var index in this_.travelData) {
+        if (this_.travelData[index].recordId != record) {
+          this_.Driving_obj = new AMap.Driving({
+        map: this_.map,
+      });
+          this_.Driving_obj.search(this_.path, function (status, result) {
+            if (status === "complete") {
+              if (result.routes && result.routes.length) {
+                drawRoute(result.routes[0], f);
+              }
+            }
+          });
+          record = this_.travelData[index].recordId;
+          this_.path = [];
+        }
+        const spot = this_.travelData[index].address;
+        this_.path.push({ keyword: spot, city: "全国" });
+      }
+      this_.Driving_obj = new AMap.Driving({
+        map: this_.map,
+      });
+      this_.Driving_obj.search(this_.path, function (status, result) {
+        if (status === "complete") {
+          if (result.routes && result.routes.length) {
+            drawRoute(result.routes[0], f);
+          }
+        }
+      });
+    },
+    initroad() {
+      const this_ = this;
+      this.polyline = new AMap.Polyline({
+        map: this.map,
+        path: null,
+        showDir: true,
+        strokeColor: "#77DDFF", // 线颜色--浅蓝色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 2, // 线宽
+        // strokeStyle: "solid"  //线样式
+        lineJoin: "round", // 折线拐点的绘制样式
+      });
+      this.polyline.setPath(this_.lineArr);
+      this.polyline.show();
+      this.polylines.push(this_.polyline);
+      this.map.setFitView(); // 合适的视口
+    },
+    clearLine() {
+      const this_ = this;
+      //this.Driving_obj.clear();
+      this.map.clearMap();
+      this.map.remove(this_.polylines);
+      this.map.remove(this_.texts);
+      this.map.remove(this_.points);
+    },
+  },
+};
 </script>
+
 
 <style lang="scss" scoped>
 div {
-  #app {
-    width: 100vw;
-    overflow: hidden;
-  }
   ::v-deep .info-top {
     position: relative;
     height: 45px;
@@ -834,9 +433,9 @@ div {
 }
 .home {
   background-color: rgba(12, 35, 85, 0.8);
-  z-index: 1;
+  // z-index: 1;
   height: 100%;
-  overflow: HIdden;
+  // overflow: HIdden;
   .header {
     &:hover {
       cursor: pointer;
@@ -845,6 +444,7 @@ div {
       margin: 0;
       position: relative;
       z-index: 2000;
+      height:150px;
       background: url("~@/assets/topbg.png");
       background-repeat: no-repeat;
       background-size: 100%;
@@ -852,7 +452,7 @@ div {
       text-align: center;
       & > span {
         display: inline-block;
-        background: linear-gradient(180deg, #fff, #b6f0ed, #0ff);
+        background: linear-gradient(180deg, #fff, #d66565, rgb(252, 80, 80));
         background-clip: text-box;
         color: transparent;
         -webkit-background-clip: text;
@@ -873,16 +473,16 @@ div {
       line-height: 45px;
       padding: 0 20px;
       cursor: pointer;
-      color: #4b92e4;
+      color: #e44b4b;
       border-radius: 6px;
-      border: 1px solid #4b92e4;
-      background-color: rgba(26, 72, 125, 0.2);
+      border: 1px solid #e44b4b;
+      background-color: rgba(125, 26, 26, 0.2);
       font-size: 18px;
       &:hover,
-      &.active {
-        color: #4bffff;
-        border: 1px solid #4bffff;
-        background-color: rgba(75, 255, 255, 0.2);
+      &.active{
+        color: #ff4b4b !important;
+        border: 1px solid #ff4b4b;
+        background-color: rgba(255, 75, 75, 0.432);
         border-radius: 6px;
       }
     }
@@ -891,6 +491,7 @@ div {
     z-index: 10;
   }
 }
+
 /* 标题样式 */
 .header {
   .header__title {
@@ -1107,28 +708,24 @@ div {
         }
       }
       .el-table__expanded-cell,
-      .el-form{
+      .el-form {
         background-color: rgba(0, 0, 0, 0);
-        .el-form-item{
-          // margin-bottom: 0!important;
-        }
-        .el-form-item__content{
+        .el-form-item__content {
           background-color: rgba(10, 88, 154, 0.6);
           color: #fff;
           padding-left: 10px;
         }
-        .el-form-item__content:hover{
+        .el-form-item__content:hover {
           background-color: rgba(75, 255, 255, 0.2);
         }
-        .el-form-item__label{
+        .el-form-item__label {
           padding-left: 10px;
           color: #fff;
         }
-        .el-button{
+        .el-button {
           padding: 3px 10px;
         }
       }
-      
     }
   }
   .shijian_content {

@@ -9,25 +9,11 @@ export function trackList(queryParams) {
         params: queryParams
     })
 }
-// export function trackList(id) {
-//     return request({
-//         url: prefix + '/' + id,
-//         method: 'get'
-//     })
-// }
-// 添加轨迹记录
-export function trackAdd(data) {
-    return request({
-        url: prefix + '/create',
-        method: 'post',
-        data: data
-    })
-}
 
 // 修改轨迹记录
-export function trackUpdate(id, data) {
+export function trackUpdate(data) {
     return request({
-        url: prefix + '/' + id,
+        url: prefix,
         method: 'put',
         data: data
     })

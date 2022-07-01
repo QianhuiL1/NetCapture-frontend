@@ -4,7 +4,7 @@
     <div class="center-content">
       <el-card class="table_content">
         <el-form ref="queryForm" :model="queryParams" :inline="true" size="small">
-        <el-form-item label="姓名:" prop="name">
+        <el-form-item label="姓名:" prop="name" style="float: left;margin-left:50px;">
           <el-input
             v-model="queryParams.name"
             placeholder="请输入人员姓名"
@@ -12,7 +12,7 @@
             @keyup.enter.native="handleQuery"
           />
         </el-form-item>
-        <el-form-item label="身份证号:" prop="id">
+        <el-form-item label="身份证号:" prop="id" style="float: left;margin-left:50px;">
           <el-input
             v-model="queryParams.id"
             placeholder="请输入身份证号"
@@ -20,22 +20,7 @@
             @keyup.enter.native="handleQuery"
           />
         </el-form-item>
-        <el-form-item label="审核状态:">
-          <el-select
-            v-model="queryParams.type"
-            placeholder="请选择审核状态"
-            clearable
-            @change="handleStatusSelect"
-          >
-            <el-option
-              v-for="(item, $index) in  TypeOptions"
-              :key="$index"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="日期:">
+        <el-form-item label="日期:" style="float: left;margin-left:50px;">
           <el-date-picker
             v-model="queryDateRange"
             type="daterange"
@@ -45,6 +30,16 @@
             @change="handleQuery"
           />
         </el-form-item>
+        <el-form-item label="地区" prop="city">
+                  <el-cascader
+                    v-model="selectedOptions"
+                    :options="options"
+                    filterable
+                    clearable
+                    style="width: 250px"
+                    @change="handleQuery"
+                  />
+                </el-form-item>
         <el-form-item style="float: right">
           <el-button
             type="primary"
@@ -56,12 +51,20 @@
           <el-button size="mini" icon="el-icon-refresh" @click="resetQuery"
             >重置</el-button
           >
+          <el-button
+        icon="el-icon-share"
+        type="primary"
+        size="mini"
+        @click="handleExport"
+        plain
+      >导出</el-button>
         </el-form-item>
       </el-form>
       </el-card>
     </div>
 <div class="center-content">
   <el-card class="table_content">
+    
     <el-table  v-loading="loading"
         :data="infectList"
         :cell-style="cellStyle"
@@ -76,22 +79,10 @@
         />
         <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
         <el-table-column label="联系电话" prop="phonenumber" min-width="10%" />
-        <el-table-column label="确诊日期" prop="createTime" min-width="20%" >
+        <el-table-column label="确诊时间" prop="positiveTime" min-width="20%" >
             <template slot-scope="scope">
-            <span>{{ scope.row.date }}</span>
+            <span>{{ scope.row.positiveTime | formatDate }}</span>
           </template></el-table-column>
-          <el-table-column label="状态" prop="type" min-width="5%">
-          <template slot-scope="scope">
-            <span
-              ><i
-                class="iconfont icon-dian"
-                :style="
-                  scope.row.type === 1 ? 'color:#11C79B' : 'color:#FF6161'
-                "
-              />{{ scope.row.type === 1 ? "已审查" : " 未审查" }}</span
-            >
-          </template>
-        </el-table-column>    
         <el-table-column label="操作" min-width="15%">
           <template slot-scope="scope">
             <el-button
@@ -201,6 +192,13 @@
 import Pagination from "@/components/Pagination";
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import {trackList} from '../../api/People/track/basic';
+import {
+  travelList,
+} from "../../api/People/travel/basic";
+import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
+
 export default {
   name: "infectList",
   components: {
@@ -209,8 +207,25 @@ export default {
   created(){
 this.getList()
   },
+  filters:{
+formatDate(value) {
+			// 计算日期相关值
+			let time =new Date(value);
+			let Y = time.getFullYear();
+			let M = time.getMonth() + 1;
+			let D = time.getDate();
+			let h = time.getHours();
+			let m = time.getMinutes();
+			let s = time.getSeconds();
+			return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+		},
+  },
   data() {
     return {
+      // 将省市区数据赋给级联选择器
+      options: regionData,
+      // 存放用户选择后省市区的信息
+      selectedOptions: [],
         id:'',
         drawerVisible:false,
         dialogVisible:false,
@@ -229,6 +244,7 @@ this.getList()
           timestamp: "2018-04-11",
         },
       ],
+      total:1,
       queryParams: {
         name: "",
         peopleId:'',
@@ -276,8 +292,24 @@ this.getList()
         this.queryParams.startDate = "";
         this.queryParams.endDate = "";
       }
+      for (let i = 0; i < this.selectedOptions.length; i++) {
+        if (i === 0) { this.queryParams.province = CodeToText[this.selectedOptions[i]] }
+        if (i === 1) { this.queryParams.city = CodeToText[this.selectedOptions[i]] }
+        if (i === 2) { this.queryParams.country = CodeToText[this.selectedOptions[i]] }
+      }
       this.getList();
     },
+formatDate(value) {
+			// 计算日期相关值
+			let time =new Date(value);
+			let Y = time.getFullYear();
+			let M = time.getMonth() + 1;
+			let D = time.getDate();
+			let h = time.getHours();
+			let m = time.getMinutes();
+			let s = time.getSeconds();
+			return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+		},
       handleClick(row, mode) {
       if (mode === "detail") {
         // 加载详情内容
@@ -287,7 +319,7 @@ this.getList()
         this.people.sex=response.data.sex === 0 ? "女":"男"
         this.people.phone=response.data.phonenumber
         this.people.address=response.data.address
-        this.people.date=response.data.updateTime
+        this.people.date=this.formatDate(response.data.positiveTime)
         this.people.status=response.data.status
         })
         
@@ -297,11 +329,18 @@ this.getList()
         this.people.name=row.name
         this.people.phone=row.phonenumber
         this.activities=[]
-        trackList({peopleId:this.people.id}).then((response) => {
-          for(var index in response.rows){
-          this.activities.push({content:response.rows[index].address,timestamp:response.rows[index].time})
+        travelList({peopleId:this.people.id}).then((response) => {
+          if(response.rows.length === 0){
+trackList({ peopleId: this.formQuery.id }).then((res) => {
+   for(var index in res.rows){
+  this.activities.push({content:response.rows[index].address,timestamp:response.rows[index].time})
+   }
+})
+          }else{
+ for(var index in response.rows){
+          this.activities.push({content:response.rows[index].address,timestamp:response.rows[index].arriveTime})
           }
-          
+          }
         })
         this.drawerVisible = true;
       }else if (mode === "check"){
@@ -320,6 +359,7 @@ this.getList()
       infectList(this.queryParams).then((response) => {
         this.loading = false;
         this.infectList = response.rows;
+        this.total=response.rows.length
       });
     },
     resetQuery() {
@@ -330,6 +370,20 @@ this.getList()
       this.queryDateRange = [];
       this.handleQuery();
     },
+    handleExport(){
+      let that = this
+      require.ensure([],()=>{
+      const { export_json_to_excel } = require('@/excel/Export2Excel'); 
+      const tHeader = ['姓名','身份证号','联系电话','确诊日期']; 
+      const filterVal =['name','peopleId','phonenumber','createTime']; 
+      const list = that.infectList;
+      const data = that.formatJson(filterVal, list);
+      export_json_to_excel(tHeader, data, '感染人员表');
+      })
+    },
+    formatJson (filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
+    }
   },
 };
 </script>
