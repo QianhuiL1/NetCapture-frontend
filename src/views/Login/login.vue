@@ -129,6 +129,7 @@ export default {
         rememberMe: false,
         code: "",
         uuid: "",
+        roleId:""
       },
       loginRules: {
         username: [
@@ -239,6 +240,9 @@ export default {
             Cookies.remove("password");
             Cookies.remove('rememberMe');
           }
+           getUserByName(this.loginForm.username).then((res) => {
+                getAuthRole(res.rows[0].userId).then((response) => {
+                  this.loginForm.roleId=response.user.roles[0].roleId
           this.$store.dispatch("Login", this.loginForm).then(() => {
              getUserByName(this.loginForm.username).then((res) => {
                 getAuthRole(res.rows[0].userId).then((response) => {
@@ -250,10 +254,10 @@ export default {
               this.getCode();
             }
           });
-        }
-      });
+        })})
+        }}
       //  this.$router.push({ path:'/home' })
-    },
+    )},
     // handleLogin() {
     //   this.$refs.loginForm.validate(valid => {
     //     if (valid) {
