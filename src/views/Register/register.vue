@@ -353,11 +353,7 @@ $cursor: #e5e5e5;
     border: none;
     background-color: rgba(0, 0, 0, 0);
     font-size: 24px;
-<<<<<<< HEAD
-    line-height: 30px;
-=======
     line-height: 10px;
->>>>>>> 0594db9 (刷新)
     color: #666666;
   }
   .el-form-item__error {
