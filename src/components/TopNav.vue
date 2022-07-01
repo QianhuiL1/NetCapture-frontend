@@ -19,7 +19,7 @@
       <template slot="title">超级管理员</template>
       <el-menu-item index="4-1">设置</el-menu-item>
       <el-menu-item index="4-2">个人中心</el-menu-item>
-      <el-menu-item @click="exit()" index="/home">退出</el-menu-item>
+      <el-menu-item @click="exit()" index="/home1">退出</el-menu-item>
     </el-submenu>
   </el-menu>
 </template>
@@ -30,11 +30,11 @@ import screenfull from "screenfull"
     name: 'TopNav',
     data: function() {
       return {
-          collapsed:false,
-          activeIndex: '1',
+        collapsed:false,
+        activeIndex: '1',
         activeIndex2: '1',
         titleList:[
-          {name:'home', navItem:'国内疫情'},
+          {name:'home1', navItem:'国内疫情'},
           {name:'track',navItem:'人员轨迹追踪'},
         ],
         img:require('../assets/list.png'),
@@ -114,9 +114,9 @@ import screenfull from "screenfull"
  .buttonimg:hover {
     background-color: #C9C9CC;
   }
-  .buttonimg:focus {
+  /* .buttonimg:focus {
     background-color:  #C9C9CC;
-  }
+  } */
   .buttonimg2{
     height: 61px;
     width:60px;
@@ -128,9 +128,9 @@ import screenfull from "screenfull"
    .buttonimg2:hover {
     background-color: #C9C9CC;
   }
-  .buttonimg2:focus {
+  /* .buttonimg2:focus {
     background-color:  #C9C9CC;
-  }
+  } */
   .showimg {
     width: 25px;
     height: 24px;

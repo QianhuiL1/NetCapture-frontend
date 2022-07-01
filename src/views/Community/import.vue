@@ -251,14 +251,6 @@ export default {
       })
       }
     },
-    sleep1(numberMillis){
-    var now = new Date();
-    var exitTime = now.getTime() + numberMillis;
-    while (true) {
-    now = new Date();
-    if (now.getTime() > exitTime) return;
-    }
-    },
     resetQuery(){
       this.queryParams={}
     },

@@ -249,7 +249,7 @@ export default {
 //     }
 //   }
 // })
-            this.$router.push({ path: "/home" }).catch(()=>{});
+            this.$router.push({ path: "/map" }).catch(()=>{});
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {

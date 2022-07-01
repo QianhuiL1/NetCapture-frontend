@@ -35,12 +35,6 @@ export default {
                 import ("@/views/Register/register.vue")
         },
         {
-            name: "home",
-            path: "/home",
-            component: () =>
-                import ("@/views/Overview/domestic")
-        },
-        {
             path: "/map",
             component: () =>
                 import ("@/views/Region/map")
@@ -50,6 +44,7 @@ export default {
             component: () =>
                 import ("@/views/Overview/foreign")
         }, {
+            name: 'home1',
             path: "/home1",
             component: () =>
                 import ("@/views/Tendency/domestic")

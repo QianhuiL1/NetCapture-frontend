@@ -2,11 +2,11 @@
   <div class="home">
     <div>
       <!-- // 头部 -->
-      <header class="header">
+      <!-- <header class="header">
         <h1 style="font-size: 2em">
           <span></span>
         </h1>
-      </header>
+      </header> -->
       <ul class="menu">
         <li
           class="menu-item"
@@ -15,6 +15,7 @@
           menuIndex = 'region';
             setRegion();
             clearLine();
+            getMenuIndex();
           "
         >
           重点地区
@@ -26,6 +27,7 @@
           menuIndex = 'track';
             clearRegion();
             setLine();
+            getMenuIndex();
           "
         >
           重点轨迹
@@ -36,8 +38,7 @@
           :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
           menuIndex = 'dataPanel';
-            clearRegion();
-            setLine();
+            getMenuIndex();
           "
         >
           数据面板
@@ -45,6 +46,7 @@
         </li>
       </ul>
     </div>
+    <dataPanel v-if="menuIndex==='dataPanel'" style="z-index: 1001;"/>
     <div id="map"></div>
     
   </div>
@@ -52,6 +54,8 @@
 <script>
 import { travelList } from "../../api/People/travel/basic";
 import { regionList } from "../../api/Region/basic";
+import dataPanel from "@/components/dataPancel";
+
 
 const AMap = window.AMap;
 export default {
@@ -64,6 +68,7 @@ export default {
   },
   components: {
     geoCoder: "",
+    dataPanel
   },
   data() {
     return {
@@ -115,6 +120,9 @@ export default {
     };
   },
   methods: {
+    getMenuIndex(){
+      console.log(this.menuIndex)
+    },
     initData(){
 travelList().then((response) => {
         this.travelData = response.rows;
@@ -474,16 +482,18 @@ div {
       padding: 0 20px;
       cursor: pointer;
       color: #e44b4b;
-      border-radius: 6px;
+      border-radius: 10px;
       border: 1px solid #e44b4b;
-      background-color: rgba(125, 26, 26, 0.2);
+      background-color: rgba(125, 26, 26, 0.1);
       font-size: 18px;
+      font-weight: 500;
+      color: #ff4b4b;
       &:hover,
       &.active{
         color: #ff4b4b !important;
         border: 1px solid #ff4b4b;
-        background-color: rgba(255, 75, 75, 0.432);
-        border-radius: 6px;
+        background-color: rgba(255, 75, 75, 0.3);
+        border-radius: 10px;
       }
     }
   }

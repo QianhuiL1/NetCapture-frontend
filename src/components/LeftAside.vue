@@ -11,7 +11,6 @@
 				<span>  国内疫情</span>
 			</template>
 			<el-menu-item-group>
-				<el-menu-item index="/home">疫情速报</el-menu-item>
 				<el-menu-item index="/home1">疫情趋势</el-menu-item>
 				<el-menu-item index="/map">疫情概况</el-menu-item>
 			</el-menu-item-group>
