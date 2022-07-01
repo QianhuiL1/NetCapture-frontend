@@ -47,6 +47,7 @@
      
       <el-table
         id="statisTable"
+        v-loading="loading"
        :data="residentTable"
        border
        highlight-current-row
@@ -87,14 +88,14 @@
         </template>
       </el-table-column>
        </el-table>
-        <!-- <pagination
+      <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="queryParams._page"
         :limit.sync="queryParams._limit"
         style="float: right; margin: 20px"
-        @pagination="getList"
-      /> -->
+        @pagination="initTable"
+      />
     </el-card>
   </div>
   <el-dialog title="个人信息" :visible.sync="dialogVisible" width="30%">
@@ -153,14 +154,18 @@ export default{
   },
   data() {
     return {
+      loading: false,
       residentTable:[],
       param:{
         ancestors: "0,420000,420102"
       },
       queryParams:{
         name: '',
-        peopleId: ''
+        peopleId: '',
+        _page: 1,
+        _limit: 10,
       },
+      total: 1,
       dialogVisible: false,
       editFormData: {
         peopleId: '',
@@ -176,7 +181,7 @@ export default{
         remark:'',
         params:{}
       },
-      rawId:''
+      rawId:'',
     }
   },
   created() {
@@ -184,8 +189,11 @@ export default{
   },
   methods:{
     initTable(){
+      this.loading= true
       searchByArea(this.param.ancestors).then(res=>{
       this.residentTable=res.rows
+      this.total=res.rows.length
+      this.loading=false
     })
     },
     handleQuery(){

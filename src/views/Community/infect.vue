@@ -137,18 +137,27 @@
             v-model="formData.name"
             placeholder="请输入重点人员姓名"
             clearable
-            prefix-icon="el-icon-mobile"
+            prefix-icon="el-icon-user-solid"
             :style="{ width: '100%' }"
           />
         </el-form-item>
         <el-form-item label="身份证号" prop="name">
           <el-input
-            v-model="formData.name"
+            v-model="formData.peopleId"
             placeholder="请输入重点人员身份证号"
             clearable
-            prefix-icon="el-icon-mobile"
+            prefix-icon="el-icon-star-on"
             :style="{ width: '100%' }"
           />
+        </el-form-item>
+        <el-form-item label="确诊时间" prop="positiveTime">
+          <el-date-picker
+            v-model="formData.positiveTime"
+            type="datetime"
+            placeholder="选择日期时间"
+            prefix-icon="el-icon-time"
+            :style="{ width: '100%' }">
+          </el-date-picker>
         </el-form-item>
         <el-form-item size="medium">
           <el-button type="primary" @click="submitForm">提交</el-button>
@@ -162,7 +171,7 @@
 <script>
 import {
   searchByArea,
-  deletePersonInfo,
+  updatePersonInfo,
   searchByName,
   searchById,
 } from "../../api/Person/basic";
@@ -196,12 +205,18 @@ export default {
       },
       infectTable:[],
       formData:{
+        name: '',
+        peopleId: '',
+        positiveTime: ''
+      },
+      submitData:{
         peopleId: '',
         name: '',
         sex: '',
         phonenumber: '',
         status:'',
         ancestors:'',
+        positiveTime:'',
         address: '',
         searchValue:'',
         createBy:'',
@@ -223,19 +238,17 @@ export default {
         res.rows.forEach((item) => {
           if (item.status != "0") {
             item.infectTime=this.formatDate(item.positiveTime)
-            console.log(item.infectTime)
             temp.push(item);
           }
         });
         this.infectTable = temp;
-        this.total = res.rows.length
+        this.total = temp.length
         this.loading = false;
       });
     },
     handleQuery() {
       this.loading = true;
       if (this.queryParams.name != "") {
-        console.log("姓名不为空");
         searchByName(this.queryParams.name).then((res) => {
           console.log(res);
           if (res.rows.length < 1) {
@@ -292,7 +305,7 @@ export default {
       this.queryParams = {
         name:'',
         peopleId: '',
-        type: ''
+        positiveTime:''
       }
     },
     handleAdd(){
@@ -302,20 +315,22 @@ export default {
     },
     submitForm(){
       if(this.formData.name==''){
-        this.$message.error('姓名不能为空!')
+        this.$message.error('姓名不能为空！')
       }else if(this.formData.peopleId==''){
-        this.$message.error('身份证号不能为空!');
-      }else{
+        this.$message.error('身份证号不能为空！');
+      }else if(this.formData.positiveTime==''){
+        this.$message.error('确诊时间不能为空！')
+        }else{
         searchById(this.formData.peopleId).then(res=>{
           if(res.data.name!=this.formData.name){
             this.$message.error('身份证号与姓名不符!');
           }else{
-            this.formData=res.data
-            this.formData.status='3'
-            updatePersonInfo(this.formData).then(resp=>{
+            this.submitData=res.data
+            this.submitData.status='3'
+            updatePersonInfo(this.submitData).then(resp=>{
               this.$message.success('修改成功');
               this.dialogVisible= false
-              this.initTable()
+              this.getInfectList()
             })
           }
         })

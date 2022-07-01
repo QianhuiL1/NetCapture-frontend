@@ -110,7 +110,7 @@
         v-model="formData.peopleId"
         placeholder="请输入重点人员身份证号"
         clearable
-        prefix-icon="el-icon-mobile"
+        prefix-icon="el-icon-star-on"
         :style="{width:'100%'}"
         />
     </el-form-item>
@@ -119,7 +119,7 @@
         v-model="formData.toAddress"
         placeholder="请输入现居地址"
         clearable
-        prefix-icon="el-icon-mobile"
+        prefix-icon="el-icon-location-information"
         :style="{width:'100%'}"
         />
     </el-form-item>
@@ -130,6 +130,7 @@
           v-model="selectedArea" 
           :options="options" 
           placeholder="请选择来源地"
+          prefix-icon="el-icon-place"
           :props="{value: 'id',label: 'name'}"
           @change="areaChange"
           :style="{width:'100%'}"

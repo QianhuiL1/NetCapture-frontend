@@ -8,16 +8,20 @@
             </div>
         </div>
     <div class="tendencyCard">
+      <el-col :span="12">
       <div class="lmap">
           <template>
-            <div id="map" style="width:700px; height: 500px;margin: 0 auto"></div>
+            <div id="map" style="width:700px;height: 600px;margin: 0 auto"></div>
           </template>
           </div>
+          </el-col>
+          <el-col :span="12">
           <div class="rmap">
             <template>
-            <div id="ownAckChart" style="width: 550px; height: 500px"></div>
+            <div id="ownAckChart" style="width:650px;height: 600px;margin: 0 auto"></div>
             </template>
           </div>
+          </el-col>
       </div>
     </el-card>
   </div>
@@ -276,9 +280,9 @@ export default {
     getOwnAck() {
       console.log('输出一下')
       this.ownAckChart = echarts.init(document.getElementById('ownAckChart'));
-      var dataAxis = ['6-01', '6-02', '6-03', '6-04', '6-05', '6-06', '6-07', '6-08', '6-09', '6-10', '6-11', '6-12', '6-13', '6-14', '6-15', '6-16', '6-17', '6-18', '6-19', '6-20'];
+      var dataAxis = ['6-01', '6-02', '6-03', '6-04', '6-05', '6-06', '6-07', '6-08', '6-09', '6-10', '6-11', '6-12', '6-13', '6-14', '6-15', '6-16', '6-17', '6-18', '6-19', '6-20','6-21'];
       var data = [3, 5, 10, 40, 30, 20, 40, 20,10, 22, 3, 49, 23, 19, 13, 14, 8, 23, 25, 20];
-      var yMax = 100;
+      var yMax = 50;
       var dataShadow = [];
       for (var i = 0; i < data.length; i++) {
           dataShadow.push(yMax);
@@ -383,11 +387,13 @@ export default {
   .center-content {
     margin-top: 20px;
     display: flex;
+    width: 100%;
     background-color: transparent!important;
   }
   .table_content{
     display:flex;
     flex-direction: column;
+    width: 100%;
     margin: 5px 10px;
   }
 .theme{
