@@ -242,7 +242,8 @@ export default {
             healthyAdd: 5,
             dangerArea:'七宝镇航华四村'
           }
-        ]
+        ],
+        // NativeEpidemicData: require()
 
     }
   },
@@ -262,7 +263,7 @@ export default {
       this.initCharts()
     },
     initCharts(){
-
+      //初始化新增本土趋势折线图
       this.ownAddChart= echarts.init(document.getElementById('ownAddChart'))
       this.ownAddOption = {
         xAxis: {
