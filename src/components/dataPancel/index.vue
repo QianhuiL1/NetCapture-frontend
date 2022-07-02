@@ -314,6 +314,9 @@ export default {
       }
     }
 }
+.table_content {
+    background-color: rgba(255, 255, 255, 0.5);
+}
 .title{
   // color:#C8102E;
   // font-size: 20px;
