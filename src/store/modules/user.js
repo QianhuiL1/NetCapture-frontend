@@ -39,9 +39,9 @@ const user = {
             const uuid = userInfo.uuid
                     return new Promise((resolve, reject) => {
                         login(username, password, code, uuid).then(res => {
-                            getUserByName(userInfo.username).then((res1) => {
                                 setToken(res.token)
                             commit('SET_TOKEN', res.token)
+                            getUserByName(userInfo.username).then((res1) => {
                 getAuthRole(res1.rows[0].userId).then((response) => {
                             commit('SET_NAME', userInfo.username + "," + response.user.nickName)
                             commit('SET_ROLES', response.user.roles[0].roleId)
