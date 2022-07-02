@@ -48,7 +48,7 @@
       <el-table
         id="statisTable"
         v-loading="loading"
-       :data="residentTable"
+       :data="tableDataEnd"
        border
        highlight-current-row
        ref="residentTable">
@@ -88,14 +88,16 @@
         </template>
       </el-table-column>
        </el-table>
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="queryParams._page"
-        :limit.sync="queryParams._limit"
-        style="float: right; margin: 20px"
-        @pagination="initTable"
-      />
+      <el-pagination
+       v-show="total > 0"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[10, 15, 30, 50]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
     </el-card>
   </div>
   <el-dialog title="个人信息" :visible.sync="dialogVisible" width="30%">
@@ -143,29 +145,26 @@
 </template>
 
 <script>
-import Pagination from "@/components/Pagination";
 import { searchByArea,updatePersonInfo,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
 
 
 export default{
   name:'residentList',
-  component:{
-    Pagination,
-  },
   data() {
     return {
       loading: false,
       residentTable:[],
       param:{
-        ancestors: "0,420000,420102"
+        ancestors: "0420000420102"
       },
       queryParams:{
         name: '',
         peopleId: '',
-        _page: 1,
-        _limit: 10,
       },
       total: 1,
+      tableDataEnd:[],
+      pageSize:15,
+      currentPage:1,
       dialogVisible: false,
       editFormData: {
         peopleId: '',
@@ -188,11 +187,35 @@ export default{
     this.initTable()
   },
   methods:{
+    handleSizeChange: function (pageSize) { // 每页条数切换
+        this.pageSize = pageSize;
+        this.handleCurrentChange(this.currentPage);
+      },
+      handleCurrentChange: function (currentPage) {//页码切换
+        this.currentPage = currentPage;
+        this.currentChangePage(this.residentTable, currentPage);
+      },
+      //分页方法
+      currentChangePage(list, currentPage) {
+        let from = (currentPage - 1) * this.pageSize;
+        let to = currentPage * this.pageSize;
+        this.tableDataEnd = [];
+for (; from < to; from++) {
+          if (list[from]) {
+            this.tableDataEnd.push(list[from]);
+}}},
     initTable(){
       this.loading= true
       searchByArea(this.param.ancestors).then(res=>{
       this.residentTable=res.rows
       this.total=res.rows.length
+      if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.residentTable[index]);
+        }
+      } else {
+        this.tableDataEnd = this.residentTable;
+      }
       this.loading=false
     })
     },

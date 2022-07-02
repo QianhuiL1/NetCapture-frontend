@@ -55,7 +55,7 @@
       <el-table
        v-loading="loading"
        id="statisTable"
-       :data="importTable"
+       :data="tableDataEnd"
        border
        highlight-current-row
        ref="importTable">
@@ -88,14 +88,16 @@
         <el-table-column label="登记时间" prop="recordTime"
         min-width="20%"></el-table-column>
        </el-table>
-        <!-- <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="queryParams._page"
-        :limit.sync="queryParams._limit"
-        style="float: right; margin: 20px"
-        @pagination="initTable"
-      /> -->
+        <el-pagination
+       v-show="total > 0"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[10, 15, 30, 50]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
     </el-card>
   </div>
   <el-dialog title="旅居人员上报" :visible.sync="dialogVisible" width="40%">
@@ -154,13 +156,9 @@ import {getAreaById} from '../../api/Ancestor/base'
 let pcas = require("./pcas/pcas-code.json")
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
-import Pagination from '../../components/Pagination'
 
 export default {
   name:'importNew',
-  components:{
-    Pagination
-  },
   data() {
     return {
       dialogVisible: false,
@@ -171,12 +169,32 @@ export default {
       options: pcas,
       selectedArea: '',
       total:1,
+      tableDataEnd:[],
+      pageSize:15,
+      currentPage:1,
     }
   },
   created() {
     this.initTable()
   },
   methods:{
+    handleSizeChange: function (pageSize) { // 每页条数切换
+        this.pageSize = pageSize;
+        this.handleCurrentChange(this.currentPage);
+      },
+      handleCurrentChange: function (currentPage) {//页码切换
+        this.currentPage = currentPage;
+        this.currentChangePage(this.connectList, currentPage);
+      },
+      //分页方法
+      currentChangePage(list, currentPage) {
+        let from = (currentPage - 1) * this.pageSize;
+        let to = currentPage * this.pageSize;
+        this.tableDataEnd = [];
+for (; from < to; from++) {
+          if (list[from]) {
+            this.tableDataEnd.push(list[from]);
+}}},
     initTable(){
       this.loading=true
       var tempArray=[]
@@ -205,6 +223,13 @@ export default {
       });
     })
       this.importTable=tempArray
+      if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.importTable[index]);
+        }
+      } else {
+        this.tableDataEnd = this.importTable;
+      }
       // this.sleep1(5000)
     },
     handleAdd(){

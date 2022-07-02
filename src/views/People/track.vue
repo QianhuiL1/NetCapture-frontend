@@ -62,7 +62,7 @@
             <div class="con-list">   
               <el-table
                 :row-class-name="tableRowClassName"
-                :data="tableData"
+                :data="tableDataEnd"
                 v-loading="loading"
                 :default-sort="{ prop: 'date', order: 'ascending' }"
                 style="width: 100%; height: 30%"
@@ -123,14 +123,16 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="_page"
-        :limit.sync="_limit"
-        style="float: right; margin: 20px"
-        @pagination="getList1"
-      />
+              <el-pagination
+       v-show="total > 0"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[10, 15, 30, 50]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
             </div>
           </div>
         </el-card>
@@ -274,8 +276,9 @@ export default {
   },
   data() {
     return {
-       _page: 1,
-        _limit: 10,
+      tableDataEnd:[],
+      pageSize:15,
+      currentPage:1,
       total: 1,
       count: true,
       peopleList: [],
@@ -307,6 +310,23 @@ export default {
   },
 
   methods: {
+    handleSizeChange: function (pageSize) { // 每页条数切换
+        this.pageSize = pageSize;
+        this.handleCurrentChange(this.currentPage);
+      },
+      handleCurrentChange: function (currentPage) {//页码切换
+        this.currentPage = currentPage;
+        this.currentChangePage(this.tableData, currentPage);
+      },
+      //分页方法
+      currentChangePage(list, currentPage) {
+        let from = (currentPage - 1) * this.pageSize;
+        let to = currentPage * this.pageSize;
+        this.tableDataEnd = [];
+for (; from < to; from++) {
+          if (list[from]) {
+            this.tableDataEnd.push(list[from]);
+}}},
     initMap() {
       this.map = new AMap.Map("amap", {
         resizeEnable: true,
@@ -509,6 +529,14 @@ setInterval(()=>{
               this.tableData[index].leftTime = res.rows[index].time;
               this.tableData[index].recordId = this.spot.recordId;
             }
+        if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.tableData[index]);
+        }
+      } else {
+        this.tableDataEnd = this.tableData;
+      }
+      
             this.commitTravel();
             this.initMap();
           });
@@ -517,6 +545,13 @@ setInterval(()=>{
           this.tableData = response.rows;
           this.total = response.rows.length
           this.spot.recordId = response.rows[0].recordId
+          if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.tableData[index]);
+        }
+      } else {
+        this.tableDataEnd = this.tableData;
+      }
           this.initMap();
         }
       });
@@ -546,15 +581,19 @@ setInterval(()=>{
       this.spot.travelId = row.travelId;
       this.listID = index;
       this.centerDialogEdit = true;
-      for (var index in this.tableData) {
-        travelAdd({
-          address: this.tableData[index].address,
-          arriveTime: this.tableData[index].arriveTime,
-          leftTime: this.tableData[index].leftTime,
-          peopleId: this.formQuery.id,
-          recordId: this.tableData[index].recordId,
+      travelList({ peopleId: this.formQuery.id }).then((response) => {
+          if (response.rows.length === 0) {
+            for (var index in this.tableData) {
+              travelAdd({
+                address: this.tableData[index].address,
+                arriveTime: this.tableData[index].arriveTime,
+                leftTime: this.tableData[index].leftTime,
+                peopleId: this.formQuery.id,
+                recordId: this.tableData[index].recordId,
+              });
+            }
+          }
         });
-      }
       this.initMap();
     },
     tableRowClassName({ row, rowIndex }) {
@@ -565,8 +604,10 @@ setInterval(()=>{
       this.spot.arriveTime = document.getElementById("time2").value;
       this.spot.leftTime = document.getElementById("time22").value;
       this.spot.address = document.getElementById("complete2").value;
-      travelUpdate(this.spot).then(this.$message.success("修改成功！"));
-      this.getList();
+      travelUpdate(this.spot).then(()=>{
+        this.$message.success("修改成功")
+        this.getList();
+      });
       this.centerDialogEdit = false;
       this.initMap();
     },
@@ -602,7 +643,11 @@ setInterval(()=>{
       this.getList();
     },
     handleCommit() {
-      connectList(this.spot.recordId).then(this.$message.success("提交成功"));
+      connectList(this.spot.recordId).then(()=>{
+        this.$message.success("提交成功")
+      }).catch(() => {
+        this.$message.success("提交成功")
+      })
     },
     handleExport(){
       let that = this

@@ -367,7 +367,9 @@ export default {
     cursor: pointer;
     transition: .2s;
   }
-
+.table_content {
+    background-color: rgba(255, 255, 255, 0.9);
+}
 .image:hover{
   background-image: url(../../assets/help_on.png);
   background-size:100% 100%;

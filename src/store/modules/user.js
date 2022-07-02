@@ -33,27 +33,25 @@ const user = {
     actions: {
         // 登录
         Login({ commit }, userInfo) {
-            var role = ""
             const username = userInfo.username.trim()
             const password = userInfo.password
             const code = userInfo.code
             const uuid = userInfo.uuid
-            // getUserByName(userInfo.username).then((res) => {
-            //     getAuthRole(res.rows[0].userId).then((response) => {
-            //         role = response.user.roles[0].roleId
                     return new Promise((resolve, reject) => {
                         login(username, password, code, uuid).then(res => {
-                            setToken(res.token)
+                            getUserByName(userInfo.username).then((res1) => {
+                                setToken(res.token)
                             commit('SET_TOKEN', res.token)
-                            // commit('SET_NAME', userInfo.username + "," + response.user.nickName)
-                            // commit('SET_ROLES', role)
+                getAuthRole(res1.rows[0].userId).then((response) => {
+                            commit('SET_NAME', userInfo.username + "," + response.user.nickName)
+                            commit('SET_ROLES', response.user.roles[0].roleId)
                             resolve()
                         }).catch(error => {
                             reject(error)
                         })
                     })
-            //     })
-            // })
+                })
+            })
         },
 
         // 获取用户信息

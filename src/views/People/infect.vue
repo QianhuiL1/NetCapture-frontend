@@ -66,7 +66,7 @@
   <el-card class="table_content">
     
     <el-table  v-loading="loading"
-        :data="infectList"
+        :data="tableDataEnd"
         border
         highlight-current-row 
         ref="EventTable">
@@ -89,24 +89,26 @@
               type="text"
               @click="handleClick(scope.row, 'line')"
             >
-              <i class="icon-view iconfont" style="color: #3388ff" />
+            <i class="el-icon-odometer" style="color: #3388ff" />
               <span style="color: #223355"> 活动轨迹</span>
             </el-button>
             <el-button type="text" size="medium" @click="handleClick(scope.row, 'detail')">
-              <i class="el-icon-odometer" style="color: #3388ff" />
+              <i class="icon-view iconfont" style="color: #3388ff" />
               <span style="color: #223355"> 查看详情</span>
             </el-button>
      </template>
   </el-table-column>
     </el-table>
-    <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="queryParams._page"
-        :limit.sync="queryParams._limit"
-        style="float: right; margin: 20px"
-        @pagination="getList"
-      />
+    <el-pagination
+       v-show="total > 0"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[10, 15, 30, 50]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
 </el-card>
 </div>
     <!-- 人员轨迹框 -->
@@ -117,15 +119,10 @@
     >
       <el-container style="height:100%">
         <el-main>
-           <div class="radio">
-    排序：
-    <el-radio-group v-model="reverse">
-      <el-radio :label="true">倒序</el-radio>
-      <el-radio :label="false">正序</el-radio>
-    </el-radio-group>
-  </div> 
+          <i class="el-icon-odometer" style="color: #3388FF; margin-left:28px; font-size:20px;" />
+        <span style="margin-left:10px; margin-top:10px; font-size:20px; font-weight:800;">人员轨迹路线</span>
  <div class="timeline">
-  <el-timeline :reverse="reverse">
+  <el-timeline :reverse="reverse" style="margin-top:30px; font-size:18px;">
     <el-timeline-item
       v-for="(activity, index) in activities"
       :key="index"
@@ -140,8 +137,8 @@
               type="text"
              @click="handleClick(id, 'check')"
             >
-            <i class="el-icon-odometer" style="color: #3388FF;" />
-               <span style="color: #223355; "> 修改轨迹</span>
+            <i class="el-icon-edit" style="color: #3388FF; margin-left:28px; font-size:20px;" />
+               <span style="color: #223355; font-size:20px; font-weight:800; margin-bottom:100px; "> 修改轨迹</span>
             </el-button>
         </el-footer>
       </el-container>
@@ -244,6 +241,9 @@ formatDate(value) {
         },
       ],
       total:1,
+      tableDataEnd:[],
+      pageSize:15,
+      currentPage:1,
       queryParams: {
         name: "",
         peopleId:'',
@@ -283,6 +283,23 @@ formatDate(value) {
     };
   },
   methods: {
+    handleSizeChange: function (pageSize) { // 每页条数切换
+        this.pageSize = pageSize;
+        this.handleCurrentChange(this.currentPage);
+      },
+      handleCurrentChange: function (currentPage) {//页码切换
+        this.currentPage = currentPage;
+        this.currentChangePage(this.infectList, currentPage);
+      },
+      //分页方法
+      currentChangePage(list, currentPage) {
+        let from = (currentPage - 1) * this.pageSize;
+        let to = currentPage * this.pageSize;
+        this.tableDataEnd = [];
+for (; from < to; from++) {
+          if (list[from]) {
+            this.tableDataEnd.push(list[from]);
+}}},
     handleQuery() {
       if (this.queryDateRange) {
         this.queryParams.startDate = this.queryDateRange[0];
@@ -291,24 +308,9 @@ formatDate(value) {
         this.queryParams.startDate = "";
         this.queryParams.endDate = "";
       }
-      for (let i = 0; i < this.selectedOptions.length; i++) {
-        if (i === 0) { this.queryParams.province = CodeToText[this.selectedOptions[i]] }
-        if (i === 1) { this.queryParams.city = CodeToText[this.selectedOptions[i]] }
-        if (i === 2) { this.queryParams.country = CodeToText[this.selectedOptions[i]] }
-      }
-      this.getList();
+      this.queryParams.ancestors='0'+','+this.selectedOptions[0]+','+this.selectedOptions[2]
+      this.getList()
     },
-formatDate(value) {
-			// 计算日期相关值
-			let time =new Date(value);
-			let Y = time.getFullYear();
-			let M = time.getMonth() + 1;
-			let D = time.getDate();
-			let h = time.getHours();
-			let m = time.getMinutes();
-			let s = time.getSeconds();
-			return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-		},
       handleClick(row, mode) {
       if (mode === "detail") {
         // 加载详情内容
@@ -356,9 +358,16 @@ trackList({ peopleId: this.formQuery.id }).then((res) => {
     getList() {
       this.loading = true;
       infectList(this.queryParams).then((response) => {
-        this.loading = false;
+        this.total = response.rows.length
         this.infectList = response.rows;
-        this.total=response.rows.length
+        if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.infectList[index]);
+        }
+      } else {
+        this.tableDataEnd = this.infectList;
+      }
+        this.loading = false;
       });
     },
     resetQuery() {
@@ -367,13 +376,15 @@ trackList({ peopleId: this.formQuery.id }).then((res) => {
       this.queryParams.peopleId = "";
       this.queryParams.type = "";
       this.queryDateRange = [];
+      this.queryParams.ancestors = ""
+      this.selectedOptions = '';
       this.handleQuery();
     },
     handleExport(){
       let that = this
       require.ensure([],()=>{
       const { export_json_to_excel } = require('@/excel/Export2Excel'); 
-      const tHeader = ['姓名','身份证号','联系电话','确诊日期']; 
+      const tHeader = ['姓名','身份证号','联系电话','确诊时间']; 
       const filterVal =['name','peopleId','phonenumber','createTime']; 
       const list = that.infectList;
       const data = that.formatJson(filterVal, list);

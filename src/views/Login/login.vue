@@ -91,9 +91,6 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-import { mapGetters } from 'vuex'
-import {getUser,getUserByName,getAuthRole} from '../../api/system/user'
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'

@@ -176,10 +176,6 @@ export default {
     this.initCharts()
   },
   created() {
-    // this.handleInit()
-    // getFromNet('2022053016').then(res=>{
-    //   console.log(res)
-    // })
   },
   methods: {
     getHelp(){

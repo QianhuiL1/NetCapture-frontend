@@ -72,7 +72,7 @@
       </el-form>
     
     <el-table  v-loading="loading"
-        :data="connectList"
+        :data="tableDataEnd"
         border
         highlight-current-row >
       <el-table-column
@@ -105,14 +105,16 @@
       </template>
     </el-table-column>
     </el-table>
-    <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="queryParams._page"
-        :limit.sync="queryParams._limit"
-        style="float: right; margin: 20px"
-        @pagination="getList1"
-      />
+       <el-pagination
+       v-show="total > 0"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[10, 15, 30, 50]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
 </el-card>
  <el-dialog title="修改密接人员信息" :visible.sync="centerDialogEdit" width="30%">    
   <div class="inputTitle"><span>
@@ -168,9 +170,6 @@
 <script>
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import { connectCreate } from '../../api/People/connect/base';
-import FileSaver from 'file-saver'
-import XLSX from 'xlsx'
-import Pagination from '../../components/Pagination'
 import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
 const ids = new Set()
 export default {
@@ -178,9 +177,6 @@ export default {
   created(){
     this.getList1()
     this.handleCommit()
-  },
-  components: {
-    Pagination
   },
   data() {
     return {
@@ -201,14 +197,15 @@ centerDialogDel: false,
         type:'',
         id:'',
       queryParams: {
-        _page: 1,
-        _limit: 10,
         name: "",
         peopleId:'',
         address:'',
         status: 2,
       },
       total: 1,
+      tableDataEnd:[],
+      pageSize:15,
+      currentPage:1,
       queryDateRange: [],
       connectList: [],
 rules: {
@@ -227,16 +224,28 @@ rules: {
     };
   },
   methods: {
+    handleSizeChange: function (pageSize) { // 每页条数切换
+        this.pageSize = pageSize;
+        this.handleCurrentChange(this.currentPage);
+      },
+      handleCurrentChange: function (currentPage) {//页码切换
+        this.currentPage = currentPage;
+        this.currentChangePage(this.connectList, currentPage);
+      },
+      //分页方法
+      currentChangePage(list, currentPage) {
+        let from = (currentPage - 1) * this.pageSize;
+        let to = currentPage * this.pageSize;
+        this.tableDataEnd = [];
+for (; from < to; from++) {
+          if (list[from]) {
+            this.tableDataEnd.push(list[from]);
+}}},
       change (e) {
     this.$forceUpdate()
 },
 handleQuery(){
-for (let i = 0; i < this.selectedOptions.length; i++) {
-        if (i === 0) { this.queryParams.province = CodeToText[this.selectedOptions[i]] }
-        if (i === 1) { this.queryParams.city = CodeToText[this.selectedOptions[i]] }
-        if (i === 2) { this.queryParams.country = CodeToText[this.selectedOptions[i]] }
-        
-      }
+      this.queryParams.ancestors='0'+','+this.selectedOptions[0]+','+this.selectedOptions[2]
       this.getList1();
 },
 handleEdit (row) {   
@@ -301,15 +310,24 @@ handleDelete (id) {
     getList1() {
       this.loading = true;
       infectList(this.queryParams).then((response) => {
-        this.loading = false;
-        this.connectList = response.rows;
         this.total = response.rows.length
+        this.connectList = response.rows;
+        if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.connectList[index]);
+        }
+      } else {
+        this.tableDataEnd = this.connectList;
+      }
+        this.loading = false;
       });
     },
     resetQuery() {
       this.queryParams.name = "";
       this.queryParams.peopleId = "";
       this.queryParams.address = "";
+      this.queryParams.ancestors = ""
+      this.selectedOptions = '';
       this.getList1();
     },
     queryInfo(){

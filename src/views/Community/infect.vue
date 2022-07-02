@@ -81,7 +81,7 @@
         <el-table
           v-loading="loading"
           id="statisTable"
-          :data="infectTable"
+          :data="tableDataEnd"
           border
           hightlight-current-row
           ref="infectTable"
@@ -115,14 +115,16 @@
           <el-table-column label="居住地址" prop="address" min-width="30%" />
           <el-table-column label="状态更新时间" prop="infectTime" min-width="20%"/>
         </el-table>
-        <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="queryParams._page"
-        :limit.sync="queryParams._limit"
-        style="float: right; margin: 20px"
-        @pagination="getInfectList"
-      />
+        <el-pagination
+       v-show="total > 0"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[10, 15, 30, 50]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
       </el-card>
     </div>
     <el-dialog title="重点人员上报" :visible.sync="dialogVisible" width="40%">
@@ -177,13 +179,9 @@ import {
 } from "../../api/Person/basic";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
-import Pagination from '../../components/Pagination'
 
 export default {
   name: "infectTable",
-  components: {
-    Pagination
-  },
   data() {
     return {
       param: {
@@ -196,9 +194,10 @@ export default {
         { name: "次密接", value: "次密接" },
       ],
       total:1,
+      tableDataEnd:[],
+      pageSize:15,
+      currentPage:1,
       queryParams: {
-        _page: 1,
-        _limit: 10,
         name: "",
         type: "",
         peopleId: "",
@@ -231,6 +230,23 @@ export default {
      this.getInfectList();
   },
   methods: {
+    handleSizeChange: function (pageSize) { // 每页条数切换
+        this.pageSize = pageSize;
+        this.handleCurrentChange(this.currentPage);
+      },
+      handleCurrentChange: function (currentPage) {//页码切换
+        this.currentPage = currentPage;
+        this.currentChangePage(this.connectList, currentPage);
+      },
+      //分页方法
+      currentChangePage(list, currentPage) {
+        let from = (currentPage - 1) * this.pageSize;
+        let to = currentPage * this.pageSize;
+        this.tableDataEnd = [];
+for (; from < to; from++) {
+          if (list[from]) {
+            this.tableDataEnd.push(list[from]);
+}}},
     getInfectList() {
       this.loading = true;
       var temp = [];
@@ -243,6 +259,13 @@ export default {
         });
         this.infectTable = temp;
         this.total = temp.length
+        if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.infectTable[index]);
+        }
+      } else {
+        this.tableDataEnd = this.infectTable;
+      }
         this.loading = false;
       });
     },
