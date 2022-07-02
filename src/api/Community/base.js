@@ -4,7 +4,7 @@ const prefix = '/system/sojourn_table'
 // 查询普通人员列表
 export function page(queryParams) {
     return request({
-        url: prefix + '/list',
+        url: prefix + '/list/',
         method: 'get',
         params: queryParams
     })

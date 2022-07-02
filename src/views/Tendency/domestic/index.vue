@@ -35,32 +35,23 @@
           v-loading="loading"
           :data="quickInfo"
           :cell-style="cellStyle"
+          style="cursor: pointer;"
+          height="400px"
+          @row-click="getNewsDetail"
           highlight-current-row>
           <el-table-column
           align="center"
-            label="地区"
-            prop="area"
+            label="日期"
+            min-width="25%"
+            prop="eventtime"
             :show-overflow-tooltip="true"
             >
             </el-table-column>
           <el-table-column
             align="center"
-            label="新增本土"
-            prop="ownAdd"
-            :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-          <el-table-column
-            align="center"
-            label="新增无症状"
-            prop="healthyAdd"
-            :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-            <el-table-column
-            align="center"
-            label="风险区域"
-            prop="dangerArea"
+            label="新闻"
+            min-width="75%"
+            prop="eventdescription"
             :show-overflow-tooltip="true"
             >
             </el-table-column>
@@ -73,9 +64,8 @@
           <span>风险地区</span>
         </div>
         <el-table
-          v-loading="loading"
+          v-loading="loading2"
           :data="dangerData"
-          :cell-style="cellStyle"
           highlight-current-row
           >
           <el-table-column
@@ -105,12 +95,12 @@ import "echarts/map/js/china.js"
 import $ from 'jquery'
 import {page} from '../../../api/Data/basic'
 let cZjson = require("../area/area.json")
+import {getNews} from '../../../api/Data/event'
 
 export default {
   data() {
     return {
       period: '今天',
-      dangerArea: [],
       ownAddOption:{},
       ownAckOption:{},
       ownAddChart: '',
@@ -186,20 +176,8 @@ export default {
             area:'上海市闵行区'
           }
         ],
-        quickInfo:[
-          {
-            area: '北京市',
-            ownAdd: 2,
-            healthyAdd:7,
-            dangerArea:'经济开发区'
-          },
-          {
-            area:'上海市',
-            ownAdd: 0,
-            healthyAdd: 5,
-            dangerArea:'七宝镇航华四村'
-          }
-        ]
+        quickInfo:[],
+        loading: false
     }
   },
   component: {
@@ -210,13 +188,17 @@ export default {
   created() {
     this.initMap()
     this.getOwnAck()
+    this.initQuickInfo()
   },
   methods: {
     getHelp(){
       this.dialogVisible= true
     },
     initMap(){
-      page().then(res=>{
+      var today=this.getCurrentTime()
+      console.log(today)
+      page(today).then(res=>{
+        console.log(res)
         res.rows.forEach(item=>{
           this.initialArray.forEach(it=>{
             if(it.name==item.province){
@@ -278,7 +260,6 @@ export default {
       })
     },
     getOwnAck() {
-      console.log('输出一下')
       this.ownAckChart = echarts.init(document.getElementById('ownAckChart'));
       var dataAxis = ['6-01', '6-02', '6-03', '6-04', '6-05', '6-06', '6-07', '6-08', '6-09', '6-10', '6-11', '6-12', '6-13', '6-14', '6-15', '6-16', '6-17', '6-18', '6-19', '6-20','6-21'];
       var data = [3, 5, 10, 40, 30, 20, 40, 20,10, 22, 3, 49, 23, 19, 13, 14, 8, 23, 25, 20];
@@ -372,7 +353,31 @@ export default {
           ]
       };
     this.ownAckChart.setOption(option)
-    }
+    },
+    initQuickInfo(){
+      this.loading= true
+      getNews().then(res=>{
+        console.log(res)
+      // 展示前20条新闻
+      this.quickInfo = res.rows.reverse().slice(0,20)
+      this.loading= false
+
+    })
+    },
+    getNewsDetail(row){
+      window.open(row.eventurl,'_blank') // 在新窗口打开外链接
+
+    },
+    getCurrentTime() {
+      //获取当前时间并打印
+      let yy = new Date().getFullYear();
+      let mm = new Date().getMonth()+1;
+      mm = mm < 10 ? '0' + mm : mm;
+      let dd = new Date().getDate();
+      dd = dd < 10 ? '0' + dd : dd;
+      var gettime = yy+'-'+mm+'-'+dd
+      return gettime
+    },
   }
 }
 

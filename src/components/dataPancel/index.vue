@@ -170,6 +170,10 @@ export default {
         yAxis: {
             type: 'value'
         },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{b} <br/>新增 {c}   例'
+        },
         series: [{
             data: [23, 95, 80, 30, 100, 110, 70],
             type: 'line',
@@ -187,6 +191,10 @@ export default {
       },
       yAxis: {
           type: 'value'
+      },
+      tooltip: {
+            trigger: 'item',
+            formatter: '{b} <br/>新增 {c}   例'
       },
       series: [{
           data: [40, 30, 50, 80, 100, 70, 80],
@@ -318,12 +326,7 @@ export default {
     background-color: rgba(255, 255, 255, 0.5);
 }
 .title{
-  // color:#C8102E;
-  // font-size: 20px;
-  // padding:3px;
-  // font-weight: 550;
   padding:3px;
-  // border-bottom: 1px solid #CCCCCC;
 }
 .title span{
   float:left;

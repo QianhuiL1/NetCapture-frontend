@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     initData(){
-travelList().then((response) => {
+      travelList().then((response) => {
         this.travelData = response.rows;
       });
     },

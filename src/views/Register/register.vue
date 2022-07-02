@@ -15,7 +15,9 @@
             <img :src="logo" style="width:230px;height:110px;"/>
           </div>
         </div>
-        <el-form-item prop="nickname">
+        <div class="mainbox">
+        <div class="rbox">
+        <el-form-item prop="nickname" style="height: 52px;">
           <el-input
             v-model="registerForm.nickname"
             placeholder="姓名"
@@ -25,7 +27,7 @@
             <template slot="prepend"><svg-icon icon-class="user"/></template>
           </el-input>
         </el-form-item>
-        <el-form-item prop="password">
+        <el-form-item prop="password" style="height: 52px;">
             <el-input
               v-model="registerForm.password"
               auto-complete="off"
@@ -38,7 +40,7 @@
               /></template>
             </el-input>
             </el-form-item>
-            <el-form-item prop="confirmPassword">
+            <el-form-item prop="confirmPassword" style="height: 52px;">
             <el-input
               v-model="registerForm.confirmPassword"
               type="password"
@@ -51,7 +53,7 @@
               /></template>
             </el-input>
           </el-form-item>
-        <el-form-item prop="username">
+        <el-form-item prop="username" style="height: 52px;">
           <el-input
             v-model="registerForm.username"
             placeholder="身份证号"
@@ -61,7 +63,7 @@
             <template slot="prepend"><svg-icon icon-class="dict"/></template>
           </el-input>
         </el-form-item>
-        <el-form-item prop="phonenumber">
+        <el-form-item prop="phonenumber" style="height: 52px;">
           <el-input
             v-model="registerForm.phonenumber"
             placeholder="电话号码"
@@ -71,7 +73,9 @@
             <template slot="prepend"><svg-icon icon-class="build"/></template>
           </el-input>
         </el-form-item>
-        <el-form-item prop="email">
+        </div>
+        <div class="rbox">
+        <el-form-item prop="email" style="height: 52px;">
           <el-input
             v-model="registerForm.email"
             placeholder="邮箱"
@@ -81,14 +85,14 @@
             <template slot="prepend"><svg-icon icon-class="mail"/></template>
           </el-input>
         </el-form-item>
-  <el-form-item prop="sex">
-    <template > <svg-icon icon-class="sex" style="width:2em; height:2em; float:left; margin-left:20px;"/></template>
-        <el-radio-group v-model="registerForm.sex" size="medium" class="radio">
+  <el-form-item prop="sex" style="height: 52px;">
+    <template > <svg-icon icon-class="sex" style="width:2em; height:3em; float:left; margin-left:20px;"/></template>
+        <el-radio-group v-model="registerForm.sex" size="medium" class="radio" style="margin-top: 10px;">
           <el-radio v-for="(item, index) in sexOption" :key="index" :label="item.value"
             >{{item.label}}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item prop="deptId">
+      <el-form-item prop="deptId" style="height: 52px;">
           <el-input
             v-model="registerForm.deptId"
             placeholder="部门号"
@@ -105,14 +109,14 @@
                     style="width: 250px"
                   ><template slot="prepend"><svg-icon icon-class="switch"/></template></el-cascader>
                 </el-form-item>-->
-          <el-form-item prop="roleId"> 
-    <template > <svg-icon icon-class="rate" style="width:2em; height:2em; float:left; margin-left:20px;"/></template>
-        <el-radio-group v-model="registerForm.roleId" size="medium" class="radio">
+          <el-form-item prop="roleId" style="height: 52px;"> 
+    <template > <svg-icon icon-class="rate" style="width:2em; height:3em; float:left; margin-left:20px;"/></template>
+        <el-radio-group v-model="registerForm.roleId" size="medium" class="radio" style="margin-top: 10px;">
           <el-radio v-for="(item, index) in roleOption" :key="index" :label="item.value"
             >{{item.label}}</el-radio>
         </el-radio-group>
       </el-form-item>
-          <el-form-item prop="code" v-if="captchaOnOff">
+          <el-form-item prop="code" v-if="captchaOnOff" style="height: 52px;">
         <el-input
           v-model="registerForm.code"
           auto-complete="off"
@@ -123,13 +127,13 @@
         <template slot="prepend">
           <svg-icon icon-class="validCode"/>
         </template>
-          <!-- <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon
-          input-icon" /> -->
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
+      </div>
+      </div>
         <el-button
           class="submit-button"
           :loading="loading"
@@ -370,14 +374,19 @@ $cursor: #e5e5e5;
   position: relative;
   .box-card {
     // background-color: rgba(126, 144, 166);
-    width: 800px;
+    width: 750px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    right: 200px;
+    right: 100px;
+  }
+  .mainbox{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
   }
   .login-form {
-    padding: 16px 16px 50px;
+    padding: 3px 3px 3px;
     margin: 0 auto;
     overflow: hidden;
 

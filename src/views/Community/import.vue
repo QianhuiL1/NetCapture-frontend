@@ -88,14 +88,14 @@
         <el-table-column label="登记时间" prop="recordTime"
         min-width="20%"></el-table-column>
        </el-table>
-        <pagination
+        <!-- <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="queryParams._page"
         :limit.sync="queryParams._limit"
         style="float: right; margin: 20px"
-        @pagination="getList"
-      />
+        @pagination="initTable"
+      /> -->
     </el-card>
   </div>
   <el-dialog title="旅居人员上报" :visible.sync="dialogVisible" width="40%">
@@ -164,8 +164,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      queryParams:{id: '',_page: 1,
-        _limit: 10,},
+      queryParams:{id: ''},
       formData:{},
       importTable: [],
       loading: false,
@@ -190,9 +189,9 @@ export default {
         temp.recordTime=item.recordTime
         temp.peopleId = item.peopleId
         getAreaById(item.toAncestors).then(re=>{
-          temp.toAncestors = re.data.name
+          temp.toAncestors = re.rows[0].name
           getAreaById(item.fromAncestors).then(resp=>{
-          temp.fromAncestors=resp.data.name
+          temp.fromAncestors=resp.rows[0].name
           searchDetail(item.peopleId).then(res=>{
           temp.status=res.data.status
           temp.sex = res.data.sex
@@ -265,12 +264,12 @@ export default {
         this.$message.error('来源地不能为空');
         }else{
           this.formData.toAncestors="0,420000,420984"
-
           this.formData.fromAncestors="0,"+this.selectedArea[0]+"0000,"+this.selectedArea[2]
           this.formData.recordTime=this.getCurrentTime()
           add(this.formData).then(res=>{
             console.log(res)
             this.$message.success('添加成功');
+            this.initTable()
             this.dialogVisible= false
           })
         }
