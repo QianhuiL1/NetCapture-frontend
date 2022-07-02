@@ -228,10 +228,6 @@ export default {
     handleLogin(){
             this.$refs.loginForm.validate(valid => {
         if (valid) {
-          getUserByName(this.loginForm.username).then((res) => {
-                getAuthRole(res.rows[0].userId).then((response) => {
-                  this.loginForm.roleId=response.user.roles[0].roleId
-                })})
           this.loading = true;
           if (this.loginForm.rememberMe) {
             Cookies.set("username", this.loginForm.username, { expires: 30 });
@@ -242,24 +238,17 @@ export default {
             Cookies.remove("password");
             Cookies.remove('rememberMe');
           }
-           getUserByName(this.loginForm.username).then((res) => {
-                getAuthRole(res.rows[0].userId).then((response) => {
-                  this.loginForm.roleId=response.user.roles[0].roleId
           this.$store.dispatch("Login", this.loginForm).then(() => {
-             getUserByName(this.loginForm.username).then((res) => {
-                getAuthRole(res.rows[0].userId).then((response) => {
             this.$router.push({ name:"map",
-          params:{
+            params:{
             name:this.loginForm.username
           } }).catch(()=>{});
-                })})
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {
               this.getCode();
             }
           });
-        })})
         }}
       //  this.$router.push({ path:'/home' })
     )},

@@ -38,22 +38,22 @@ const user = {
             const password = userInfo.password
             const code = userInfo.code
             const uuid = userInfo.uuid
-            getUserByName(userInfo.username).then((res) => {
-                getAuthRole(res.rows[0].userId).then((response) => {
-                    role = response.user.roles[0].roleId
+            // getUserByName(userInfo.username).then((res) => {
+            //     getAuthRole(res.rows[0].userId).then((response) => {
+            //         role = response.user.roles[0].roleId
                     return new Promise((resolve, reject) => {
                         login(username, password, code, uuid).then(res => {
                             setToken(res.token)
                             commit('SET_TOKEN', res.token)
-                            commit('SET_NAME', userInfo.username + "," + response.user.nickName)
-                            commit('SET_ROLES', role)
+                            // commit('SET_NAME', userInfo.username + "," + response.user.nickName)
+                            // commit('SET_ROLES', role)
                             resolve()
                         }).catch(error => {
                             reject(error)
                         })
                     })
-                })
-            })
+            //     })
+            // })
         },
 
         // 获取用户信息
@@ -68,7 +68,7 @@ const user = {
                     } else {
                         commit('SET_ROLES', ['ROLE_DEFAULT'])
                     }
-                    commit('SET_NAME', user.userName)
+                    commit('SET_NAME', user.username)
                     commit('SET_AVATAR', avatar)
                     resolve(res)
                 }).catch(error => {
