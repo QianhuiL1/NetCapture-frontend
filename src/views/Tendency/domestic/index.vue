@@ -34,7 +34,6 @@
         <el-table
           v-loading="loading"
           :data="quickInfo"
-          :cell-style="cellStyle"
           style="cursor: pointer;"
           height="400px"
           @row-click="getNewsDetail"
@@ -96,6 +95,8 @@ import $ from 'jquery'
 import {page} from '../../../api/Data/basic'
 let cZjson = require("../area/area.json")
 import {getNews} from '../../../api/Data/event'
+import { getProvinceList,getCountryList } from '../../../api/Data/total'
+import { getConfig } from '../../../api/system/config'
 
 export default {
   data() {
@@ -177,7 +178,8 @@ export default {
           }
         ],
         quickInfo:[],
-        loading: false
+        loading: false,
+        loading2: false
     }
   },
   component: {
@@ -189,6 +191,14 @@ export default {
     this.initMap()
     this.getOwnAck()
     this.initQuickInfo()
+    // var today = this.getCurrentTime()
+    // console.log(today)
+    // getProvinceList(today).then(res=>{
+    //   console.log(res)
+    // })
+    // getCountryList(today).then(res=>{
+    //   console.log(res)
+    // })
   },
   methods: {
     getHelp(){

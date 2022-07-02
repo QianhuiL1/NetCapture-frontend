@@ -18,8 +18,7 @@
     </div>
     <el-submenu index="4" class="submenu">
       <template slot="title"><span style="font-size:20px;">{{ username }}</span></template>
-      <el-menu-item index="4-1">设置</el-menu-item>
-      <router-link to="" @click.native="userDialog=true">
+      <router-link to="" @click.native="openOwn">
         <el-menu-item>个人中心</el-menu-item>
       </router-link>
       <el-menu-item @click="exit()" index="/home1">退出</el-menu-item>
@@ -70,11 +69,11 @@
             :rules="baseRules"
             label-width="80px"
           >
-            <el-form-item label="用户昵称" prop="name">
-              <el-input v-model="baseInfo.name" maxlength="30" />
+            <el-form-item label="用户昵称" prop="nickName">
+              <el-input v-model="baseInfo.nickName" maxlength="30" />
             </el-form-item>
-            <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="baseInfo.phone" maxlength="11" />
+            <el-form-item label="手机号码" prop="phonenumber">
+              <el-input v-model="baseInfo.phonenumber" maxlength="11" />
             </el-form-item>
             <el-form-item label="邮箱" prop="email">
               <el-input v-model="baseInfo.email" maxlength="50" />
@@ -88,10 +87,10 @@
               </div>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" class="button1" size="medium" @click="submit"
+              <el-button type="primary" class="button1" size="medium" @click="handleChange"
                 >保存</el-button
               >
-              <el-button type="primary" class="button2" size="medium" @click="close"
+              <el-button type="primary" class="button2" size="medium" @click="userDialog=flase"
                 >关闭</el-button
               >
             </el-form-item>
@@ -107,9 +106,9 @@
                 show-password
               />
             </el-form-item>
-            <el-form-item label="新密码" prop="password">
+            <el-form-item label="新密码" prop="newPassword">
               <el-input
-                v-model="form.password"
+                v-model="form.newPassword"
                 style="width: 90%"
                 placeholder="请输入新密码"
                 show-password
@@ -144,16 +143,23 @@
 </template>
  
 <script>
+import { getUserByName,updateUser,resetUserPwd,updateUserPwd,updateAuthRole } from "../api/system/user"
 import screenfull from "screenfull"
-  export default {
-    name: 'TopNav',
-    created(){
+export default {
+  name: 'TopNav',
+  created(){
 		this.getName()
 	},
-    data: function() {
-      return {
-        // peopleId:this.$store.state.user.name.split(',')[0],
-        id:"",
+  data() {
+    const equalToPassword = (rule,value,callback) =>{
+        if(this.form.newPassword != value){
+          callback(new Error("两次输入的密码不一致"))
+        }else {
+          callback()
+        }
+      }
+    return {
+      id:"",
         n:0,
         username:"",
           collapsed:false,
@@ -166,20 +172,22 @@ import screenfull from "screenfull"
         img:require('../assets/list.png'),
         fullscreen: false,
         user:{
-          name: '邓奇',
-          phone: '13495847363',
-          email: '18736472638@qq.com',
-          role:'管理员',
-          createTime: '2022-06-30 12:00:00'
+          name: '',
+          phone: '',
+          email: '',
+          role:'',
+          createTime: ''
         },
         baseInfo:{
-          name: '',
+          nickName: '',
           email: '',
-          phone: '',
-          sex: ''
+          phonenumber: '',
+          sex: '',
+          userName:'',
+          userId: ''
         },
         baseRules: {
-        name: [
+        nickName: [
           { required: true, message: '用户昵称不能为空', trigger: 'blur' }
         ],
         email: [
@@ -190,33 +198,62 @@ import screenfull from "screenfull"
             trigger: ['blur', 'change']
           }
         ],
-        phone: [
+        phonenumber: [
           { required: true, message: '手机号码不能为空', trigger: 'blur' },
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: '请输入正确的手机号码',
             trigger: 'blur'
           }
-        ]
-      },
-      rules: {
+        ]},
+        rules: {
         oldPassword: [
           { required: true, message: '旧密码不能为空', trigger: 'blur' }
         ],
-        password: [
-          { required: true, message: '新密码不能为空', trigger: 'blur' }
+        newPassword: [
+          { required: true, message: '新密码不能为空', trigger: 'blur' },
+          { min: 6, max: 20, message:'长度在6到20个字符',trigger: 'blur'}
         ],
         confirmPassword: [
-          { required: true, message: '确认密码不能为空', trigger: 'blur' }
+          { required: true, message: '确认密码不能为空', trigger: 'blur' },
+          { required: true, validator: equalToPassword, trigger:'blur'}
         ]
       },
-      form: { oldPassword: '', password: '', confirmPassword: '' },
-      userDialog: false
-      }
-    },
-    methods: {
+      form: { oldPassword: '', newPassword: '', confirmPassword: '' },
+      userDialog: false,
+      activeName:"userInfo",
+      userId:'',
+      inputInfo: {
+        userId: 0,
+        roleIds: []
+      },
+      
+    }
+
+  },
+  methods: {
+      openOwn(){
+        this.userDialog=true
+        this.user.name=this.username
+        getUserByName(this.$store.state.user.name.split(',')[0]).then(res=>{
+          this.user.email=res.rows[0].email
+          this.user.phone=res.rows[0].phonenumber
+          this.user.createTime=res.rows[0].createTime
+          this.userId=res.rows[0].userId
+          var role = this.$store.state.user.roles
+          if(role=='1'){
+            this.user.role='超级管理员'
+          }else if(role=='2'){
+            this.user.role='普通用户'
+          }else if(role=='3'){
+            this.user.role='疾控工作人员'
+          }else{
+            this.user.role='社区工作人员'
+          }
+        })
+      },
       getName(){
-this.id=setInterval(()=>{
+      this.id=setInterval(()=>{
 				this.n=this.n+1
 				if(this.n == 50){
 					clearInterval(this.id)
@@ -245,17 +282,33 @@ this.id=setInterval(()=>{
         }
         screenfull.toggle();
       },
+      // 修改资料
+      handleChange(){
+        if(this.baseInfo.sex=='女'){
+          this.baseInfo.sex='0'
+        }else{
+          this.baseInfo.sex='1'
+        }
+        this.baseInfo.userId=this.userId
+        this.baseInfo.userName=this.$store.state.user.name.split(',')[0]
+        console.log(this.baseInfo)
+        updateUser(this.baseInfo).then(res=>{
+          this.$message.success('修改资料成功')
+          this.userDialog=false
+        })
+      },
       handleSubmit(){
-
+        this.$refs["form"].validate(valid=>{
+          if(valid) {
+            updateUserPwd(this.form.oldPassword,this.form.newPassword).then(response=>{
+                this.$message.success("修改成功")
+                this.userDialog=false
+            })
+          }
+        })
       },
-      submit(){
-
-      },
-      close(){
-
-      }
-    }
   }
+}
 </script>
  
 <style scoped>

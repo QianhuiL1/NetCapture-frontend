@@ -258,11 +258,6 @@ callback(new Error('手机号码格式不正确'))
     this.getCode();
   },
   mounted() {
-    //     if (this.loginForm.username === '') {
-    //   this.$refs.username.focus()
-    // } else if (this.loginForm.password === '') {
-    //   this.$refs.password.focus()
-    // }
     window.onresize = () => {
       this.getScale()
     }

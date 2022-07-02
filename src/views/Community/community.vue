@@ -113,6 +113,7 @@
       </el-form-item>
       <el-form-item label="身份证号：" prop="peopleId">
         <el-input
+          :disabled="true"
           v-model="editFormData.peopleId"
           placeholder="请输入身份证号"
           clearable
@@ -181,6 +182,8 @@ export default{
         params:{}
       },
       rawId:'',
+      ownSex:'',
+      type:''
     }
   },
   created() {
@@ -224,9 +227,15 @@ for (; from < to; from++) {
       {
         this.initTable()
       }else if(this.queryParams.peopleId!=''){
+        console.log('身份证号不为空')
+        console.log(this.queryParams.peopleId)
         searchById(this.queryParams.peopleId).then(res=>{
+          console.log(res)
           this.residentTable=[]
           this.residentTable.push(res.data)
+          this.total=this.residentTable.length
+          this.handleSizeChange(10)
+          this.handleCurrentChange(1)
         })
       }else if(this.queryParams.name!=''){
         searchByName(this.queryParams.name).then(response=>{
@@ -234,9 +243,13 @@ for (; from < to; from++) {
             this.residentTable=[]
           }else{
             response.rows.forEach(item=>{
-              if(item.ancestors==this.param.ancestors){
+              var ancestor=item.ancestors.split(',').join('')
+              if(ancestor==this.param.ancestors){
                 this.residentTable=[]
                 this.residentTable.push(item)
+                this.total=this.residentTable.length
+                this.handleSizeChange(10)
+                this.handleCurrentChange(1)
               }
             })
           }
@@ -249,11 +262,10 @@ for (; from < to; from++) {
       this.rawId=row.peopleId
     },
     handleEdit(){
-      deletePersonInfo(this.rawId).then(item=>{
+      console.log(this.editFormData)
         updatePersonInfo(this.editFormData).then(res=>{
         this.$message.success('修改成功');
         this.dialogVisible= false
-      })
       })
     },
     resetQuery(){ 

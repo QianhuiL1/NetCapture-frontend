@@ -1,7 +1,8 @@
 <template>
   <div class="home_container">
-      <el-card class="table_content">
         <div class="center_content">
+          <el-card class="table_content">
+            <div class="firstLine">
           <div class="theme">
             <span> 重点人员上报记录 </span>
           </div>
@@ -14,8 +15,10 @@
               >上报重点人员</el-button
             >
           </div>
+          </div>
+            </el-card>
         </div>
-      </el-card>
+      <div class="center-content">
       <el-card class="table_content">
         <el-form
           ref="queryForm"
@@ -75,8 +78,8 @@
           </el-form-item>
         </el-form>
       </el-card>
-    
-    <div class="center-content">
+    </div>
+    <div class="center_content">
       <el-card class="table_content">
         <el-table
           v-loading="loading"
@@ -185,7 +188,7 @@ export default {
   data() {
     return {
       param: {
-        ancestors: "0,420000,420102",
+        ancestors: "0420000420102",
       },
       dialogVisible: false,
       typeArr: [
@@ -243,10 +246,10 @@ export default {
         let from = (currentPage - 1) * this.pageSize;
         let to = currentPage * this.pageSize;
         this.tableDataEnd = [];
-for (; from < to; from++) {
+          for (; from < to; from++) {
           if (list[from]) {
             this.tableDataEnd.push(list[from]);
-}}},
+        }}},
     getInfectList() {
       this.loading = true;
       var temp = [];
@@ -273,27 +276,47 @@ for (; from < to; from++) {
       this.loading = true;
       if (this.queryParams.name != "") {
         searchByName(this.queryParams.name).then((res) => {
-          console.log(res);
           if (res.rows.length < 1) {
             this.infectTable = [];
           } else {
             res.rows.forEach((item) => {
-              if (item.ancestors == this.param.ancestors) {
+              var ancestor=item.ancestors.split(',').join('')
+              if (ancestor == this.param.ancestors) {
                 if (item.status != "0") {
+                  item.infectTime=this.formatDate(item.positiveTime)
                   this.infectTable = [];
                   this.infectTable.push(item);
+                  this.total=this.infectTable.length
+                  if (this.total > this.pageSize) {
+                  for (let index = 0; index < this.pageSize; index++) {
+                    this.tableDataEnd.push(this.infectTable[index]);
+                  }
+                } else {
+                  this.tableDataEnd = this.infectTable;
+                }
+                this.loading=false
                 }
               }
             });
           }
         });
       } else if (this.queryParams.peopleId != "") {
-        console.log("id不为空");
         searchById(this.queryParams.peopleId).then((res) => {
           this.infectTable = [];
-          if (res.data.ancestors == this.param.ancestors) {
+          var ancestor=res.data.ancestors.split(',').join('')
+          if (ancestor == this.param.ancestors) {
             if (res.data.status != "0") {
+              res.data.infectTime=this.formatDate(res.data.positiveTime)
               this.infectTable.push(res.data);
+              this.total=this.infectTable.length
+              if (this.total > this.pageSize) {
+              for (let index = 0; index < this.pageSize; index++) {
+                this.tableDataEnd.push(this.infectTable[index]);
+              }
+              } else {
+                this.tableDataEnd = this.infectTable;
+              }
+              this.loading=false
             }
           }
         });
@@ -301,6 +324,7 @@ for (; from < to; from++) {
         var temp = [];
         searchByArea(this.param.ancestors).then((res) => {
           res.rows.forEach((item) => {
+            item.infectTime=this.formatDate(item.positiveTime)
             if (this.queryParams.type == "次密接") {
               if (item.status == "1") {
                 temp.push(item);
@@ -316,19 +340,25 @@ for (; from < to; from++) {
             }
           });
           this.infectTable = temp;
+          this.total=this.infectTable.length
+          if (this.total > this.pageSize) {
+          for (let index = 0; index < this.pageSize; index++) {
+            this.tableDataEnd.push(this.infectTable[index]);
+          }
+          } else {
+            this.tableDataEnd = this.infectTable;
+          }
+          this.loading=false
         });
-        console.log("type不为空");
       } else {
-        console.log("都为空");
         this.getInfectList();
       }
-      this.loading = false;
     },
     resetQuery() {
       this.queryParams = {
         name:'',
         peopleId: '',
-        positiveTime:''
+        type:''
       }
     },
     handleAdd(){
@@ -348,16 +378,22 @@ for (; from < to; from++) {
           if(res.data.name!=this.formData.name){
             this.$message.error('身份证号与姓名不符!');
           }else{
-            this.submitData=res.data
-            this.submitData.status='3'
-            updatePersonInfo(this.submitData).then(resp=>{
-              this.$message.success('修改成功');
+              this.submitData=res.data
+              this.submitData.status='3'
+              updatePersonInfo(this.submitData).then(resp=>{
               this.dialogVisible= false
               this.getInfectList()
-            })
-          }
-        })
-      }
+              let ancestor = res.data.ancestors.split(',').join('')
+              if(ancestor!=this.param.ancestors){
+                this.$message.success('已成功上报非本社区阳性人员')
+              }else{
+                this.$message.success('已成功上报本社区阳性人员');
+              }
+               this.getInfectList();
+              })
+              }
+          })
+        }
     },
     resetForm(){
       this.formData.name=''
@@ -399,6 +435,21 @@ for (; from < to; from++) {
 .home_container {
   padding: 2px 5px;
   line-height: 1;
+  height: 100%;
+}
+.center-content {
+  margin-top: 10px;
+}
+
+.table_content{
+  width: 100%;
+  padding: 10px 5px 0px 0px;
+
+}
+.firstLine{
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
 }
   .first-content {
     margin-top: 10px;
