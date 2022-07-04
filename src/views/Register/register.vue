@@ -60,7 +60,7 @@
             type="text"
             auto-complete="off"
           >
-            <template slot="prepend"><svg-icon icon-class="dict"/></template>
+            <template slot="prepend"><svg-icon icon-class="id" style="width:1.5em; height:1.5em; margin-left:-10px;margin-top:-5px;"/></template>
           </el-input>
         </el-form-item>
         <el-form-item prop="phonenumber" style="height: 52px;">
@@ -74,7 +74,7 @@
           </el-input>
         </el-form-item>
         </div>
-        <div class="rbox">
+        <div class="rbox" style="margin-left:20px;">
         <el-form-item prop="email" style="height: 52px;">
           <el-input
             v-model="registerForm.email"
@@ -92,25 +92,27 @@
             >{{item.label}}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item prop="deptId" style="height: 52px;">
+      <!-- <el-form-item prop="deptId" style="height: 52px;">
           <el-input
             v-model="registerForm.deptId"
             placeholder="部门号"
             type="text"
             auto-complete="off"
           ><template slot="prepend"><svg-icon icon-class="switch"/></template>
-          </el-input></el-form-item>
-          <!-- <el-form-item prop="deptId">
+          </el-input></el-form-item> -->
+          <el-form-item prop="deptId">
+            <svg-icon icon-class="dept" style="width:2em; height:3em; float:left; margin-left:20px; margin-top: 8px;"/>
                   <el-cascader
                     v-model="selectedOptions"
                     :options="options"
                     filterable
                     clearable
-                    style="width: 250px"
-                  ><template slot="prepend"><svg-icon icon-class="switch"/></template></el-cascader>
-                </el-form-item>-->
-          <el-form-item prop="roleId" style="height: 52px;"> 
-    <template > <svg-icon icon-class="rate" style="width:2em; height:3em; float:left; margin-left:20px;"/></template>
+                    style="width: 330px; margin-left:10px; "
+                    @change="handleQuery"
+                  />
+                </el-form-item>
+          <el-form-item prop="roleId"> 
+    <template > <svg-icon icon-class="role" style="width:2em; height:3em; float:left; margin-left:20px;"/></template>
         <el-radio-group v-model="registerForm.roleId" size="medium" class="radio" style="margin-top: 10px;">
           <el-radio v-for="(item, index) in roleOption" :key="index" :label="item.value"
             >{{item.label}}</el-radio>
@@ -228,10 +230,10 @@ callback(new Error('手机号码格式不正确'))
           { required: true, trigger: "blur", message: "请输入您的手机号" },
           { required: true, validator: validatePhone, trigger: "blur" }
         ],
-        // email: [
-        //   { required: true, trigger: "blur", message: "请输入您的邮箱" },
-        //   { required: true, validator: validateMail, trigger: "blur" }
-        // ],
+        email: [
+          { required: true, trigger: "blur", message: "请输入您的邮箱" },
+          { required: true, validator: validateMail, trigger: "blur" }
+        ],
         nickname: [
           { required: true, trigger: "blur", message: "请输入您的账号" },
           { min: 2, max: 20, message: '用户姓名长度必须介于 2 和 20 之间', trigger: 'blur' }
@@ -267,6 +269,10 @@ callback(new Error('手机号码格式不正确'))
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    handleQuery(){
+      this.registerForm.deptId=this.selectedOptions[2]
+      this.$message(this.registerForm.deptId)
+},
     getCode() {
       getCodeImg().then(res => {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
@@ -369,7 +375,7 @@ $cursor: #e5e5e5;
   position: relative;
   .box-card {
     // background-color: rgba(126, 144, 166);
-    width: 750px;
+    width: 780px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);

@@ -199,7 +199,6 @@ for (; from < to; from++) {
       this.loading=true
       var tempArray=[]
       page(this.queryParams).then(response=>{
-        console.log(response)
         this.total=response.rows.length
       response.rows.forEach(item => {
         var temp = {}

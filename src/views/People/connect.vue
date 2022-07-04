@@ -170,7 +170,7 @@
 <script>
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import { connectCreate } from '../../api/People/connect/base';
-import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
+import { regionData} from 'element-china-area-data'
 const ids = new Set()
 export default {
   name: "connectList",

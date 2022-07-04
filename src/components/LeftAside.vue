@@ -75,6 +75,14 @@
 		  n:0,
       }
     },
+	inject: ['reload'],  // 注入重载的功能（注入依赖）
+    //监视
+    watch: {
+       //检测路由参数发生改变时，刷新当前页面 调用
+       '$route': function(){
+            this.reload();
+        }
+    },
     methods:{
 		getRole(){
 			this.id=setInterval(()=>{
