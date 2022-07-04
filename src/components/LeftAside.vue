@@ -21,13 +21,22 @@
 				<span>  重点人员追踪</span>
 			</template>
 			<el-menu-item-group>
-				<el-menu-item index="/infect">感染人员列表</el-menu-item>
+				<el-menu-item index="/topology">拓扑图</el-menu-item>
 				<el-menu-item index="/track">行动轨迹追踪</el-menu-item>
+			</el-menu-item-group>
+		</el-submenu>
+		<el-submenu index="3" v-if="role == 1||role == 3">
+			<template slot="title">
+				<i class="el-icon-view" style="font-size: 28px;"></i>
+				<span>  重点人员列表</span>
+			</template>
+			<el-menu-item-group>
+				<el-menu-item index="/infect">感染人员列表</el-menu-item>
 				<el-menu-item index="/connect">密接人员列表</el-menu-item>
 				<el-menu-item index="/ci">次密接人员列表</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="3" v-if="role == 1||role == 3">
+		<el-submenu index="4" v-if="role == 1||role == 3">
 			<template slot="title">
 				<i class="el-icon-star-off" style="font-size: 28px;"></i>
 				<span>  区级管理</span>
@@ -36,7 +45,7 @@
 				<el-menu-item index="/dept">部门通讯录</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="4" v-if="role == 1||role == 4">
+		<el-submenu index="5" v-if="role == 1||role == 4">
 			<template slot="title">
 				<i class="el-icon-office-building" style="font-size: 28px;"></i>
 				<span>  社区管理</span>
@@ -47,7 +56,7 @@
 				<el-menu-item index="/communityImport">旅居人员登记</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="5">
+		<el-submenu index="6">
 			<template slot="title">
 				<i class="el-icon-share" style="font-size: 28px;"></i>
 				<span>  管理</span>
@@ -183,6 +192,14 @@
     background-size: 25px;
 }
 .el-icon-share:before{
+			font-size: 16px;
+			visibility: hidden;
+}
+.el-icon-view{
+		background: url('../assets/form.png') center center no-repeat;
+    background-size: 25px;
+}
+.el-icon-view:before{
 			font-size: 16px;
 			visibility: hidden;
 }

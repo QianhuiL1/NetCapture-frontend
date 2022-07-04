@@ -39,12 +39,12 @@
                 <span class="count" style="color:#C23531">{{totalNum.xybt}}</span>
               </div>
               <div class="event-item" style="background:#FEF7FF">
-                <span class="label">现有境外</span>
-                <span class="count">{{totalNum.xyjw}}</span>
+                <span class="label">新增治愈</span>
+                <span class="count">{{totalNum.xzzy}}</span>
               </div>
               <div class="event-item" style="background:#FEF7FF">
-                <span class="label">现有无症状</span>
-                <span class="count" style="color:#34C9C3">{{totalNum.xywzz}}</span>
+                <span class="label">新增死亡</span>
+                <span class="count" style="color:#34C9C3">{{totalNum.xzsw}}</span>
               </div>
             </div>
       </div>
@@ -94,7 +94,7 @@
 
 <script>
 import echarts from 'echarts'
-
+import { getAll } from '../../api/Data/basic'
 export default {
   data() {
     return {
@@ -103,10 +103,10 @@ export default {
         xzbt: '9',
         xzjw: '28',
         xzwzz: '1,132',
-        xyqz: '3,574,754',
+        xyqz: '4,754',
         xybt: '555',
-        xyjw: '254',
-        xywzz: '1,449',
+        xzzz: '254',
+        xzsw: '9',
       },
         dialogVisible: false,
         helpItems:[
@@ -148,12 +148,25 @@ export default {
     this.initCharts()
   },
   created() {
-    // this.handleInit()
-    // getFromNet('2022053016').then(res=>{
-    //   console.log(res)
-    // })
+    this.initForm()
   },
   methods: {
+    initForm(){
+      var today = this.getCurrentTime()
+      console.log('初始化')
+      getAll(today).then(res=>{
+        console.log('访问接口成功')
+        this.totalNum.xzqz=res.data.confirm
+        this.totalNum.xzbt=res.data.confirm-res.data.input
+        this.totalNum.xzjw=res.data.input
+        this.totalNum.xzwzz= res.data.incrNoSymptom
+        this.totalNum.xyqz= res.data.storeconfirm
+        this.totalNum.xybt= res.data.storeconfirm-res.data.input
+        this.totalNum.xzzy= res.data.heal
+        this.totalNum.xzsw=res.data.dead
+        
+    })
+    },
     getHelp(){
       this.dialogVisible= true
     },
@@ -203,7 +216,17 @@ export default {
       }]
       }
     this.otherAddChart.setOption(this.otherAddOption)
-  }
+  },
+      getCurrentTime() {
+      //获取当前时间并打印
+      let yy = new Date().getFullYear();
+      let mm = new Date().getMonth()+1;
+      mm = mm < 10 ? '0' + mm : mm;
+      let dd = new Date().getDate();
+      dd = dd < 10 ? '0' + dd : dd;
+      var gettime = yy+'-'+mm+'-'+dd
+      return gettime
+    },
 
   }
 }

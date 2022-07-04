@@ -85,6 +85,11 @@ export default {
             path: "/checkUser",
             component: () =>
                 import ("@/views/Admin/checkUser.vue")
+        },
+        {
+            path: "/topology",
+            component: () =>
+                import ("@/views/People/topology.vue")
         }
     ],
     // 去掉Vue地址的#

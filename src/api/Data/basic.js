@@ -8,3 +8,10 @@ export function page(date) {
         method: 'get',
     })
 }
+// 查询当天全国疫情信息
+export function getAll(date) {
+    return request({
+        url: prefix + '/country/' + date,
+        method: 'get'
+    })
+}

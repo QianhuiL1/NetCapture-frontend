@@ -1,12 +1,11 @@
 import request from '@/utils/request'
-const prefix = '/system/sojourn_table'
+const prefix = '/sojourn'
 
-// 查询普通人员列表
-export function page(queryParams) {
+// 通过区号查询旅居人员信息
+export function page(ancestor) {
     return request({
-        url: prefix + '/list/',
-        method: 'get',
-        params: queryParams
+        url: prefix + '/listByAncestor/' + ancestor,
+        method: 'get'
     })
 }
 

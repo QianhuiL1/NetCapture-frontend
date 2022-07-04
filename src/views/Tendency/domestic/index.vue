@@ -92,7 +92,7 @@
 import echarts from 'echarts'
 import "echarts/map/js/china.js"
 import $ from 'jquery'
-import {page} from '../../../api/Data/basic'
+import {page,getAll} from '../../../api/Data/basic'
 let cZjson = require("../area/area.json")
 import {getNews} from '../../../api/Data/event'
 import { getProvinceList,getCountryList } from '../../../api/Data/total'
@@ -194,12 +194,11 @@ export default {
     this.initMap()
     this.getOwnAck()
     this.initQuickInfo()
-    var today = this.getCurrentTime()
-    console.log(today)
-    getProvinceList(this.paramData.totalepidemicDate).then(res=>{
-      console.log('解决了')
-      console.log(res)
-    })
+    
+    // getProvinceList(today).then(res=>{
+    //   console.log('解决了')
+    //   console.log(res)
+    // })
     // getCountryList(today).then(res=>{
     //   console.log(res)
     // })
@@ -210,12 +209,12 @@ export default {
     },
     initMap(){
       var today=this.getCurrentTime()
-      console.log(today)
       page(today).then(res=>{
-        console.log(res)
+        // console.log(res)
         res.rows.forEach(item=>{
+          // console.log(item.province)
           this.initialArray.forEach(it=>{
-            if(it.name==item.province){
+            if(it.name===item.province){
               it.value=item.confirm
             }
           })
@@ -371,11 +370,9 @@ export default {
     initQuickInfo(){
       this.loading= true
       getNews().then(res=>{
-        console.log(res)
       // 展示前20条新闻
       this.quickInfo = res.rows.reverse().slice(0,20)
       this.loading= false
-
     })
     },
     getNewsDetail(row){

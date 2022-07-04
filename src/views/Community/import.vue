@@ -82,7 +82,7 @@
           </template>
         </el-table-column>
         <el-table-column label="来源地" prop="fromAncestors" min-width="20%"></el-table-column>
-        <el-table-column label="交通方式" prop="fromAncestors" min-width="20%"></el-table-column>
+        <el-table-column label="交通方式" prop="transportation" min-width="20%"></el-table-column>
         <el-table-column label="现居地" prop="toAncestors" min-width="20%"></el-table-column>
         <el-table-column label="详细地址" prop="toAddress" min-width="20%"></el-table-column>
         <el-table-column label="登记时间" prop="recordTime"
@@ -156,6 +156,7 @@ import {getAreaById} from '../../api/Ancestor/base'
 let pcas = require("./pcas/pcas-code.json")
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
+import {CodeToText} from 'element-china-area-data'
 
 export default {
   name:'importNew',
@@ -163,6 +164,7 @@ export default {
     return {
       dialogVisible: false,
       queryParams:{id: ''},
+      ancestors: '0,420000,420984',
       formData:{},
       importTable: [],
       loading: false,
@@ -172,6 +174,18 @@ export default {
       tableDataEnd:[],
       pageSize:15,
       currentPage:1,
+      tempItem:{
+        name:'',
+        sex: '',
+        peopleId: '',
+        phonenumber: '',
+        status:'',
+        fromAncestors:'',
+        toAncestors:'',
+        transportation:'',
+        toAddress:'',
+        recordTime:''
+      }
     }
   },
   created() {
@@ -198,30 +212,31 @@ for (; from < to; from++) {
     initTable(){
       this.loading=true
       var tempArray=[]
-      page(this.queryParams).then(response=>{
-        this.total=response.rows.length
-      response.rows.forEach(item => {
-        var temp = {}
-        temp.toAddress=item.toAddress
-        temp.recordTime=item.recordTime
-        temp.peopleId = item.peopleId
-        getAreaById(item.toAncestors).then(re=>{
-          temp.toAncestors = re.rows[0].name
-          getAreaById(item.fromAncestors).then(resp=>{
-          temp.fromAncestors=resp.rows[0].name
-          searchDetail(item.peopleId).then(res=>{
-          temp.status=res.data.status
-          temp.sex = res.data.sex
-          temp.phonenumber=res.data.phonenumber
-          temp.name = res.data.name
-          tempArray.push(temp)
-           this.loading=false
-        })
-        })        
-        })
-      });
+      page(this.ancestors).then(response=>{
+        response.rows.forEach(item => {
+          this.tempItem=item
+          this.tempItem.name=item.personInfo.name
+          this.tempItem.phonenumber=item.personInfo.phonenumber
+          this.tempItem.toAddress=item.personInfo.address
+          this.tempItem.sex=item.personInfo.sex
+          this.tempItem.status=item.personInfo.status
+          var fromArray=item.fromAncestors.split(',')
+          var name1=''
+          for(var i=1;i<fromArray.length;i++){
+            name1+= CodeToText[fromArray[i]]+' '
+          }
+          this.tempItem.fromAncestors=name1
+          var toArray =item.toAncestors.split(',')
+          var name2=''
+          for(var j=1;j<toArray.length;j++){
+            name2+=CodeToText[toArray[j]]+' '
+          }
+          this.tempItem.toAncestors=name2
+          tempArray.push(this.tempItem)
+        });
     })
       this.importTable=tempArray
+      this.total=this.importTable.length
       if (this.total > this.pageSize) {
         for (let index = 0; index < this.pageSize; index++) {
           this.tableDataEnd.push(this.importTable[index]);
@@ -229,7 +244,7 @@ for (; from < to; from++) {
       } else {
         this.tableDataEnd = this.importTable;
       }
-      // this.sleep1(5000)
+      this.loading= false;
     },
     handleAdd(){
       this.dialogVisible=true
@@ -237,46 +252,42 @@ for (; from < to; from++) {
     handleChange(value){
     },
     handleQuery(){
+      this.loading=true
       this.importTable=[]
       if(this.queryParams.id==''){
         this.initTable()
       }else{
         searchById(this.queryParams.id).then(res=>{
         if(res.total<1){
+          this.importTable=[]
+          this.total=0
           // 若查询为空
         }else{
-          var temp = {}
-          temp.toAddress=res.rows[0].toAddress
-          temp.recordTime=res.rows[0].recordTime
-          temp.peopleId = res.rows[0].peopleId
-          getAreaById(res.rows[0].toAncestors).then(re=>{
-          temp.toAncestors = re.data.name
-          getAreaById(res.rows[0].fromAncestors).then(resp=>{
-          temp.fromAncestors=resp.data.name
-          searchDetail(temp.peopleId).then(res=>{
-            temp.phonenumber=res.data.phonenumber
-            temp.name = res.data.name
-            temp.sex= res.data.sex=="1"?"女":"男"
-            if(res.data.status=="0"){
-              temp.status = "健康"
-            }else if(res.data.status=="1"){
-              temp.status ="次密接"
-            }else if (res.data.status=="2"){
-              temp.status="密接"
-            }else{
-              temp.status="阳性"
-            }
-            console.log(temp)
-            this.importTable.push(temp)
-          })
-          })
-          })
+          this.tempItem=res.rows[0]
+          this.tempItem.name=res.rows[0].personInfo.name
+          this.tempItem.peopleId=res.rows[0].personInfo.peopleId
+          this.tempItem.phonenumber=res.rows[0].personInfo.phonenumber
+          this.tempItem.toAddress=res.rows[0].personInfo.address
+          this.tempItem.sex=res.rows[0].personInfo.sex
+          this.tempItem.status=res.rows[0].personInfo.status
+          this.total=1
+          this.importTable.push(this.tempItem)
+          this.loading=false
+          if (this.total > this.pageSize) {
+          for (let index = 0; index < this.pageSize; index++) {
+            this.tableDataEnd.push(this.importTable[index]);
+          }
+          } else {
+            this.tableDataEnd = this.importTable;
+          }
         }
       })
       }
     },
     resetQuery(){
-      this.queryParams={}
+      this.queryParams={
+        id:''
+      }
     },
     areaChange(){
     },
