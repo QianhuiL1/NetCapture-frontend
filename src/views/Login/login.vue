@@ -1,6 +1,6 @@
 <template>
   <div
-    class="login-container" :style="backgorund"
+    class="login-container"
   >
     <el-card class="box-card">
       <el-form
@@ -99,11 +99,6 @@ export default {
   // components: { SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-      // if (!validUsername(value)) {
-      //   callback(new Error('请输入用户名'))
-      // } else {
-      //   callback()
-      // }
       if(value==''){
         callback(new Error('请输入用户名'))
       }else{
@@ -236,10 +231,7 @@ export default {
             Cookies.remove('rememberMe');
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
-            this.$router.push({ name:"map",
-            params:{
-            name:this.loginForm.username
-          } }).catch(()=>{});
+            this.$router.push({ path:'/map' }).catch(()=>{});
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {
@@ -247,7 +239,6 @@ export default {
             }
           });
         }}
-      //  this.$router.push({ path:'/home' })
     )},
     // handleLogin() {
     //   this.$refs.loginForm.validate(valid => {

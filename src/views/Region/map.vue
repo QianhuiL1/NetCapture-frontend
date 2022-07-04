@@ -12,7 +12,7 @@
           class="menu-item"
           :class="[menuIndex == 'region' ? 'active' : '']"
           @click="
-          menuIndex = 'region';
+            menuIndex = 'region';
             setRegion();
             clearLine();
             getMenuIndex();
@@ -24,7 +24,7 @@
           class="menu-item"
           :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
-          menuIndex = 'track';
+            menuIndex = 'track';
             clearRegion();
             setLine();
             getMenuIndex();
@@ -37,7 +37,7 @@
           class="menu-item"
           :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
-          menuIndex = 'dataPanel';
+            menuIndex = 'dataPanel';
             getMenuIndex();
           "
         >
@@ -46,36 +46,32 @@
         </li>
       </ul>
     </div>
-    <dataPanel v-if="menuIndex==='dataPanel'" style="z-index: 1001;"/>
+    <dataPanel v-if="menuIndex === 'dataPanel'" style="z-index: 1001" />
     <div id="map"></div>
-    
   </div>
 </template>
 <script>
 import { travelList } from "../../api/People/travel/basic";
-import { regionList } from "../../api/Region/basic";
+import { regionList,getAncestor } from "../../api/Region/basic";
 import dataPanel from "@/components/dataPancel";
-
-
+import { infectInfo, infectList } from "../../api/People/infect/basic";
+import { CodeToText } from 'element-china-area-data'
 const AMap = window.AMap;
 export default {
   name: "Map",
   mounted() {
     // 初始化地图页面
-    // if(this.$route.params.name != undefined){
-    //   this.$router.go(0)
-    // }
     this.initData();
+    this.setRegion();
     this.initMap();
-    this.setRegion()
   },
   components: {
     geoCoder: "",
-    dataPanel
+    dataPanel,
   },
   data() {
     return {
-      menuIndex:"region",
+      menuIndex: "region",
       count: true,
       peopleList: [],
       map: null,
@@ -123,7 +119,7 @@ export default {
     };
   },
   methods: {
-    initData(){
+    initData() {
       travelList().then((response) => {
         this.travelData = response.rows;
       });
@@ -149,12 +145,16 @@ export default {
         citylimit: true,
       };
       this.geoCoder = new AMap.Geocoder(geoOption);
-      
     },
     setRegion() {
       let this_ = this;
       this.webRegion(2, "#ff0000", "#ff8000");
-      for (var index in this_.travelData) {
+      setInterval(()=>{
+				this.n=this.n+1
+				if(this.travelData.length > 0){
+					clearInterval(this.id)
+				}
+        for (var index in this_.travelData) {
         this.geoCoder.getLocation(
           this_.travelData[index].address,
           function (status, result) {
@@ -169,6 +169,8 @@ export default {
           }
         );
       }
+			},1000)
+      
     },
     webRegion(status, color, stroke) {
       let this_ = this;
@@ -186,7 +188,8 @@ export default {
     },
     showRegion(result, color, stroke) {
       const this_ = this;
-      var city = "";
+      var code = ""
+      var codeArray = []
       let bounds = result.districtList[0].boundaries;
       if (bounds) {
         for (let i = 0, l = bounds.length; i < l; i++) {
@@ -199,14 +202,14 @@ export default {
             fillColor: color, //填充颜色
             strokeColor: stroke, //线条颜色
           });
-          this.polygons.push(polygon);
+          getAncestor(result.districtList[0].adcode).then((response)=>{
+code = response.data.ancestors
+codeArray = code.split(",");
+this.polygons.push(polygon);
           var level = color == "#ff0000" ? "一级重点区域" : "二级重点区域";
           polygon.content =
-            "<h4>区域编码：" +
-            result.districtList[0].adcode +
-            "</h4>" +
-            "<h4>具体地址：" +
-            result.districtList[0].name +
+            "<h4>重点地区：" +
+            CodeToText[codeArray[1]] + "/" + CodeToText[codeArray[2]]+
             "</h4>" +
             "<h4>区域级别：" +
             level +
@@ -219,6 +222,7 @@ export default {
             infoWindow.setContent(e.target.content);
             infoWindow.open(this_.map, e.lnglat);
           }
+      })
         }
         // 地图自适应
         this.map.setFitView();
@@ -236,34 +240,38 @@ export default {
     setLine() {
       const tmp_this = this;
       const map = this.map;
+      var name = "";
       var lng = "";
       var lat = "";
       this.lineArr = [];
       var point = 0;
       var record = this.travelData[0].recordId;
+      var infoWindow = new AMap.InfoWindow({
+        offset: new AMap.Pixel(0, -20),
+      });
       for (const index in this.travelData) {
         const spot = this.travelData[index].address;
-        const time = this.travelData[index].time;
+        const arriveTime = this.travelData[index].arriveTime;
+        const leftTime = this.travelData[index].leftTime;
+        const peopleId = this.travelData[index].peopleId;
+        infectInfo(peopleId).then((res1) => {
+          name = res1.data.name;
+        });
         this.geoCoder.getLocation(spot, function (status, result) {
-          if (tmp_this.travelData[index].recordId != record) {
-              tmp_this.initroad();
-              tmp_this.lineArr = [];
-              point = 0;
-              record = tmp_this.travelData[index].recordId;
-            }
           if (status === "complete" && result.geocodes.length) {
+            if (tmp_this.travelData[index].recordId != record) {
+            tmp_this.initroad();
+            tmp_this.lineArr = [];
+            point = 0;
+            record = tmp_this.travelData[index].recordId;
+          }
             var lnglat = result.geocodes[0].location;
             lng = lnglat.lng;
             lat = lnglat.lat;
-            point = point + 1;
             tmp_this.lineArr.push([lng, lat]);
-            if (tmp_this.travelData.length-1 === parseInt(index)) {
-              tmp_this.initroad();
-              tmp_this.initLine();
-            }
             var markerspot = new AMap.CircleMarker({
               center: [lng, lat],
-              radius: 20, //3D视图下，CircleMarker半径不要超过64px 大小
+              radius: 20,
               strokeColor: "white", // 边框颜色
               strokeWeight: 2,
               strokeOpacity: 0.5,
@@ -274,10 +282,33 @@ export default {
               cursor: "pointer",
               clickable: true,
             });
+            markerspot.content =
+              "<div style='font-size:18px; font-height:20px;'>" +
+              "轨迹地点：" +
+              spot +
+              "<br/>" +
+              "人员姓名：" +
+              name +
+              "<br/>" +
+              "身份证号：" +
+              peopleId +
+              "<br/>" +
+              "到达时间：" +
+              arriveTime +
+              "<br/>" +
+              "离开时间：" +
+              leftTime +
+              "</div>";
+            markerspot.on("mouseover", markerClick);
+            markerspot.emit("mouseover", { target: markerspot });
+            function markerClick(e) {
+              infoWindow.setContent(e.target.content);
+              infoWindow.open(map, e.target.getCenter());
+            }
             map.add(markerspot);
             tmp_this.points.push(markerspot);
             var text = new AMap.Text({
-              text: point,
+              text: ++point,
               anchor: "center", // 设置文本标记锚点
               // draggable: true, // 是否可移动文本
               cursor: "pointer",
@@ -301,21 +332,24 @@ export default {
             text.setMap(map);
             tmp_this.texts.push(text);
             map.setFitView();
+            if (tmp_this.travelData.length - 1 === parseInt(index)) {
+              tmp_this.initroad();
+              tmp_this.initLine();
+            }
           }
         });
       }
     },
     initLine() {
       var record = "";
-      const this_=this;
+      const this_ = this;
       AMap.plugin("AMap.Driving", function () {});
-
       record = this.travelData[0];
       for (var index in this_.travelData) {
         if (this_.travelData[index].recordId != record) {
           this_.Driving_obj = new AMap.Driving({
-        map: this_.map,
-      });
+            map: this_.map,
+          });
           this_.Driving_obj.search(this_.path, function (status, result) {
             if (status === "complete") {
               if (result.routes && result.routes.length) {
@@ -452,7 +486,7 @@ div {
       margin: 0;
       position: relative;
       z-index: 2000;
-      height:150px;
+      height: 150px;
       background: url("~@/assets/topbg.png");
       background-repeat: no-repeat;
       background-size: 100%;
@@ -489,7 +523,7 @@ div {
       font-weight: 500;
       color: #ff4b4b;
       &:hover,
-      &.active{
+      &.active {
         color: #ff4b4b !important;
         border: 1px solid #ff4b4b;
         background-color: rgba(255, 75, 75, 0.3);

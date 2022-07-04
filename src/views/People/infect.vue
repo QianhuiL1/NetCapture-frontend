@@ -185,21 +185,17 @@
 </template>
 
 <script>
-import Pagination from "@/components/Pagination";
 import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
 import {trackList} from '../../api/People/track/basic';
 import {
   travelList,
 } from "../../api/People/travel/basic";
-import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
+import { regionData} from 'element-china-area-data'
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 
 export default {
   name: "infectList",
-  components: {
-    Pagination,
-  },
   created(){
 this.getList()
   },
