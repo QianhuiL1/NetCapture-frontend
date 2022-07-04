@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
+import { regionData} from 'element-china-area-data'
 import { getCodeImg,register } from '../../api/login'
 
 export default {
@@ -271,7 +271,6 @@ callback(new Error('手机号码格式不正确'))
   methods: {
     handleQuery(){
       this.registerForm.deptId=this.selectedOptions[2]
-      this.$message(this.registerForm.deptId)
 },
     getCode() {
       getCodeImg().then(res => {

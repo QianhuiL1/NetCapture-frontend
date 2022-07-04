@@ -43,3 +43,11 @@ export function infectDelete(id) {
         method: 'delete'
     })
 }
+
+//获取某段时间内的感染人员记录
+export function TimeList(startTime,endTime) {
+    return request({
+        url: prefix +'/listByTime/' + startTime + "&&" + endTime,
+        method: 'get',
+    })
+}

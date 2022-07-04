@@ -360,6 +360,7 @@ export default {
         peopleId: '',
         type:''
       }
+      this.handleQuery()
     },
     handleAdd(){
       this.formData.name=''

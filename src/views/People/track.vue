@@ -251,8 +251,6 @@ import {
 } from "../../api/People/travel/basic";
 import { connectList } from "../../api/People/connect/basic";
 const AMap = window.AMap;
-import FileSaver from 'file-saver'
-import XLSX from 'xlsx'
 import Pagination from '../../components/Pagination'
 
 export default {
@@ -545,6 +543,7 @@ setInterval(()=>{
           this.tableData = response.rows;
           this.total = response.rows.length
           this.spot.recordId = response.rows[0].recordId
+          console.log(response.rows[0].arriveTime)
           if (this.total > this.pageSize) {
         for (let index = 0; index < this.pageSize; index++) {
           this.tableDataEnd.push(this.tableData[index]);
@@ -586,8 +585,8 @@ setInterval(()=>{
             for (var index in this.tableData) {
               travelAdd({
                 address: this.tableData[index].address,
-                arriveTime: this.tableData[index].arriveTime,
-                leftTime: this.tableData[index].leftTime,
+                arriveTime: this.tableData[index].arriveTime.toString(),
+                leftTime: this.tableData[index].leftTime.toString(),
                 peopleId: this.formQuery.id,
                 recordId: this.tableData[index].recordId,
               });
@@ -643,16 +642,25 @@ setInterval(()=>{
       this.getList();
     },
     handleCommit() {
+      const this_ = this
+      var codes = []
+      for (var index in this.tableData) {
+        this.geoCoder.getLocation(
+          this.tableData[index].address,
+          function (status, result) {
+            if (status === "complete" && result.geocodes.length) {
+              if(!codes.includes(result.geocodes[0].adcode))
+              codes.push(result.geocodes[0].adcode)
+            }
+          }
+        );
+      }
       connectList(this.spot.recordId).then(()=>{
         this.$message.success("提交成功")
-      }).catch(() => {
-        this.$message.success("提交成功")
-      })
+      }).catch(() => {})
     },
     handleExport(){
       let that = this
-      console.log('开始导出')
-      console.log(that.tableData)
       require.ensure([],()=>{
       const { export_json_to_excel } = require('@/excel/Export2Excel'); 
       const tHeader = ['到达时间','离开时间','地点']; 

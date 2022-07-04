@@ -150,15 +150,13 @@ export default {
   computed: {
     // ...mapGetters(['rootRoles', 'permission_routes'])
   },
-  watch: {
-    // $route: {
-    //   handler: function(route) {
-    //     const query = route.query
-    //     this.redirect = query.redirect
-    //     this.otherQuery = this.getOtherQuery(query)
-    //   },
-    //   immediate: true
-    // }
+ watch: {
+    $route: {
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect;
+      },
+      immediate: true
+    }
   },
   created() {
     this.getCode();
@@ -232,6 +230,7 @@ export default {
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
             this.$router.push({ path:'/map' }).catch(()=>{});
+            // this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {

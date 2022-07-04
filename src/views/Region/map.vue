@@ -15,7 +15,6 @@
             menuIndex = 'region';
             setRegion();
             clearLine();
-            getMenuIndex();
           "
         >
           重点地区
@@ -27,7 +26,6 @@
             menuIndex = 'track';
             clearRegion();
             setLine();
-            getMenuIndex();
           "
         >
           重点轨迹
@@ -38,7 +36,8 @@
           :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
             menuIndex = 'dataPanel';
-            getMenuIndex();
+            clearLine();
+            clearRegion();
           "
         >
           数据面板
@@ -149,12 +148,10 @@ export default {
     setRegion() {
       let this_ = this;
       this.webRegion(2, "#ff0000", "#ff8000");
-      setInterval(()=>{
-				this.n=this.n+1
+      this.id=setInterval(()=>{
 				if(this.travelData.length > 0){
 					clearInterval(this.id)
-				}
-        for (var index in this_.travelData) {
+          for (var index in this_.travelData) {
         this.geoCoder.getLocation(
           this_.travelData[index].address,
           function (status, result) {
@@ -169,6 +166,8 @@ export default {
           }
         );
       }
+				}
+        
 			},1000)
       
     },
@@ -254,9 +253,6 @@ this.polygons.push(polygon);
         const arriveTime = this.travelData[index].arriveTime;
         const leftTime = this.travelData[index].leftTime;
         const peopleId = this.travelData[index].peopleId;
-        infectInfo(peopleId).then((res1) => {
-          name = res1.data.name;
-        });
         this.geoCoder.getLocation(spot, function (status, result) {
           if (status === "complete" && result.geocodes.length) {
             if (tmp_this.travelData[index].recordId != record) {
@@ -264,7 +260,9 @@ this.polygons.push(polygon);
             tmp_this.lineArr = [];
             point = 0;
             record = tmp_this.travelData[index].recordId;
+            console.log("111")
           }
+          console.log("aaa"+point)
             var lnglat = result.geocodes[0].location;
             lng = lnglat.lng;
             lat = lnglat.lat;
@@ -282,7 +280,9 @@ this.polygons.push(polygon);
               cursor: "pointer",
               clickable: true,
             });
-            markerspot.content =
+            infectInfo(peopleId).then((res1) => {
+          name = res1.data.name;
+          markerspot.content =
               "<div style='font-size:18px; font-height:20px;'>" +
               "轨迹地点：" +
               spot +
@@ -299,6 +299,7 @@ this.polygons.push(polygon);
               "离开时间：" +
               leftTime +
               "</div>";
+        });
             markerspot.on("mouseover", markerClick);
             markerspot.emit("mouseover", { target: markerspot });
             function markerClick(e) {
@@ -307,6 +308,7 @@ this.polygons.push(polygon);
             }
             map.add(markerspot);
             tmp_this.points.push(markerspot);
+            
             var text = new AMap.Text({
               text: ++point,
               anchor: "center", // 设置文本标记锚点
@@ -314,15 +316,10 @@ this.polygons.push(polygon);
               cursor: "pointer",
               angle: 10,
               style: {
-                // padding: ".75rem 1.25rem",
-                // "margin-bottom": "1rem",
-                // "border-radius": ".25rem",
                 "margin-top": "2px",
                 "background-color": "#9b9a99",
                 opacity: "1",
-                // width: "100%",
                 "border-width": 0,
-                // "box-shadow": "0 2px 6px 0 rgba(114, 124, 245, .5)",
                 "text-align": "center",
                 "font-size": "20px",
                 color: "#fff",
@@ -510,6 +507,7 @@ div {
     padding: 8px 0;
     margin: 0;
     .menu-item {
+      margin-top: 28px;
       z-index: 2000;
       height: 45px;
       line-height: 45px;

@@ -23,6 +23,7 @@
         <el-form-item label="日期:" style="float: left;margin-left:50px;">
           <el-date-picker
             v-model="queryDateRange"
+            value-format="yyyy-MM-dd"
             type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
@@ -37,7 +38,7 @@
                     filterable
                     clearable
                     style="width: 250px"
-                    @change="handleQuery"
+                    @change="handleQuery1"
                   />
                 </el-form-item>
         <el-form-item style="float: right">
@@ -185,7 +186,7 @@
 </template>
 
 <script>
-import {infectList,infectInfo,infectUpdate,infectDelete,infectAdd} from '../../api/People/infect/basic';
+import {infectList,infectInfo,TimeList} from '../../api/People/infect/basic';
 import {trackList} from '../../api/People/track/basic';
 import {
   travelList,
@@ -222,20 +223,7 @@ formatDate(value) {
         drawerVisible:false,
         dialogVisible:false,
       reverse: true,
-      activities: [
-        {
-          content: "活动按期开始",
-          timestamp: "2018-04-15",
-        },
-        {
-          content: "通过审核",
-          timestamp: "2018-04-13",
-        },
-        {
-          content: "创建成功",
-          timestamp: "2018-04-11",
-        },
-      ],
+      activities: [],
       total:1,
       tableDataEnd:[],
       pageSize:15,
@@ -259,13 +247,7 @@ formatDate(value) {
           label: "未审查",
         },
       ],
-      infectList: [{
-          name: '张三',
-          peopleId:'42030219901024737X',
-          phonenumber:'13962462222',
-          createTime: '2016-05-02',
-          type:1,
-        }],
+      infectList: [],
       value: "",
       people:{
           id:"",
@@ -275,7 +257,9 @@ formatDate(value) {
           address:"",
           date:"",
           status:""
-        }
+        },
+        startDate:"",
+        endDate:""
     };
   },
   methods: {
@@ -298,12 +282,15 @@ for (; from < to; from++) {
 }}},
     handleQuery() {
       if (this.queryDateRange) {
-        this.queryParams.startDate = this.queryDateRange[0];
-        this.queryParams.endDate = this.queryDateRange[1];
+        this.startDate = this.queryDateRange[0];
+        this.endDate = this.queryDateRange[1];
       } else {
-        this.queryParams.startDate = "";
-        this.queryParams.endDate = "";
+        this.startDate = "";
+        this.endDate = "";
       }
+      this.getList()
+    },
+    handleQuery1(){
       this.queryParams.ancestors='0'+','+this.selectedOptions[0]+','+this.selectedOptions[2]
       this.getList()
     },
@@ -353,9 +340,31 @@ trackList({ peopleId: this.formQuery.id }).then((res) => {
     },
     getList() {
       this.loading = true;
-      infectList(this.queryParams).then((response) => {
+      var list = []
+infectList(this.queryParams).then((response) => {
         this.total = response.rows.length
         this.infectList = response.rows;
+        if(this.startDate != ""){
+TimeList(this.startDate,this.endDate).then((res) => {
+for(var i in this.infectList){
+  for(var index in res.rows){
+if(res.rows[index].peopleId === this.infectList[i].peopleId){
+    list.push(res.rows[index])
+    continue
+  }
+  }
+}
+this.total = list.length
+this.infectList = list
+if (this.total > this.pageSize) {
+        for (let index = 0; index < this.pageSize; index++) {
+          this.tableDataEnd.push(this.infectList[index]);
+        }
+      } else {
+        this.tableDataEnd = this.infectList;
+      }
+        });
+        }
         if (this.total > this.pageSize) {
         for (let index = 0; index < this.pageSize; index++) {
           this.tableDataEnd.push(this.infectList[index]);
@@ -374,7 +383,8 @@ trackList({ peopleId: this.formQuery.id }).then((res) => {
       this.queryDateRange = [];
       this.queryParams.ancestors = ""
       this.selectedOptions = '';
-      this.handleQuery();
+      //this.handleQuery();
+      this.getList()
     },
     handleExport(){
       let that = this

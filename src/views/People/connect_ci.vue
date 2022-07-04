@@ -205,7 +205,7 @@ import {
   infectDelete,
   infectAdd,
 } from "../../api/People/infect/basic";
-import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
+import { regionData} from 'element-china-area-data'
 export default {
   name: "connectList",
   created() {

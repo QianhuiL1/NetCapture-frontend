@@ -150,6 +150,12 @@ export default {
   created(){
 		this.getName()
 	},
+  // watch: {
+  //      //检测路由参数发生改变时，刷新当前页面 调用
+  //      '$route': function(){
+  //           this.$route.go(0)
+  //       }
+  //   },
   data() {
     const equalToPassword = (rule,value,callback) =>{
         if(this.form.newPassword != value){
