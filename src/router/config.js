@@ -80,6 +80,11 @@ export default {
             path: "/dept",
             component: () =>
                 import ("@/views/system/dept")
+        },
+        {
+            path: "/checkUser",
+            component: () =>
+                import ("@/views/Admin/checkUser.vue")
         }
     ],
     // 去掉Vue地址的#

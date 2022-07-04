@@ -179,7 +179,10 @@ export default {
         ],
         quickInfo:[],
         loading: false,
-        loading2: false
+        loading2: false,
+        paramData:{
+          totalepidemicDate:'2022-07-02'
+        }
     }
   },
   component: {
@@ -191,11 +194,12 @@ export default {
     this.initMap()
     this.getOwnAck()
     this.initQuickInfo()
-    // var today = this.getCurrentTime()
-    // console.log(today)
-    // getProvinceList(today).then(res=>{
-    //   console.log(res)
-    // })
+    var today = this.getCurrentTime()
+    console.log(today)
+    getProvinceList(this.paramData.totalepidemicDate).then(res=>{
+      console.log('解决了')
+      console.log(res)
+    })
     // getCountryList(today).then(res=>{
     //   console.log(res)
     // })

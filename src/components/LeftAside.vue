@@ -47,6 +47,15 @@
 				<el-menu-item index="/communityImport">旅居人员登记</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
+		<el-submenu index="5">
+			<template slot="title">
+				<i class="el-icon-share" style="font-size: 28px;"></i>
+				<span>  管理</span>
+			</template>
+			<el-menu-item-group>
+				<el-menu-item index="/checkUser">审核注册用户</el-menu-item>
+			</el-menu-item-group>
+		</el-submenu>
 	</el-menu>
 </template>
 
@@ -158,6 +167,14 @@
     background-size: 25px;
 }
 .el-icon-office-building:before{
+			font-size: 16px;
+			visibility: hidden;
+}
+.el-icon-share{
+		background: url('../assets/check.png') center center no-repeat;
+    background-size: 25px;
+}
+.el-icon-share:before{
 			font-size: 16px;
 			visibility: hidden;
 }
