@@ -95,8 +95,7 @@ import $ from 'jquery'
 import {page,getAll} from '../../../api/Data/basic'
 let cZjson = require("../area/area.json")
 import {getNews} from '../../../api/Data/event'
-import { getProvinceList,getCountryList } from '../../../api/Data/total'
-import { getConfig } from '../../../api/system/config'
+import {getProvince,getCountryList} from '../../../api/Data/total'
 
 export default {
   data() {
@@ -194,14 +193,6 @@ export default {
     this.initMap()
     this.getOwnAck()
     this.initQuickInfo()
-    
-    // getProvinceList(today).then(res=>{
-    //   console.log('解决了')
-    //   console.log(res)
-    // })
-    // getCountryList(today).then(res=>{
-    //   console.log(res)
-    // })
   },
   methods: {
     getHelp(){
@@ -210,9 +201,7 @@ export default {
     initMap(){
       var today=this.getCurrentTime()
       page(today).then(res=>{
-        // console.log(res)
         res.rows.forEach(item=>{
-          // console.log(item.province)
           this.initialArray.forEach(it=>{
             if(it.name===item.province){
               it.value=item.confirm
@@ -273,99 +262,107 @@ export default {
       })
     },
     getOwnAck() {
+      var dateArray= this.getPreWeekTime()
+      console.log(dateArray)
       this.ownAckChart = echarts.init(document.getElementById('ownAckChart'));
-      var dataAxis = ['6-01', '6-02', '6-03', '6-04', '6-05', '6-06', '6-07', '6-08', '6-09', '6-10', '6-11', '6-12', '6-13', '6-14', '6-15', '6-16', '6-17', '6-18', '6-19', '6-20','6-21'];
-      var data = [3, 5, 10, 40, 30, 20, 40, 20,10, 22, 3, 49, 23, 19, 13, 14, 8, 23, 25, 20];
-      var yMax = 50;
+      var dataAxis = dateArray
+      var yMax = 50000;
       var dataShadow = [];
-      for (var i = 0; i < data.length; i++) {
+      for (var i = 0; i < dateArray.length; i++) {
           dataShadow.push(yMax);
       }
-      let option = {
-          title: {
-              text: '新增确诊趋势',
-              // subtext: ''
-              x: 'center'
-          },
-          tooltip: {
-            trigger: 'item',
-            formatter: '{b}日<br/>新增 {c}   例'
-          },
-          xAxis: {
-              data: dataAxis,
-              axisLabel: {
-                  inside: false,
-                  textStyle: {
-                      color: '#1E1E1E'
-                  }
-              },
-              axisTick: {
-                  show: false
-              },
-              axisLine: {
-                  show: false
-              },
-              z: 10
-          },
-          yAxis: {
-              axisLine: {
-                  show: true
-              },
-              axisTick: {
-                  show: true
-              },
-              axisLabel: {
-                  textStyle: {
-                      color: '#999'
-                  }
-              }
-          },
-          dataZoom: [
-              {
-                  type: 'inside'
-              }
-          ],
-          series: [
-              { // For shadow
-                  type: 'bar',
-                  itemStyle: {
-                      color: 'rgba(0,0,0,0.05)'
-                  },
-                  barGap: '-100%',
-                  barCategoryGap: '40%',
-                  data: dataShadow,
-                  animation: false,
-                  zoom: 0.5,
-              },
-              {
-                  type: 'bar',
-                  itemStyle: {
-                      color: new echarts.graphic.LinearGradient(
-                          0, 0, 0, 1,
-                          [
-                           {offset: 0, color: '#D92121'},
-                           {offset: 0.7, color: '#EC8152'},
-                           {offset: 1, color: '#F9C273'}
-                          ]
-                      )
-                  },
-                  emphasis: {
-                      itemStyle: {
-                          color: new echarts.graphic.LinearGradient(
-                              0, 0, 0, 1,
-                              [
-                                  {offset: 0, color: '#D92121'},
-                                  {offset: 0.7, color: '#F9C273'},
-                                  {offset: 1, color: '#D92121'}
-                              ]
-                          )
-                      }
-                  },
-                  data: data
-              }
-          ]
-      };
-    this.ownAckChart.setOption(option)
+      var numArray=[]
+      for(var m=0;m<dateArray.length;m++){
+        getAll(dateArray[m]).then(res=>{
+          numArray.push(res.data.confirm)
+          if(m==dateArray.length){
+            let option = {
+            title: {
+                text: '新增确诊趋势',
+                x: 'center'
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: '{b}日<br/>新增 {c}   例'
+            },
+            xAxis: {
+                data: dataAxis,
+                axisLabel: {
+                    inside: false,
+                    textStyle: {
+                        color: '#1E1E1E'
+                    }
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    show: false
+                },
+                z: 10
+            },
+            yAxis: {
+                axisLine: {
+                    show: true
+                },
+                axisTick: {
+                    show: true
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            dataZoom: [
+                {
+                    type: 'inside'
+                }
+            ],
+            series: [
+                {
+                    type: 'bar',
+                    itemStyle: {
+                        color: 'rgba(0,0,0,0.05)'
+                    },
+                    barGap: '-100%',
+                    barCategoryGap: '40%',
+                    data: dataShadow,
+                    animation: false,
+                    zoom: 0.5,
+                },
+                {
+                    type: 'bar',
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(
+                            0, 0, 0, 1,
+                            [
+                            {offset: 0, color: '#D92121'},
+                            {offset: 0.7, color: '#EC8152'},
+                            {offset: 1, color: '#F9C273'}
+                            ]
+                        )
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(
+                                0, 0, 0, 1,
+                                [
+                                    {offset: 0, color: '#D92121'},
+                                    {offset: 0.7, color: '#F9C273'},
+                                    {offset: 1, color: '#D92121'}
+                                ]
+                            )
+                        }
+                    },
+                    data: numArray
+                }
+            ]
+          };
+          this.ownAckChart.setOption(option)
+          }
+        })
+      }
     },
     initQuickInfo(){
       this.loading= true
@@ -389,6 +386,35 @@ export default {
       var gettime = yy+'-'+mm+'-'+dd
       return gettime
     },
+    getPreWeekTime(){
+      // var array= []
+      // for (var i=6;i>=0;i--){
+      //   var date1 = new Date()
+      //   var date2 = new Date(date1)
+      //   date2.setDate(date1.getDate()-i)
+      //   let yy = date2.getFullYear();
+      //   let mm = date2.getMonth()+1;
+      //   mm = mm < 10 ? '0' + mm : mm;
+      //   let dd = date2.getDate();
+      //   dd = dd < 10 ? '0' + dd : dd;
+      //   var gettime = yy+'-'+mm+'-'+dd
+      //   array.push(gettime)
+      // }
+      // return array
+      var now = new Date()
+      var array=[]
+      for(var j=7;j>=0;j--){
+        var date = new Date(now.getTime()-j*24*3600*1000)
+        var yy = date.getFullYear()
+        var mm = date.getMonth()+1
+        var dd = date.getDate()
+        mm = mm < 10 ? '0' + mm : mm;
+        dd = dd < 10 ? '0' + dd : dd;
+        var needDate= yy+'-'+mm+'-'+ dd
+        array.push (needDate)
+      }
+      return array
+    }
   }
 }
 

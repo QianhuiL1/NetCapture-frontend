@@ -31,7 +31,7 @@
               </div>
               <div class="event-content">
               <div class="event-item" style="background:#FFF4F4">
-                <span class="label">现有确诊</span>
+                <span class="label">新增现有确诊</span>
                 <span class="count" style="color:#E8317A">{{totalNum.xyqz}}</span>
               </div>
               <div class="event-item" style="background:#FFF7F7">
@@ -40,11 +40,11 @@
               </div>
               <div class="event-item" style="background:#FEF7FF">
                 <span class="label">新增治愈</span>
-                <span class="count">{{totalNum.xzzy}}</span>
+                <span class="count" style="color:#34C9C3">{{totalNum.xzzy}}</span>
               </div>
               <div class="event-item" style="background:#FEF7FF">
                 <span class="label">新增死亡</span>
-                <span class="count" style="color:#34C9C3">{{totalNum.xzsw}}</span>
+                <span class="count" >{{totalNum.xzsw}}</span>
               </div>
             </div>
       </div>
@@ -156,6 +156,7 @@ export default {
       console.log('初始化')
       getAll(today).then(res=>{
         console.log('访问接口成功')
+        console.log(res)
         this.totalNum.xzqz=res.data.confirm
         this.totalNum.xzbt=res.data.confirm-res.data.input
         this.totalNum.xzjw=res.data.input
@@ -174,48 +175,67 @@ export default {
       this.initCharts()
     },
     initCharts(){
+      // 新增本土趋势图
       this.ownAddChart= echarts.init(document.getElementById('ownAddChart'))
-      this.ownAddOption = {
-        xAxis: {
-            type: 'category',
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        },
-        yAxis: {
-            type: 'value'
-        },
-        tooltip: {
-            trigger: 'item',
-            formatter: '{b} <br/>新增 {c}   例'
-        },
-        series: [{
-            data: [23, 95, 80, 30, 100, 110, 70],
-            type: 'line',
-            smooth: true
-        }]
-      };
-
-    this.ownAddChart.setOption(this.ownAddOption)
+      var lchartDate=this.getPreWeekTime()
+      console.log(lchartDate)
+      var lchartNum=[]
+        for(var i=0;i<lchartDate.length;i++){
+          getAll(lchartDate[i]).then(res=>{
+            lchartNum.push(res.data.confirm-res.data.input)
+            if(i==lchartDate.length){
+                    this.ownAddOption = {
+          xAxis: {
+              type: 'category',
+              data: lchartDate
+          },
+          yAxis: {
+              type: 'value'
+          },
+          tooltip: {
+              trigger: 'item',
+              formatter: '{b} <br/>新增 {c}   例'
+          },
+          series: [{
+              data: lchartNum,
+              type: 'line',
+              smooth: true
+          }]
+        };
+        this.ownAddChart.setOption(this.ownAddOption)
+          }
+        })
+      }
     // 初始化境外输入趋势折线图
     this.otherAddChart= echarts.init(document.getElementById('otherAddChart'))
-    this.otherAddOption={
-      xAxis: {
-        type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      yAxis: {
-          type: 'value'
-      },
-      tooltip: {
-            trigger: 'item',
-            formatter: '{b} <br/>新增 {c}   例'
-      },
-      series: [{
-          data: [40, 30, 50, 80, 100, 70, 80],
-          type: 'line',
-          smooth: true
-      }]
+    var rchartNum=[]
+    for(var i=0;i<lchartDate.length;i++){
+        getAll(lchartDate[i]).then(res=>{
+          rchartNum.push(res.data.input)
+          if(i==lchartDate.length){
+            this.otherAddOption={
+              xAxis: {
+                type: 'category',
+                data: lchartDate
+              },
+              yAxis: {
+                  type: 'value'
+              },
+              tooltip: {
+                    trigger: 'item',
+                    formatter: '{b} <br/>新增 {c}   例'
+              },
+              series: [{
+                  data: rchartNum,
+                  type: 'line',
+                  smooth: true
+              }]
+              }
+            this.otherAddChart.setOption(this.otherAddOption)
+          }
+        })
       }
-    this.otherAddChart.setOption(this.otherAddOption)
+   
   },
       getCurrentTime() {
       //获取当前时间并打印
@@ -224,9 +244,24 @@ export default {
       mm = mm < 10 ? '0' + mm : mm;
       let dd = new Date().getDate();
       dd = dd < 10 ? '0' + dd : dd;
-      var gettime = yy+'-'+mm+'-'+dd
+      var gettime = yy+'-'+mm+'-'+dd;
       return gettime
     },
+    getPreWeekTime(){
+      var now = new Date()
+      var array=[]
+      for(var j=7;j>=0;j--){
+        var date = new Date(now.getTime()-j*24*3600*1000)
+        var yy = date.getFullYear()
+        var mm = date.getMonth()+1
+        var dd = date.getDate()
+        mm = mm < 10 ? '0' + mm : mm;
+        dd = dd < 10 ? '0' + dd : dd;
+        var needDate= yy+'-'+mm+'-'+ dd
+        array.push (needDate)
+      }
+      return array
+    }
 
   }
 }

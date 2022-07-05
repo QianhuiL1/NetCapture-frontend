@@ -21,6 +21,9 @@ export default{
       
     }
   },
+  mounted(){
+    this.initMap()
+  },
   created(){
     this.initMap()
   },
@@ -148,7 +151,7 @@ export default{
                 top: '5%',
                 left: '7%',
                 bottom: '2%',
-                right: '60%',
+                right: '20%',
 
                 symbolSize: 7,
 
