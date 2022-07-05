@@ -57,7 +57,6 @@
         type="primary"
         size="mini"
         @click="handleExport"
-        plain
       >导出</el-button>
         </el-form-item>
       </el-form>
@@ -263,6 +262,17 @@ formatDate(value) {
     };
   },
   methods: {
+    formatDate(value) {
+			// 计算日期相关值
+			let time =new Date(value);
+			let Y = time.getFullYear();
+			let M = time.getMonth() + 1;
+			let D = time.getDate();
+			let h = time.getHours();
+			let m = time.getMinutes();
+			let s = time.getSeconds();
+			return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+		},
     handleSizeChange: function (pageSize) { // 每页条数切换
         this.pageSize = pageSize;
         this.handleCurrentChange(this.currentPage);

@@ -5,7 +5,7 @@
 			<img class="logoimg" src="../assets/littlelogo.png" alt="">
 			<div class="tim"><span>疫情流调系统</span></div>
 		</div>
-		<el-submenu index="1">
+		<el-submenu index="1" v-if="role != 1">
 			<template slot="title">
 				<i class="el-icon-s-home" style="font-size: 28px;"></i>
 				<span>  国内疫情</span>
@@ -15,7 +15,7 @@
 				<el-menu-item index="/map">疫情概况</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-    <el-submenu index="2" v-if="role == 1||role == 3">
+    <el-submenu index="2" v-if="role == 3">
 			<template slot="title">
 				<i class="el-icon-s-marketing" style="font-size: 28px;"></i>
 				<span>  重点人员追踪</span>
@@ -56,10 +56,10 @@
 				<el-menu-item index="/communityImport">旅居人员登记</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="6">
+		<el-submenu index="5" v-if="role == 1">
 			<template slot="title">
 				<i class="el-icon-share" style="font-size: 28px;"></i>
-				<span>  管理</span>
+				<span>  用户管理</span>
 			</template>
 			<el-menu-item-group>
 				<el-menu-item index="/checkUser">审核注册用户</el-menu-item>

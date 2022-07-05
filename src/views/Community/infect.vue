@@ -1,8 +1,8 @@
 <template>
   <div class="home_container">
-        <div class="center_content">
-          <el-card class="table_content">
-            <div class="firstLine">
+    <div class="center_content">
+      <el-card class="table_content">
+        <div class="firstLine">
           <div class="theme">
             <span> 重点人员上报记录 </span>
           </div>
@@ -15,10 +15,10 @@
               >上报重点人员</el-button
             >
           </div>
-          </div>
-            </el-card>
         </div>
-      <div class="center-content">
+      </el-card>
+    </div>
+    <div class="center-content">
       <el-card class="table_content">
         <el-form
           ref="queryForm"
@@ -26,7 +26,11 @@
           :inline="true"
           size="medium"
         >
-          <el-form-item label="姓名：" prop="name" style="float: left;margin-left:50px;">
+          <el-form-item
+            label="姓名："
+            prop="name"
+            style="float: left; margin-left: 50px"
+          >
             <el-input
               v-model="queryParams.name"
               placeholder="请输入住户姓名"
@@ -34,7 +38,11 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="身份证号：" prop="peopleId" style="float: left;margin-left:50px;">
+          <el-form-item
+            label="身份证号："
+            prop="peopleId"
+            style="float: left; margin-left: 50px"
+          >
             <el-input
               v-model="queryParams.peopleId"
               placeholder="请输入身份证号"
@@ -42,7 +50,11 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="状态：" prop="type" style="float: left;margin-left:50px;">
+          <el-form-item
+            label="状态："
+            prop="type"
+            style="float: left; margin-left: 50px"
+          >
             <el-select
               v-model="queryParams.type"
               placeholder="请选择人员状态"
@@ -116,18 +128,23 @@
             min-width="20%"
           />
           <el-table-column label="居住地址" prop="address" min-width="30%" />
-          <el-table-column label="状态更新时间" prop="infectTime" min-width="20%"/>
+          <el-table-column
+            label="状态更新时间"
+            prop="infectTime"
+            min-width="20%"
+          />
         </el-table>
         <el-pagination
-       v-show="total > 0"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage"
-      :page-sizes="[10, 15, 30, 50]"
-      :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+          v-show="total > 0"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10, 15, 30, 50]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        >
+        </el-pagination>
       </el-card>
     </div>
     <el-dialog title="重点人员上报" :visible.sync="dialogVisible" width="40%">
@@ -161,7 +178,8 @@
             type="datetime"
             placeholder="选择日期时间"
             prefix-icon="el-icon-time"
-            :style="{ width: '100%' }">
+            :style="{ width: '100%' }"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item size="medium">
@@ -180,6 +198,10 @@ import {
   searchByName,
   searchById,
 } from "../../api/Person/basic";
+import { CodeToText,TextToCode } from "element-china-area-data";
+import {
+  getAncestor
+} from "../../api/Region/basic";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
 
@@ -188,7 +210,7 @@ export default {
   data() {
     return {
       param: {
-        ancestors: "0420000420102",
+        ancestors: "",
       },
       dialogVisible: false,
       typeArr: [
@@ -196,81 +218,90 @@ export default {
         { name: "密接", value: "密接" },
         { name: "次密接", value: "次密接" },
       ],
-      total:1,
-      tableDataEnd:[],
-      pageSize:15,
-      currentPage:1,
+      total: 1,
+      tableDataEnd: [],
+      pageSize: 15,
+      currentPage: 1,
       queryParams: {
         name: "",
         type: "",
         peopleId: "",
       },
-      infectTable:[],
-      formData:{
-        name: '',
-        peopleId: '',
-        positiveTime: ''
+      infectTable: [],
+      formData: {
+        name: "",
+        peopleId: "",
+        positiveTime: "",
       },
-      submitData:{
-        peopleId: '',
-        name: '',
-        sex: '',
-        phonenumber: '',
-        status:'',
-        ancestors:'',
-        positiveTime:'',
-        address: '',
-        searchValue:'',
-        createBy:'',
-        createTime:'',
-        remark:'',
-        params:{}
+      submitData: {
+        peopleId: "",
+        name: "",
+        sex: "",
+        phonenumber: "",
+        status: "",
+        ancestors: "",
+        positiveTime: "",
+        address: "",
+        searchValue: "",
+        createBy: "",
+        createTime: "",
+        remark: "",
+        params: {},
       },
-      loading: false
-    }
+      loading: false,
+    };
   },
   created() {
-     this.getInfectList();
+    this.getInfectList();
   },
   methods: {
-    handleSizeChange: function (pageSize) { // 每页条数切换
-        this.pageSize = pageSize;
-        this.handleCurrentChange(this.currentPage);
-      },
-      handleCurrentChange: function (currentPage) {//页码切换
-        this.currentPage = currentPage;
-        this.currentChangePage(this.connectList, currentPage);
-      },
-      //分页方法
-      currentChangePage(list, currentPage) {
-        let from = (currentPage - 1) * this.pageSize;
-        let to = currentPage * this.pageSize;
-        this.tableDataEnd = [];
-          for (; from < to; from++) {
-          if (list[from]) {
-            this.tableDataEnd.push(list[from]);
-        }}},
+    handleSizeChange: function (pageSize) {
+      // 每页条数切换
+      this.pageSize = pageSize;
+      this.handleCurrentChange(this.currentPage);
+    },
+    handleCurrentChange: function (currentPage) {
+      //页码切换
+      this.currentPage = currentPage;
+      this.currentChangePage(this.connectList, currentPage);
+    },
+    //分页方法
+    currentChangePage(list, currentPage) {
+      let from = (currentPage - 1) * this.pageSize;
+      let to = currentPage * this.pageSize;
+      this.tableDataEnd = [];
+      for (; from < to; from++) {
+        if (list[from]) {
+          this.tableDataEnd.push(list[from]);
+        }
+      }
+    },
     getInfectList() {
       this.loading = true;
       var temp = [];
-      searchByArea(this.param.ancestors).then((res) => {
+      getAncestor(this.$store.state.user.dept).then((res)=>{
+        let arr=res.data.ancestors.split(',')
+this.param.ancestors=arr[0]+arr[1]+arr[2]
+searchByArea(this.param.ancestors).then((res) => {
         res.rows.forEach((item) => {
           if (item.status != "0") {
-            item.infectTime=this.formatDate(item.positiveTime)
+            item.infectTime = this.formatDate(item.positiveTime);
             temp.push(item);
           }
         });
         this.infectTable = temp;
-        this.total = temp.length
+        this.total = temp.length;
         if (this.total > this.pageSize) {
-        for (let index = 0; index < this.pageSize; index++) {
-          this.tableDataEnd.push(this.infectTable[index]);
+          for (let index = 0; index < this.pageSize; index++) {
+            this.tableDataEnd.push(this.infectTable[index]);
+          }
+        } else {
+          this.tableDataEnd = this.infectTable;
         }
-      } else {
-        this.tableDataEnd = this.infectTable;
-      }
         this.loading = false;
       });
+      })
+      
     },
     handleQuery() {
       this.loading = true;
@@ -280,21 +311,21 @@ export default {
             this.infectTable = [];
           } else {
             res.rows.forEach((item) => {
-              var ancestor=item.ancestors.split(',').join('')
+              var ancestor = item.ancestors.split(",").join("");
               if (ancestor == this.param.ancestors) {
                 if (item.status != "0") {
-                  item.infectTime=this.formatDate(item.positiveTime)
+                  item.infectTime = this.formatDate(item.positiveTime);
                   this.infectTable = [];
                   this.infectTable.push(item);
-                  this.total=this.infectTable.length
+                  this.total = this.infectTable.length;
                   if (this.total > this.pageSize) {
-                  for (let index = 0; index < this.pageSize; index++) {
-                    this.tableDataEnd.push(this.infectTable[index]);
+                    for (let index = 0; index < this.pageSize; index++) {
+                      this.tableDataEnd.push(this.infectTable[index]);
+                    }
+                  } else {
+                    this.tableDataEnd = this.infectTable;
                   }
-                } else {
-                  this.tableDataEnd = this.infectTable;
-                }
-                this.loading=false
+                  this.loading = false;
                 }
               }
             });
@@ -303,20 +334,20 @@ export default {
       } else if (this.queryParams.peopleId != "") {
         searchById(this.queryParams.peopleId).then((res) => {
           this.infectTable = [];
-          var ancestor=res.data.ancestors.split(',').join('')
+          var ancestor = res.data.ancestors.split(",").join("");
           if (ancestor == this.param.ancestors) {
             if (res.data.status != "0") {
-              res.data.infectTime=this.formatDate(res.data.positiveTime)
+              res.data.infectTime = this.formatDate(res.data.positiveTime);
               this.infectTable.push(res.data);
-              this.total=this.infectTable.length
+              this.total = this.infectTable.length;
               if (this.total > this.pageSize) {
-              for (let index = 0; index < this.pageSize; index++) {
-                this.tableDataEnd.push(this.infectTable[index]);
-              }
+                for (let index = 0; index < this.pageSize; index++) {
+                  this.tableDataEnd.push(this.infectTable[index]);
+                }
               } else {
                 this.tableDataEnd = this.infectTable;
               }
-              this.loading=false
+              this.loading = false;
             }
           }
         });
@@ -324,7 +355,7 @@ export default {
         var temp = [];
         searchByArea(this.param.ancestors).then((res) => {
           res.rows.forEach((item) => {
-            item.infectTime=this.formatDate(item.positiveTime)
+            item.infectTime = this.formatDate(item.positiveTime);
             if (this.queryParams.type == "次密接") {
               if (item.status == "1") {
                 temp.push(item);
@@ -340,15 +371,15 @@ export default {
             }
           });
           this.infectTable = temp;
-          this.total=this.infectTable.length
+          this.total = this.infectTable.length;
           if (this.total > this.pageSize) {
-          for (let index = 0; index < this.pageSize; index++) {
-            this.tableDataEnd.push(this.infectTable[index]);
-          }
+            for (let index = 0; index < this.pageSize; index++) {
+              this.tableDataEnd.push(this.infectTable[index]);
+            }
           } else {
             this.tableDataEnd = this.infectTable;
           }
-          this.loading=false
+          this.loading = false;
         });
       } else {
         this.getInfectList();
@@ -356,52 +387,52 @@ export default {
     },
     resetQuery() {
       this.queryParams = {
-        name:'',
-        peopleId: '',
-        type:''
+        name: "",
+        peopleId: "",
+        type: "",
+      };
+      this.handleQuery();
+    },
+    handleAdd() {
+      this.formData.name = "";
+      this.formData.peopleId = "";
+      this.dialogVisible = true;
+    },
+    submitForm() {
+      if (this.formData.name == "") {
+        this.$message.error("姓名不能为空！");
+      } else if (this.formData.peopleId == "") {
+        this.$message.error("身份证号不能为空！");
+      } else if (this.formData.positiveTime == "") {
+        this.$message.error("确诊时间不能为空！");
+      } else {
+        searchById(this.formData.peopleId).then((res) => {
+          if (res.data.name != this.formData.name) {
+            this.$message.error("身份证号与姓名不符!");
+          } else {
+            this.submitData = res.data;
+            this.submitData.status = "3";
+            updatePersonInfo(this.submitData).then((resp) => {
+              this.dialogVisible = false;
+              this.getInfectList();
+              let ancestor = res.data.ancestors.split(",").join("");
+              if (ancestor != this.param.ancestors) {
+                this.$message.success("已成功上报非本社区阳性人员");
+              } else {
+                this.$message.success("已成功上报本社区阳性人员");
+              }
+              this.getInfectList();
+            });
+          }
+        });
       }
-      this.handleQuery()
     },
-    handleAdd(){
-      this.formData.name=''
-      this.formData.peopleId=''
-      this.dialogVisible=true
+    resetForm() {
+      this.formData.name = "";
+      this.formData.peopleId = "";
     },
-    submitForm(){
-      if(this.formData.name==''){
-        this.$message.error('姓名不能为空！')
-      }else if(this.formData.peopleId==''){
-        this.$message.error('身份证号不能为空！');
-      }else if(this.formData.positiveTime==''){
-        this.$message.error('确诊时间不能为空！')
-        }else{
-        searchById(this.formData.peopleId).then(res=>{
-          if(res.data.name!=this.formData.name){
-            this.$message.error('身份证号与姓名不符!');
-          }else{
-              this.submitData=res.data
-              this.submitData.status='3'
-              updatePersonInfo(this.submitData).then(resp=>{
-              this.dialogVisible= false
-              this.getInfectList()
-              let ancestor = res.data.ancestors.split(',').join('')
-              if(ancestor!=this.param.ancestors){
-                this.$message.success('已成功上报非本社区阳性人员')
-              }else{
-                this.$message.success('已成功上报本社区阳性人员');
-              }
-               this.getInfectList();
-              })
-              }
-          })
-        }
-    },
-    resetForm(){
-      this.formData.name=''
-      this.formData.peopleId=''
-    },
-    handleExport(){
-      var wb = XLSX.utils.table_to_book(document.querySelector('#statisTable'))
+    handleExport() {
+      var wb = XLSX.utils.table_to_book(document.querySelector("#statisTable"));
       var wbout = XLSX.write(wb, {
         bookType: "xlsx",
         bookSST: true,
@@ -418,16 +449,28 @@ export default {
       return wbout;
     },
     formatDate(value) {
-			// 计算日期相关值
-			let time =new Date(value);
-			let Y = time.getFullYear();
-			let M = time.getMonth() + 1;
-			let D = time.getDate();
-			let h = time.getHours();
-			let m = time.getMinutes();
-			let s = time.getSeconds();
-			return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-		}
+      // 计算日期相关值
+      let time = new Date(value);
+      let Y = time.getFullYear();
+      let M = time.getMonth() + 1;
+      let D = time.getDate();
+      let h = time.getHours();
+      let m = time.getMinutes();
+      let s = time.getSeconds();
+      return (
+        Y +
+        "-" +
+        (M < 10 ? "0" + M : M) +
+        "-" +
+        (D < 10 ? "0" + D : D) +
+        " " +
+        (h < 10 ? "0" + h : h) +
+        ":" +
+        (m < 10 ? "0" + m : m) +
+        ":" +
+        (s < 10 ? "0" + s : s)
+      );
+    },
   },
 };
 </script>
@@ -442,39 +485,38 @@ export default {
   margin-top: 10px;
 }
 
-.table_content{
+.table_content {
   width: 100%;
   padding: 10px 5px 0px 0px;
-
 }
-.firstLine{
-  display:flex;
-  flex-direction:row;
+.firstLine {
+  display: flex;
+  flex-direction: row;
   justify-content: space-between;
 }
-  .first-content {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-  }
-.center_content{
-    margin-top: 3px;
-    display: flex;
-    flex-direction:row;
-    justify-content: space-between;
+.first-content {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
 }
-  .theme{
-    color:#1E1E1E;
-    font-size: 20px;
-    font-weight: 550;
-    padding:0px;
-  }
-  .inputTitle{
-    font-size: 15px;
-    font-weight: 500;
-    float:left;
-    padding: 2px
-  }
+.center_content {
+  margin-top: 3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.theme {
+  color: #1e1e1e;
+  font-size: 20px;
+  font-weight: 550;
+  padding: 0px;
+}
+.inputTitle {
+  font-size: 15px;
+  font-weight: 500;
+  float: left;
+  padding: 2px;
+}
 .el-scrollbar__wrap {
   overflow-x: hidden;
 }

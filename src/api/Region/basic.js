@@ -10,7 +10,7 @@ export function regionList(queryParams) {
     })
 }
 
-// 获取部门编号获取详细信息
+// 根据部门编号获取详细信息
 export function getAncestor(id) {
     return request({
         url: '/system/dept/' + id,

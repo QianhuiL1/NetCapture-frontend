@@ -1,13 +1,15 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { getUser, getUserByName, getAuthRole } from '../../api/system/user'
+import { getUserByName, getAuthRole } from '../../api/system/user'
 const user = {
     state: {
         token: getToken(),
         name: '' || localStorage.getItem('name'),
         avatar: '',
         roles: '' || localStorage.getItem('roles'),
-        permissions: []
+        permissions: [],
+        examine: '',
+        dept:'' || localStorage.getItem('dept')
     },
 
     mutations: {
@@ -25,9 +27,16 @@ const user = {
             state.roles = roles
             localStorage.setItem('roles', roles)
         },
+        SET_EXAMINE: (state, examine) => {
+            state.examine = examine
+        },
         SET_PERMISSIONS: (state, permissions) => {
             state.permissions = permissions
-        }
+        },
+        SET_DEPT: (state, dept) => {
+            state.dept = dept
+            localStorage.setItem('dept', dept)
+        },
     },
 
     actions: {
@@ -43,6 +52,8 @@ const user = {
                             commit('SET_TOKEN', res.token)
                             getUserByName(userInfo.username).then((res1) => {
                 getAuthRole(res1.rows[0].userId).then((response) => {
+                    commit('SET_DEPT', response.user.deptId)
+                    commit('SET_EXAMINE', response.user.examine)
                             commit('SET_NAME', userInfo.username + "," + response.user.nickName)
                             commit('SET_ROLES', response.user.roles[0].roleId)
                             resolve()

@@ -150,14 +150,14 @@ export default {
   computed: {
     // ...mapGetters(['rootRoles', 'permission_routes'])
   },
- watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect;
-      },
-      immediate: true
-    }
-  },
+//  watch: {
+//     $route: {
+//       handler: function(route) {
+//         this.redirect = route.query && route.query.redirect;
+//       },
+//       immediate: true
+//     }
+//   },
   created() {
     this.getCode();
     this.getCookie();
@@ -178,6 +178,7 @@ export default {
     window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {getCode() {
+    this.loading = false
       getCodeImg().then(res => {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
         if (this.captchaOnOff) {
@@ -188,11 +189,9 @@ export default {
     },getCookie() {
       const username = Cookies.get("username");
       const password = Cookies.get("password");
-      const rememberMe = Cookies.get('rememberMe')
       this.loginForm = {
         username: username === undefined ? this.loginForm.username : username,
         password: password === undefined ? this.loginForm.password : decrypt(password),
-        rememberMe: rememberMe === false
       };
     },
     getScale() {
@@ -222,18 +221,23 @@ export default {
           if (this.loginForm.rememberMe) {
             Cookies.set("username", this.loginForm.username, { expires: 30 });
             Cookies.set("password", encrypt(this.loginForm.password), { expires: 30 });
-            Cookies.set('rememberMe', this.loginForm.rememberMe, { expires: 30 });
           } else {
             Cookies.remove("username");
             Cookies.remove("password");
-            Cookies.remove('rememberMe');
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
-            this.$router.push({ path:'/map' }).catch(()=>{});
+            this.loading = false;
+            if(this.$store.state.user.examine == 1){
+              this.$router.push({ path:'/map' }).catch(()=>{});
+            }else{
+              this.$message.info("账号等待审核……")
+            }
+            
             // this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {
+              this.loading = false;
               this.getCode();
             }
           });

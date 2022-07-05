@@ -7,7 +7,7 @@
         <el-button class="buttonimg2">
       <img class="showimg" src="../assets/largeScreen.png" @click="full">
     </el-button>
-    	<el-menu-item class="submenu-item" v-for="(tit,i) in titleList" :key="i" :index="tit.name">
+    	<el-menu-item v-if="role!=1" class="submenu-item" v-for="(tit,i) in titleList" :key="i" :index="tit.name" >
         <template>
           <div class="item">
             <span>{{ tit.navItem }}</span>
@@ -165,6 +165,7 @@ export default {
         }
       }
     return {
+      role:"",
       id:"",
         n:0,
         username:"",
@@ -264,6 +265,7 @@ export default {
 				if(this.n == 50){
 					clearInterval(this.id)
 				}
+        this.role=this.$store.state.user.roles
 			this.username=this.$store.state.user.name.split(',')[1]
 			},1000)
       },
