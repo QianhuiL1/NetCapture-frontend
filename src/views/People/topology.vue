@@ -2,23 +2,25 @@
 <div class="home_container">
   <div class="center-content">
     <el-card class="table_content">
-      <div class="map">
-          <template>
-            <div id="Mymap" style="height: 700px;margin: 0 auto"></div>
-          </template>
-          </div>
+      <div class="main">
+        <template>
+          <div id="topology" style="width:100%;height: 600px;margin: 0 auto"></div>
+        </template>
+      </div>
     </el-card>
-    </div>
-    </div>
+  </div>
+</div>
 
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'echarts'
+
 export default{
-  data(){
+  components: {},
+  data() {
     return {
-      
+     
     }
   },
   mounted(){
@@ -29,155 +31,143 @@ export default{
   },
   methods:{
     initMap(){
-      var ownMap = echarts.init(document.getElementById('Mymap'));
-      var data = {
-        "name": "flare",
-        "children": [
-            {
-                "name": "data",
-                "children": [
-                    {
-                        "name": "converters",
-                        "children": [
-                          {"name": "Converters", "value": 721},
-                          {"name": "DelimitedTextConverter", "value": 4294}
-                        ]
-                    },
-                    {
-                        "name": "DataUtil",
-                        "value": 3322
-                    }
-                ]
-            },
-            {
-                "name": "display",
-                "children": [
-                    {"name": "DirtySprite", "value": 8833},
-                    {"name": "LineSprite", "value": 1732},
-                    {"name": "RectSprite", "value": 3623}
-              ]
-            },
-            {
-                "name": "flex",
-                "children": [
-                    {"name": "FlareVis", "value": 4116}
-                ]
-            },
-            {
-              "name": "query",
-              "children": [
-                {"name": "AggregateExpression", "value": 1616},
-                {"name": "And", "value": 1027},
-                {"name": "Arithmetic", "value": 3891},
-                {"name": "Average", "value": 891},
-                {"name": "BinaryExpression", "value": 2893},
-                {"name": "Comparison", "value": 5103},
-                {"name": "CompositeExpression", "value": 3677},
-                {"name": "Count", "value": 781},
-                {"name": "DateUtil", "value": 4141},
-                {
-                "name": "methods",
-                "children": [
-                  {"name": "add", "value": 593},
-                  {"name": "and", "value": 330},
-                  {"name": "average", "value": 287},
-                  {"name": "count", "value": 277},
-                  {"name": "distinct", "value": 292},
-                  {"name": "div", "value": 595},
-                  {"name": "eq", "value": 594},
-                  {"name": "fn", "value": 460},
-                  {"name": "gt", "value": 603},
-                  {"name": "gte", "value": 625},
-                  {"name": "iff", "value": 748},
-                  {"name": "isa", "value": 461},
-                  {"name": "lt", "value": 597},
-                  {"name": "lte", "value": 619},
-                  {"name": "max", "value": 283},
-                ]
-                },
-                {"name": "Minimum", "value": 843},
-                {"name": "Not", "value": 1554},
-                {"name": "Or", "value": 970},
-                {"name": "Query", "value": 13896},
-                {"name": "Range", "value": 1594},
-                {"name": "StringUtil", "value": 4130},
-                {"name": "Sum", "value": 791},
-                {"name": "Variable", "value": 1124},
-                {"name": "Variance", "value": 1876},
-                {"name": "Xor", "value": 1101}
-              ]
-              },
-            {
-              "name": "scale",
-              "children": [
-                {"name": "IScaleMap", "value": 2105},
-                {"name": "LinearScale", "value": 1316},
-                {"name": "LogScale", "value": 3151},
-                {"name": "OrdinalScale", "value": 3770},
-                {"name": "QuantileScale", "value": 2435},
-                {"name": "QuantitativeScale", "value": 4839},
-                {"name": "RootScale", "value": 1756},
-                {"name": "Scale", "value": 4268},
-                {"name": "ScaleType", "value": 1821},
-                {"name": "TimeScale", "value": 5833}
-              ]
-            }
-        ]
-    };
-    var option={
-       tooltip: {
-            trigger: 'item',
-            triggerOn: 'mousemove'
-        },
-        legend: {
-            top: '2%',
-            left: '3%',
-            orient: 'vertical',
-            data: [{
-                name: 'tree1',
-                icon: 'rectangle'
-            },
-            ],
-            borderColor: '#A9334C'
-        },
-        series:[
-            {
-                type: 'tree',
-
-                name: 'tree1',
-
-                data: [data],
-
-                top: '5%',
-                left: '7%',
-                bottom: '2%',
-                right: '20%',
-
-                symbolSize: 7,
-
-                label: {
-                    position: 'left',
-                    verticalAlign: 'middle',
-                    align: 'right'
-                },
-
-                leaves: {
-                    label: {
-                        position: 'right',
-                        verticalAlign: 'middle',
-                        align: 'left'
-                    }
-                },
-
-                expandAndCollapse: true,
-
-                animationDuration: 550,
-                animationDurationUpdate: 750
-
-            },
-        ]
-    }
-    ownMap.setOption(option);
+      var myChart = echarts.init(document.getElementById('topology'))
+      var categories=[]
+      for (var i = 0; i < 2; i++) {
+          categories[i] = {name: '类目' + i};
+      }
+      var option = {
+      // 图的标题
+      title: {
+        text: '感染人员拓扑图'
+      },
+      // 提示框的配置
+      tooltip: {
+        formatter: function (x) {
+          return x.data.des;
+        }
+      },
+      // 工具箱
+      toolbox: {
+        // 显示工具箱
+        show: true,
+        feature: {
+        mark: {
+        show: true
+      },
+      // 还原
+      restore: {
+        show: true
+      },
+      // 保存为图片
+      saveAsImage: {
+        show: true
+      }
+      }
+      },
+      legend: [{
+        // selectedMode: 'single',
+        data: categories.map(function (a) {
+        return a.name;
+        })
+      }],
+      series: [{
+      type: 'graph', // 类型:关系图
+      layout: 'force', //图的布局，类型为力导图
+      symbolSize: 40, // 调整节点的大小
+      roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+      edgeSymbol: ['circle', 'arrow'],
+      edgeSymbolSize: [2, 10],
+      edgeLabel: {
+      normal: {
+        textStyle: {
+          fontSize: 20
+          }
+          }
+      },
+      force: {
+        repulsion: 2500,
+        edgeLength: [10, 50]
+      },
+      draggable: true,
+      lineStyle: {
+      normal: {
+        color: '#4b565b',
+      }
+      },
+      edgeLabel: {
+      normal: {
+        show: true,
+        formatter: function (x) {
+        return x.data.name;
+      }
+      }
+      },
+      label: {
+        normal: {
+        show: true,
+        textStyle: {}
+      }
+      },
+      // 数据
+      data: [{
+        name: 'node01',
+        des: 'nodedes01',
+        symbolSize: 70,
+        category: 0,
+      }, 
+      {
+        name: 'node02',
+        des: 'nodedes02',
+        symbolSize: 50,
+        category: 1,
+      }, 
+      {
+        name: 'node03',
+        des: 'nodedes3',
+        symbolSize: 50,
+        category: 1,
+      }, 
+      {
+        name: 'node04',
+        des: 'nodedes04',
+        symbolSize: 50,
+        category: 1,
+      }, 
+      {
+        name: 'node05',
+        des: 'nodedes05',
+        symbolSize: 50,
+        category: 1,
+      }],
+      links: [{
+        source: 'node01',
+        target: 'node02',
+        name: 'link01',
+        des: 'link01des'
+      }, 
+      {
+        source: 'node01',
+        target: 'node03',
+        name: 'link02',
+        des: 'link02des'
+      }, 
+      {
+        source: 'node01',
+        target: 'node04',
+        name: 'link03',
+        des: 'link03des'
+      }, 
+      {
+        source: 'node01',
+        target: 'node05',
+        name: 'link04',
+        des: 'link05des'
+      }],
+        categories: categories,
+      }]
+      };
+      myChart.setOption(option);
     }
   }
 }
@@ -196,10 +186,12 @@ export default{
     width: 100%;
     background-color: transparent!important;
   }
-    .table_content{
+  .table_content{
     display:flex;
     flex-direction: column;
     width: 100%;
+    height: 100%;
     margin: 5px 10px;
   }
 </style>
+    

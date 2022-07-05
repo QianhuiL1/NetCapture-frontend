@@ -26,7 +26,6 @@
     </el-card>
   </div>
     <div class="center-content">
-    <el-col :span="12">
       <el-card class="table_content table_content_all">
         <div slot="header">
           <span>疫情速报</span>
@@ -56,34 +55,6 @@
             </el-table-column>
         </el-table>
       </el-card>
-      </el-col>
-      <el-col :span="12">
-      <el-card class="table_content table_content_all">
-        <div slot="header">
-          <span>风险地区</span>
-        </div>
-        <el-table
-          v-loading="loading2"
-          :data="dangerData"
-          highlight-current-row
-          >
-          <el-table-column
-            align="center"
-            label="风险等级"
-            prop="level"
-           :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-          <el-table-column
-            align="center"
-            label="地区"
-            prop="area"
-           :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-        </el-table>
-      </el-card>
-      </el-col>
     </div>
 </div>
 </template>
@@ -163,22 +134,8 @@ export default {
         {name:'香港',value:0},
         {name:'澳门',value:0},
       ],
-      dangerData:[
-          {
-            level: '高风险',
-            area: '内蒙古锡林郭勒盟'
-          },{
-            level:'高风险',
-            area:'北京市昌平区'
-          },
-          {
-            level:'中风险',
-            area:'上海市闵行区'
-          }
-        ],
         quickInfo:[],
         loading: false,
-        loading2: false,
         paramData:{
           totalepidemicDate:'2022-07-02'
         }
@@ -374,7 +331,6 @@ export default {
     },
     getNewsDetail(row){
       window.open(row.eventurl,'_blank') // 在新窗口打开外链接
-
     },
     getCurrentTime() {
       //获取当前时间并打印

@@ -318,8 +318,7 @@ $cursor: #e5e5e5;
   }
 }
 .login-container {
-  background: url(../../assets/loginbg1.png);
-  background: url(../../assets/loginbg2.png);
+  background: url(../../assets/loginback1.jpg);
   background-size: 100% 100%;
 
   .el-form-item {
