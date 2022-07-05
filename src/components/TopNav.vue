@@ -7,16 +7,6 @@
         <el-button class="buttonimg2">
       <img class="showimg" src="../assets/largeScreen.png" @click="full">
     </el-button>
-<<<<<<< HEAD
-    	<el-menu-item v-if="role!=1" class="submenu-item" v-for="(tit,i) in titleList" :key="i" :index="tit.name" >
-        <template>
-          <div class="item">
-            <span>{{ tit.navItem }}</span>
-          </div>
-          </template>
-      </el-menu-item>
-=======
->>>>>>> fc04efa (拓扑图demo)
       <div class="rdiv">
     </div>
     <el-submenu index="4" class="submenu">
