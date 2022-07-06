@@ -78,7 +78,7 @@
 
     <div class="center-content">
       <el-card class="table_content">
-        <el-table v-loading="loading" :data="tableDataEnd" border :default-sort = "{prop: 'createTime', order: 'descending'}">
+        <el-table v-loading="loading" :data="tableDataEnd" border >
           <el-table-column
             label="用户名"
             align="center"
@@ -150,7 +150,8 @@
                 @click="handleClick(scope.row)"
               >
                 <i class="icon-view iconfont" style="color: #3388ff" />
-                <span style="color: #223355"> 查看详情</span>
+                <span style="color: #223355" v-if="scope.row.examine == '已审核'"> 查看详情</span>
+                <span style="color: #223355" v-if="scope.row.examine == '未审核'"> 审核</span>
               </el-button>
               <el-button
                 type="text"
@@ -226,22 +227,32 @@
         >{{ user.createTime }}</span
       >
       <span slot="footer" class="dialog-footer">
+          <el-button
+        type="primary"
+          @click="
+            dialogVisible = false;
+            getAccess();
+          "
+          v-if="user.type == '未通过'"
+          >通 过</el-button
+        >
         <el-button
         type="primary"
           @click="
             dialogVisible = false;
             getAccess();
           "
-          >通 过</el-button
+          v-if="user.type == '已通过'"
+          >停 用</el-button
         >
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="dialogVisible = false">关 闭</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { changeUserStatus, listUser,delUser } from "../../api/system/user";
+import { changeUserStatus, listUser,delUser,listByTime } from "../../api/system/user";
 import { CodeToText } from "element-china-area-data";
 export default {
   name: "Dict",
@@ -329,20 +340,21 @@ export default {
     // 查询审核注册列表
     getList() {
       this.tableDataEnd = []
+      this.checkList = []
       listUser(this.queryParams).then((res) => {
-        this.checkList = res.rows;
         this.total = res.rows.length;
-        var list = [];
+        this.checkList.length = this.total
         for (var index in res.rows) {
-          this.checkList[index].userName = res.rows[index].userName;
-          this.checkList[index].community = CodeToText[res.rows[index].deptId];
+          this.checkList[index] = res.rows[res.rows.length-1-index];
+          this.checkList[index].userName = res.rows[res.rows.length-1-index].userName;
+          this.checkList[index].community = CodeToText[res.rows[res.rows.length-1-index].deptId];
           this.checkList[index].examine =
-            res.rows[index].examine == 1 ? "已审核" : "未审核";
-          if (res.rows[index].roles[0].roleId == 4)
+            res.rows[res.rows.length-1-index].examine == 1 ? "已审核" : "未审核";
+          if (res.rows[res.rows.length-1-index].roles[0].roleId == 4)
             this.checkList[index].type = "社区工作人员";
-          else if (res.rows[index].roles[0].roleId == 3)
+          else if (res.rows[res.rows.length-1-index].roles[0].roleId == 3)
             this.checkList[index].type = "疾控工作人员";
-          else if (res.rows[index].roles[0].roleId == 1)
+          else if (res.rows[res.rows.length-1-index].roles[0].roleId == 1)
             this.checkList[index].type = "管理员";
           else this.checkList[index].type = "普通用户";
           if (index == res.rows.length - 1) {
@@ -365,13 +377,50 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      if (this.queryParams.type != "") {
+      this.tableDataEnd = []
+      this.checkList = []
+       if (this.dateRange.length > 0) {
+        this.startDate = this.dateRange[0];
+        this.endDate = this.dateRange[1]
+      listByTime(this.startDate,this.endDate).then((res) => {
+        this.total = res.rows.length;
+        this.checkList.length = this.total
+          for (var index in res.rows) {
+          this.checkList[index] = res.rows[res.rows.length-1-index];
+          this.checkList[index].userName = res.rows[res.rows.length-1-index].userName;
+          this.checkList[index].community = CodeToText[res.rows[res.rows.length-1-index].deptId];
+          this.checkList[index].examine =
+            res.rows[res.rows.length-1-index].examine == 1 ? "已审核" : "未审核";
+          if (res.rows[res.rows.length-1-index].roles[0].roleId == 4)
+            this.checkList[index].type = "社区工作人员";
+          else if (res.rows[res.rows.length-1-index].roles[0].roleId == 3)
+            this.checkList[index].type = "疾控工作人员";
+          else if (res.rows[res.rows.length-1-index].roles[0].roleId == 1)
+            this.checkList[index].type = "管理员";
+          else this.checkList[index].type = "普通用户";
+          if (index == res.rows.length - 1) {
+            
+            if (this.total > this.pageSize) {
+              for (let index = 0; index < this.pageSize; index++) {
+                this.tableDataEnd.push(this.checkList[index]);
+              }
+            } else {
+              this.tableDataEnd = this.checkList;
+            }
+            this.loading = false;
+          }
+        }
+      });
+      } else {
+        this.startDate = "";
+        this.endDate = "";
+        this.getList();
       }
-      this.getList();
     },
     /** 重置按钮操作 */
     resetQuery() {
       this.queryParams = "";
+      this.dateRange = []
       this.getList();
     },
     convertStatusToTag(status) {
@@ -383,13 +432,6 @@ export default {
         return "primary";
       }
     },
-    setStatus(event, row, value) {},
-    /** 新增按钮操作 */
-    handleAdd() {},
-
-    /** 修改按钮操作 */
-    handleUpdate(row) {},
-
     /** 删除按钮操作 */
     handleDelete(row) {
       this.$confirm('是否确认删除用户?', '警告', {
@@ -420,15 +462,23 @@ export default {
         if (res.rows[0].roles[0].roleId == 4) this.user.role = "社区工作人员";
         else if (res.rows[0].roles[0].roleId == 3) this.user.role = "疾控工作人员";
         else if (res.rows[0].roles[0].roleId == 1) this.user.role = "管理员";
-        else user.role = "普通用户";
+        else this.user.role = "普通用户";
         this.dialogVisible = true;
       });
     },
     getAccess() {
-changeUserStatus({userId:this.user.userId,examine:1}).then(()=>{
+      if(this.user.type == "已通过"){
+changeUserStatus({userId:this.user.userId,examine:0}).then(()=>{
   this.$message.success("操作成功")
   this.getList()
 })
+      }else{
+        changeUserStatus({userId:this.user.userId,examine:1}).then(()=>{
+  this.$message.success("操作成功")
+  this.getList()
+})
+      }
+
     },
   },
 };

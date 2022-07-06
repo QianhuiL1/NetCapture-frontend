@@ -10,6 +10,14 @@ export function listUser(query) {
     })
 }
 
+// 查询用户列表
+export function listByTime(time1,time2) {
+    return request({
+        url: '/system/user/listByTime/'+time1+"&&"+time2,
+        method: 'get'
+    })
+}
+
 // 查询用户详细
 export function getUser(userId) {
     return request({

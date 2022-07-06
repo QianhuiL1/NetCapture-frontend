@@ -140,12 +140,14 @@ export default {
   created(){
 		this.getName()
 	},
-  // watch: {
-  //      //检测路由参数发生改变时，刷新当前页面 调用
-  //      '$route': function(){
-  //           this.$route.go(0)
-  //       }
-  //   },
+  inject: ['reload'],  // 注入重载的功能（注入依赖）
+    //监视
+    watch: {
+       //检测路由参数发生改变时，刷新当前页面 调用
+       '$route': function(){
+            this.reload()
+        }
+    },
   data() {
     const equalToPassword = (rule,value,callback) =>{
         if(this.form.newPassword != value){
@@ -265,8 +267,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-             this.$router.push('/');
-             //this.$router.go(0)
+            this.$router.push('/');
         }).catch(() => {});
       },
       doToggle:function(){

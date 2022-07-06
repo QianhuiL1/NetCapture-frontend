@@ -25,7 +25,7 @@
 				<el-menu-item index="/track">行动轨迹追踪</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="3" v-if="role == 1||role == 3">
+		<el-submenu index="3" v-if="role == 3">
 			<template slot="title">
 				<i class="el-icon-view" style="font-size: 28px;"></i>
 				<span>  重点人员列表</span>
@@ -45,7 +45,7 @@
 				<el-menu-item index="/dept">部门通讯录</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="5" v-if="role == 1||role == 4">
+		<el-submenu index="5" v-if="role == 4">
 			<template slot="title">
 				<i class="el-icon-office-building" style="font-size: 28px;"></i>
 				<span>  社区管理</span>
@@ -84,14 +84,14 @@
 		  n:0,
       }
     },
-	// inject: ['reload'],  // 注入重载的功能（注入依赖）
+	inject: ['reload'],  // 注入重载的功能（注入依赖）
     //监视
-    // watch: {
-    //    //检测路由参数发生改变时，刷新当前页面 调用
-    //    '$route': function(){
-    //         this.$route.go(0)
-    //     }
-    // },
+    watch: {
+       //检测路由参数发生改变时，刷新当前页面 调用
+       '$route': function(){
+            this.reload()
+        }
+    },
     methods:{
 		getRole(){
 			this.id=setInterval(()=>{

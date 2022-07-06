@@ -45,7 +45,7 @@
           v-hasPermi="['system:dept:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="info"
           plain
@@ -53,7 +53,7 @@
           size="mini"
           @click="toggleExpandAll"
         >展开/折叠</el-button>
-      </el-col>
+      </el-col> -->
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
 
@@ -64,6 +64,9 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
+    <template slot="empty">
+                    <span style="font-size:20px">请先选择正确的检索条件！</span>
+                </template>
       <el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
       <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
       <el-table-column prop="status" label="状态" width="100">

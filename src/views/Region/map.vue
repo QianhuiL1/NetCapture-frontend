@@ -13,7 +13,7 @@
           :class="[menuIndex == 'region' ? 'active' : '']"
           @click="
             menuIndex = 'region';
-            setRegion();
+            //setRegion();
             clearLine();
           "
         >
@@ -24,7 +24,7 @@
           :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
             menuIndex = 'track';
-            clearRegion();
+            //clearRegion();
             setLine();
           "
         >
@@ -47,11 +47,71 @@
     </div>
     <dataPanel v-if="menuIndex === 'dataPanel'" style="z-index: 1001" />
     <div id="map"></div>
+    <aside class="asideRight weather">
+      <el-table
+        v-if="menuIndex == 'region'"
+        :data="polygons"
+        height="100%"
+      >
+        <el-table-column
+          label="重点地区"
+          prop="region"
+          align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          label="防控级别"
+          prop="level"
+          align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column label="操作" align="center" style="width:100px !important;">
+          <template slot-scope="scope">
+          <el-button style="height:28px;width:60px" @click="moveTo(scope.row)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </aside>
+    <aside class="asideRight weather">
+      <el-table
+        v-if="menuIndex == 'track'"
+        :data="travelData"
+        height="100%"
+      >
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" class="demo-table-expand">
+              <el-form-item>
+                <span style="padding-left: 50px; font-weight:800;">重点人员 :  </span>
+                <span>{{ props.row.peopleId }}</span>
+              </el-form-item>
+              <el-form-item >
+                 <span style="padding-left: 80px; font-weight:800;">到达时间 :  </span>
+                <span>{{ props.row.arriveTime }}</span>
+              </el-form-item>
+              <el-form-item>
+                 <span style="padding-left: 110px; font-weight:800;">离开时间 :  </span>
+              <span>{{ props.row.leftTime }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="轨迹地点"
+          prop="address"
+          show-overflow-tooltip
+        />
+        <el-table-column label="操作" align="center" style="width:100px !important;">
+          <template slot-scope="scope">
+          <el-button style="height:28px;width:60px" @click="moveTo(scope.row)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </aside>
   </div>
 </template>
 <script>
 import { travelList } from "../../api/People/travel/basic";
-import { regionList,getAncestor } from "../../api/Region/basic";
 import dataPanel from "@/components/dataPancel";
 import { infectInfo, infectList } from "../../api/People/infect/basic";
 import { CodeToText } from 'element-china-area-data'
@@ -60,9 +120,10 @@ export default {
   name: "Map",
   mounted() {
     // 初始化地图页面
+    this.initMap();
     this.initData();
     this.setRegion();
-    this.initMap();
+    
   },
   components: {
     geoCoder: "",
@@ -70,6 +131,7 @@ export default {
   },
   data() {
     return {
+      asideRightSwitch: true,
       menuIndex: "region",
       count: true,
       peopleList: [],
@@ -113,14 +175,26 @@ export default {
       polylines: [],
       path: [],
       Driving_obj: null,
+      regions:[],
       texts: [],
       points: [],
     };
   },
   methods: {
     initData() {
+      const this_=this
       travelList().then((response) => {
         this.travelData = response.rows;
+        this.travelData.forEach((item) => {
+          infectInfo(item.peopleId).then((res)=>{
+            item.name = res.data.name
+          })
+      this.geoCoder.getLocation(item.address, function (status, result) {
+          if (status === "complete" && result.geocodes.length) {
+            item.location = result.geocodes[0].location
+          }
+          })
+      })
       });
     },
     initMap() {
@@ -146,74 +220,16 @@ export default {
       this.geoCoder = new AMap.Geocoder(geoOption);
     },
     setRegion() {
-      let this_ = this;
-      this.webRegion(2, "#ff0000", "#ff8000");
-      this.id=setInterval(()=>{
-				if(this.travelData.length > 0){
-					clearInterval(this.id)
-          for (var index in this_.travelData) {
-        this.geoCoder.getLocation(
-          this_.travelData[index].address,
-          function (status, result) {
-            if (status === "complete" && result.geocodes.length) {
-              this_.districtOption.search(
-                result.geocodes[0].adcode,
-                (status, result) => {
-                  this_.showRegion(result, "#ffa31a", "#ffa31a");
-                }
-              );
-            }
-          }
-        );
-      }
-				}
-        
-			},1000)
-      
-    },
-    webRegion(status, color, stroke) {
-      let this_ = this;
-      regionList({ status: status }).then((response) => {
-        for (var index in response.rows) {
-          var code = response.rows[index].ancestorId.toString().split(",");
-          this_.districtOption.search(
-            code[code.length - 1],
-            (status, result) => {
-              this_.showRegion(result, color, stroke);
-            }
-          );
-        }
-      });
-    },
-    showRegion(result, color, stroke) {
-      const this_ = this;
-      var code = ""
-      var codeArray = []
-      let bounds = result.districtList[0].boundaries;
-      if (bounds) {
-        for (let i = 0, l = bounds.length; i < l; i++) {
-          //生成行政区划polygon
-          let polygon = new AMap.Polygon({
-            map: this.map, // 指定地图对象
-            strokeWeight: 1, // 轮廓线宽度
-            path: bounds[i], //轮廓线的节点坐标数组
-            fillOpacity: 0.4, //透明度
-            fillColor: color, //填充颜色
-            strokeColor: stroke, //线条颜色
-          });
-          getAncestor(result.districtList[0].adcode).then((response)=>{
-code = response.data.ancestors
-codeArray = code.split(",");
-this.polygons.push(polygon);
-          var level = color == "#ff0000" ? "一级重点区域" : "二级重点区域";
-          polygon.content =
-            "<h4>重点地区：" +
-            CodeToText[codeArray[1]] + "/" + CodeToText[codeArray[2]]+
-            "</h4>" +
-            "<h4>区域级别：" +
-            level +
-            "</h4>";
-          polygon.on("click", showInfoP);
+      const this_=this
+      var marker = new AMap.Marker({
+            icon:'//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+            position: [116.406315,39.908775],
+            offset: new AMap.Pixel(-13, -30)
+        });
+        marker.content = 
+         "<h4 style='font-weight:600;'>重点地区：</h4>" +
+            "<h4 style='font-weight:600;'>防控级别：</h4>";
+          marker.on("click", showInfoP);
           function showInfoP(e) {
             var infoWindow = new AMap.InfoWindow({
               offset: new AMap.Pixel(0, -30),
@@ -221,20 +237,60 @@ this.polygons.push(polygon);
             infoWindow.setContent(e.target.content);
             infoWindow.open(this_.map, e.lnglat);
           }
-      })
-        }
-        // 地图自适应
+        marker.setMap(this.map);
+        this.regions.push(marker)
         this.map.setFitView();
-      }
     },
+//     showRegion(result, color, stroke) {
+//       const this_ = this;
+//       var code = ""
+//       var codeArray = []
+//       let bounds = result.districtList[0].boundaries;
+//       if (bounds) {
+//         for (let i = 0, l = bounds.length; i < l; i++) {
+//           //生成行政区划polygon
+//           let polygon = new AMap.Polygon({
+//             map: this.map, // 指定地图对象
+//             strokeWeight: 1, // 轮廓线宽度
+//             path: bounds[i], //轮廓线的节点坐标数组
+//             fillOpacity: 0.4, //透明度
+//             fillColor: color, //填充颜色
+//             strokeColor: stroke, //线条颜色
+//           });
+//           getAncestor(result.districtList[0].adcode).then((response)=>{
+// code = response.data.ancestors
+// codeArray = code.split(",");
+// this.polygons.push(polygon);
+//           var level = color == "#ff0000" ? "一级重点区域" : "二级重点区域";
+//           polygon.content =
+//             "<h4>重点地区：" +
+//             CodeToText[codeArray[1]] + "/" + CodeToText[codeArray[2]]+
+//             "</h4>" +
+//             "<h4>区域级别：" +
+//             level +
+//             "</h4>";
+//           polygon.on("click", showInfoP);
+//           function showInfoP(e) {
+//             var infoWindow = new AMap.InfoWindow({
+//               offset: new AMap.Pixel(0, -30),
+//             });
+//             infoWindow.setContent(e.target.content);
+//             infoWindow.open(this_.map, e.lnglat);
+//           }
+//       })
+//         }
+//         // 地图自适应
+//         this.map.setFitView();
+//       }
+//     },
     clearRegion() {
-      for (var index in this.polygons) {
-        if (this.polygons[index]) {
-          this.polygons[index].setMap(null);
-          this.polygons[index] = null;
+      for (var index in this.regions) {
+        if (this.regions[index]) {
+          this.regions[index].setMap(null);
+          this.regions[index] = null;
         }
       }
-      this.polygons = [];
+      this.regions = [];
     },
     setLine() {
       const tmp_this = this;
@@ -248,27 +304,42 @@ this.polygons.push(polygon);
       var infoWindow = new AMap.InfoWindow({
         offset: new AMap.Pixel(0, -20),
       });
-      for (const index in this.travelData) {
-        const spot = this.travelData[index].address;
-        const arriveTime = this.travelData[index].arriveTime;
-        const leftTime = this.travelData[index].leftTime;
-        const peopleId = this.travelData[index].peopleId;
-        this.geoCoder.getLocation(spot, function (status, result) {
-          if (status === "complete" && result.geocodes.length) {
-            if (tmp_this.travelData[index].recordId != record) {
-            tmp_this.initroad();
-            tmp_this.lineArr = [];
-            point = 0;
-            record = tmp_this.travelData[index].recordId;
-            console.log("111")
-          }
-          console.log("aaa"+point)
-            var lnglat = result.geocodes[0].location;
-            lng = lnglat.lng;
-            lat = lnglat.lat;
-            tmp_this.lineArr.push([lng, lat]);
+      this.travelData.forEach((item) => {
+        const spot = item.address;
+        const arriveTime = item.arriveTime;
+        const leftTime = item.leftTime;
+        const peopleId = item.peopleId;
+        const location = item.location
+        const name = item.name
+            if(item.recordId != record){
+              point = 0
+              record = item.recordId
+              tmp_this.initLine()
+              tmp_this.lineArr = []
+            }
+            tmp_this.lineArr.push(location);
+            tmp_this.points.push(markerspot);
+            var text = new AMap.Text({
+              text: ++point,
+              anchor: "center", // 设置文本标记锚点
+              // draggable: true, // 是否可移动文本
+              cursor: "pointer",
+              angle: 10,
+              style: {
+                "margin-top": "2px",
+                "background-color": "#9b9a99",
+                opacity: "1",
+                "border-width": 0,
+                "text-align": "center",
+                "font-size": "20px",
+                color: "#fff",
+              },
+              position: location,
+            });
+            text.setMap(map);
+            tmp_this.texts.push(text);
             var markerspot = new AMap.CircleMarker({
-              center: [lng, lat],
+              center: location,
               radius: 20,
               strokeColor: "white", // 边框颜色
               strokeWeight: 2,
@@ -280,9 +351,7 @@ this.polygons.push(polygon);
               cursor: "pointer",
               clickable: true,
             });
-            infectInfo(peopleId).then((res1) => {
-          name = res1.data.name;
-          markerspot.content =
+              markerspot.content =
               "<div style='font-size:18px; font-height:20px;'>" +
               "轨迹地点：" +
               spot +
@@ -299,7 +368,6 @@ this.polygons.push(polygon);
               "离开时间：" +
               leftTime +
               "</div>";
-        });
             markerspot.on("mouseover", markerClick);
             markerspot.emit("mouseover", { target: markerspot });
             function markerClick(e) {
@@ -308,70 +376,10 @@ this.polygons.push(polygon);
             }
             map.add(markerspot);
             tmp_this.points.push(markerspot);
-            
-            var text = new AMap.Text({
-              text: ++point,
-              anchor: "center", // 设置文本标记锚点
-              // draggable: true, // 是否可移动文本
-              cursor: "pointer",
-              angle: 10,
-              style: {
-                "margin-top": "2px",
-                "background-color": "#9b9a99",
-                opacity: "1",
-                "border-width": 0,
-                "text-align": "center",
-                "font-size": "20px",
-                color: "#fff",
-              },
-              position: [lng, lat],
-            });
-            text.setMap(map);
-            tmp_this.texts.push(text);
-            map.setFitView();
-            if (tmp_this.travelData.length - 1 === parseInt(index)) {
-              tmp_this.initroad();
-              tmp_this.initLine();
-            }
-          }
-        });
-      }
+          })
+          this.initLine()
     },
     initLine() {
-      var record = "";
-      const this_ = this;
-      AMap.plugin("AMap.Driving", function () {});
-      record = this.travelData[0];
-      for (var index in this_.travelData) {
-        if (this_.travelData[index].recordId != record) {
-          this_.Driving_obj = new AMap.Driving({
-            map: this_.map,
-          });
-          this_.Driving_obj.search(this_.path, function (status, result) {
-            if (status === "complete") {
-              if (result.routes && result.routes.length) {
-                drawRoute(result.routes[0], f);
-              }
-            }
-          });
-          record = this_.travelData[index].recordId;
-          this_.path = [];
-        }
-        const spot = this_.travelData[index].address;
-        this_.path.push({ keyword: spot, city: "全国" });
-      }
-      this_.Driving_obj = new AMap.Driving({
-        map: this_.map,
-      });
-      this_.Driving_obj.search(this_.path, function (status, result) {
-        if (status === "complete") {
-          if (result.routes && result.routes.length) {
-            drawRoute(result.routes[0], f);
-          }
-        }
-      });
-    },
-    initroad() {
       const this_ = this;
       this.polyline = new AMap.Polyline({
         map: this.map,
@@ -379,15 +387,17 @@ this.polygons.push(polygon);
         showDir: true,
         strokeColor: "#77DDFF", // 线颜色--浅蓝色
         // strokeOpacity: 1,     //线透明度
-        strokeWeight: 2, // 线宽
+        strokeWeight: 5, // 线宽
         // strokeStyle: "solid"  //线样式
         lineJoin: "round", // 折线拐点的绘制样式
       });
       this.polyline.setPath(this_.lineArr);
       this.polyline.show();
       this.polylines.push(this_.polyline);
-      this.map.setFitView(); // 合适的视口
+      this.map.setZoom(15)
+      this.map.setCenter(this_.lineArr[0])
     },
+
     clearLine() {
       const this_ = this;
       //this.Driving_obj.clear();
@@ -396,6 +406,10 @@ this.polygons.push(polygon);
       this.map.remove(this_.texts);
       this.map.remove(this_.points);
     },
+    moveTo(row){
+      this.map.setZoom(20)
+      this.map.setCenter(row.location)
+    }
   },
 };
 </script>
@@ -681,14 +695,14 @@ div {
   top: calc((100% - 131px) / 2);
   right: 0;
   transform: translateY(calc(-50% + 116px));
-  width: 30%;
+  width: 20%;
   height: calc(calc(80% - 120px));
   background-color: rgba(0, 0, 0, 0);
   transition: right 0.8s;
   padding: 0;
   margin: 0;
   &.close {
-    right: -30% !important;
+    right: -20% !important;
   }
   .Right {
     z-index: 1;
@@ -701,7 +715,7 @@ div {
     display: inline-block;
     vertical-align: middle;
     border-radius: 5px 0 0 5px;
-    background-color: #4ba1f3;
+    background-color: #DD5043;
     cursor: pointer;
     &.is-active {
       transform: translate(-100%, -50%) rotate(180deg);
@@ -712,7 +726,7 @@ div {
     ::v-deep .el-table {
       background-color: rgba(0, 0, 0, 0);
       thead tr {
-        background: rgba(10, 88, 154, 1);
+        background: rgba(150, 21, 21, 0.89);
         .el-table__cell {
           color: #fff;
           .cell {
@@ -739,26 +753,26 @@ div {
           .cell {
             height: 35px;
             line-height: 35px;
-            background-color: rgba(10, 88, 154, 0.6);
+            background-color: rgba(184, 42, 42, 0.6);
           }
         }
       }
       .el-table__body tr:hover > td.el-table__cell {
-        background-color: rgba(75, 255, 255, 0) !important;
+        background-color: rgba(226, 75, 75, 0.5) !important;
         .cell {
-          background-color: rgba(75, 255, 255, 0.2);
+          background-color: rgba(221, 91, 91, 0.2);
         }
       }
       .el-table__expanded-cell,
       .el-form {
-        background-color: rgba(0, 0, 0, 0);
+        background-color: rgba(180, 83, 83, 0.404);
         .el-form-item__content {
-          background-color: rgba(10, 88, 154, 0.6);
+          background-color: rgba(185, 75, 75, 0.6);
           color: #fff;
           padding-left: 10px;
         }
         .el-form-item__content:hover {
-          background-color: rgba(75, 255, 255, 0.2);
+          background-color: rgba(204, 68, 68, 0.479);
         }
         .el-form-item__label {
           padding-left: 10px;
@@ -816,7 +830,7 @@ div {
       .camera_box {
         padding: 12px;
         border-radius: 6px;
-        border: 2px solid rgba(10, 88, 154, 1);
+        border: 2px solid rgb(255, 0, 0);
         margin-bottom: 5px;
       }
     }

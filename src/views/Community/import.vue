@@ -161,7 +161,9 @@
 <script>
 import {page,searchById,add,update,deleteById} from '../../api/Community/base'
 import {searchById as searchDetail} from '../../api/Person/basic'
-import {getAreaById} from '../../api/Ancestor/base'
+import {
+  getAncestor
+} from "../../api/Region/basic";
 let pcas = require("./pcas/pcas-code.json")
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
@@ -221,6 +223,9 @@ for (; from < to; from++) {
     initTable(){
       this.loading=true
       var tempArray=[]
+       getAncestor(this.$store.state.user.dept).then((res)=>{
+        let arr=res.data.ancestors.split(',')
+this.ancestors=arr[0]+arr[1]+arr[2]
       page(this.ancestors).then(response=>{
         response.rows.forEach(item => {
           this.tempItem=item
@@ -254,7 +259,7 @@ for (; from < to; from++) {
         }
         this.loading= false;
     })
-      
+       })
     },
     handleAdd(){
       this.dialogVisible=true

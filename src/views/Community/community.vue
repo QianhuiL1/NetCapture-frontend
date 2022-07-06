@@ -147,7 +147,9 @@
 
 <script>
 import { searchByArea,updatePersonInfo,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
-
+import {
+  getAncestor
+} from "../../api/Region/basic";
 
 export default{
   name:'residentList',
@@ -156,7 +158,7 @@ export default{
       loading: false,
       residentTable:[],
       param:{
-        ancestors: "0420000420102"
+        ancestors: ""
       },
       queryParams:{
         name: '',
@@ -209,6 +211,9 @@ for (; from < to; from++) {
 }}},
     initTable(){
       this.loading= true
+       getAncestor(this.$store.state.user.dept).then((res)=>{
+        let arr=res.data.ancestors.split(',')
+this.param.ancestors=arr[0]+arr[1]+arr[2]
       searchByArea(this.param.ancestors).then(res=>{
       this.residentTable=res.rows
       this.total=res.rows.length
@@ -221,6 +226,7 @@ for (; from < to; from++) {
       }
       this.loading=false
     })
+       })
     },
     handleQuery(){
       if(this.queryParams.name==''&&this.queryParams.peopleId=='')

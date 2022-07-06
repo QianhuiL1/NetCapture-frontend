@@ -198,7 +198,6 @@ import {
   searchByName,
   searchById,
 } from "../../api/Person/basic";
-import { CodeToText,TextToCode } from "element-china-area-data";
 import {
   getAncestor
 } from "../../api/Region/basic";
