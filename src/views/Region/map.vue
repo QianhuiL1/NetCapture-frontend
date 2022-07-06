@@ -47,16 +47,54 @@
     </div>
     <dataPanel v-if="menuIndex === 'dataPanel'" style="z-index: 1001" />
     <div id="map"></div>
+     <!-- <aside class="asideRight weather">
+       <div v-if="menuIndex === 'region'" class="shijian_content">
+        <div class="right-header">
+          <p class="header-title">
+            更新时间: <span>{{ regionList[0].lastupdatetime }}</span>
+          </p>
+          <div class="header-button">
+            <el-input
+              v-model="address"
+              placeholder="站点查询"
+              class="input-with-select"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="searchClick"
+              />
+            </el-input>
+          </div>
+        </div>
+     
+      </div>
+    </aside>  -->
+    
     <aside class="asideRight weather">
-      <el-table
+       <el-table
         v-if="menuIndex == 'region'"
-        :data="polygons"
+        :data="regionList"
         height="100%"
       >
+      <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" class="demo-table-expand">
+              <el-form-item>
+                <span style="padding-left: 50px; font-weight:800;">更新时间 : </span>
+                <span>{{ props.row.lastupdatetime }}</span>
+              </el-form-item>
+              <el-form-item >
+                <span style="padding-left: 80px; font-weight:800;">所属行政区 : </span>
+                <span>{{ props.row.area }}</span>
+              </el-form-item>
+              
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column
           label="重点地区"
-          prop="region"
-          align="center"
+          prop="address"
           show-overflow-tooltip
         />
         <el-table-column
@@ -71,8 +109,6 @@
           </template>
         </el-table-column>
       </el-table>
-    </aside>
-    <aside class="asideRight weather">
       <el-table
         v-if="menuIndex == 'track'"
         :data="travelData"
@@ -83,14 +119,14 @@
             <el-form label-position="left" class="demo-table-expand">
               <el-form-item>
                 <span style="padding-left: 50px; font-weight:800;">重点人员 :  </span>
-                <span>{{ props.row.peopleId }}</span>
+                <span>{{ props.row.name }}</span>
               </el-form-item>
               <el-form-item >
-                 <span style="padding-left: 80px; font-weight:800;">到达时间 :  </span>
+                <span style="padding-left: 80px; font-weight:800;">到达时间 :  </span>
                 <span>{{ props.row.arriveTime }}</span>
               </el-form-item>
               <el-form-item>
-                 <span style="padding-left: 110px; font-weight:800;">离开时间 :  </span>
+                <span style="padding-left: 110px; font-weight:800;">离开时间 :  </span>
               <span>{{ props.row.leftTime }}</span>
               </el-form-item>
             </el-form>
@@ -114,6 +150,7 @@
 import { travelList } from "../../api/People/travel/basic";
 import dataPanel from "@/components/dataPancel";
 import { infectInfo, infectList } from "../../api/People/infect/basic";
+import { regionList } from "../../api/Region/basic";
 import { CodeToText } from 'element-china-area-data'
 const AMap = window.AMap;
 export default {
@@ -122,7 +159,6 @@ export default {
     // 初始化地图页面
     this.initMap();
     this.initData();
-    this.setRegion();
     
   },
   components: {
@@ -131,32 +167,19 @@ export default {
   },
   data() {
     return {
+      address:"",
       asideRightSwitch: true,
       menuIndex: "region",
       count: true,
-      peopleList: [],
+      regionList: [],
       map: null,
       lineArr: [],
-      new_time: "",
-      new_time1: "",
-      new_address: "",
-      listID: "",
-      centerDialogAdd: false,
-      centerDialogEdit: false,
-      centerDialogDel: false,
-      formQuery: {
-        name: "",
-        id: "",
-        phone: "",
-        email: "",
-      },
       spot: {
         travelId: "",
         address: "",
         arriveTime: "",
         leftTime: "",
       },
-      isCommit: false,
       loading: false,
       travelData: [],
       district: [],
@@ -196,6 +219,26 @@ export default {
           })
       })
       });
+      var i = 0
+      regionList().then((response) => {
+this.regionList = response.rows
+this.regionList.forEach((item) => {
+  item.level = item.risklevel==2?"高风险地区":(item.risklevel==1?"中风险地区":"低风险地区")
+      this_.geoCoder.getLocation(item.address, function (status, result) {
+          if (status === "complete" && result.geocodes.length) {
+            item.location = result.geocodes[0].location
+i=i+1
+ if(i == this_.regionList.length)
+      {
+this_.setRegion();
+      }
+          }
+          })
+      })
+      })
+    },
+    searchClick(){
+
     },
     initMap() {
       this.map = new AMap.Map("map", {
@@ -221,14 +264,16 @@ export default {
     },
     setRegion() {
       const this_=this
+      this.regionList.forEach((item) => {
       var marker = new AMap.Marker({
-            icon:'//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
-            position: [116.406315,39.908775],
+            //icon:'//vdata.amap.com/icons/b18/1/2.png',
+            position: item.location,
             offset: new AMap.Pixel(-13, -30)
         });
-        marker.content = 
-         "<h4 style='font-weight:600;'>重点地区：</h4>" +
-            "<h4 style='font-weight:600;'>防控级别：</h4>";
+        marker.content = "<div style='width:200px;height:150px;'>" + 
+         "<h4 style='font-weight:600;'>重点地区：" + "<span style='font-weight:200;'>" + item.address + "</span>" + "</h4>"+
+          "<h4 style='font-weight:600;'>所属地：" + "<span style='font-weight:200;'>" + item.area + "</span>" + "</h4>"+
+            "<h4 style='font-weight:600;'>防控级别："+ "<span style='font-weight:200;'>" + item.level + "</span>" + "</h4>"+"</div>";
           marker.on("click", showInfoP);
           function showInfoP(e) {
             var infoWindow = new AMap.InfoWindow({
@@ -239,6 +284,7 @@ export default {
           }
         marker.setMap(this.map);
         this.regions.push(marker)
+      })
         this.map.setFitView();
     },
 //     showRegion(result, color, stroke) {
@@ -695,14 +741,14 @@ div {
   top: calc((100% - 131px) / 2);
   right: 0;
   transform: translateY(calc(-50% + 116px));
-  width: 20%;
+  width: 30%;
   height: calc(calc(80% - 120px));
   background-color: rgba(0, 0, 0, 0);
   transition: right 0.8s;
   padding: 0;
   margin: 0;
   &.close {
-    right: -20% !important;
+    right: -30% !important;
   }
   .Right {
     z-index: 1;
@@ -793,8 +839,8 @@ div {
     line-height: 40px;
     background: linear-gradient(
       to right,
-      rgba(10, 88, 154, 1),
-      rgba(10, 88, 154, 0.1)
+      rgb(154, 10, 10),
+      rgba(154, 10, 10, 0.1)
     );
     display: flex;
     margin-bottom: 12px;
@@ -883,7 +929,7 @@ a {
   background-color: rgba(0, 0, 0, 0);
   border: 1px solid;
   border-right: 0px;
-  border-color: #3388ff;
+  border-color: #ff3333;
   color: white;
 }
 // 输入框按钮
@@ -892,9 +938,9 @@ a {
   border: 1px solid;
   border-left: 0px;
   border-radius: 0px 4px 4px 0px;
-  border-color: #3388ff;
+  border-color: #ff3333;
   .el-icon-search {
-    color: #3388ff;
+    color: #ff3333;
   }
 }
 </style>

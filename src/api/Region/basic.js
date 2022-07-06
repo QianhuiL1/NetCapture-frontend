@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const prefix = '/ancestor'
+const prefix = '/riskArea'
 
 // 获取区域列表
 export function regionList(queryParams) {
@@ -10,10 +10,10 @@ export function regionList(queryParams) {
     })
 }
 
-// 根据部门编号获取详细信息
-export function getAncestor(id) {
+// 获取重点地区详细信息
+export function getRegionInfo(id) {
     return request({
-        url: '/system/dept/' + id,
+        url: prefix + '/' + id,
         method: 'get',
     })
 }
