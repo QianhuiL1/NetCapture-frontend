@@ -132,6 +132,7 @@
         v-model="info.peopleId"
         placeholder="请输入身份证号"
         @input="change($event)"
+        disabled='true'
       ></el-input>
       <div class="inputTitle"><span> 联系电话： </span></div>
       <el-input

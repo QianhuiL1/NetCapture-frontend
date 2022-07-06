@@ -210,7 +210,7 @@ export default {
   data() {
     return {
       param: {
-        ancestors: "",
+        ancestors: "420302",
       },
       dialogVisible: false,
       typeArr: [
@@ -279,6 +279,7 @@ export default {
     getInfectList() {
       this.loading = true;
       var temp = [];
+      console.log(this.$store.state.user.dept)
       getAncestor(this.$store.state.user.dept).then((res)=>{
         let arr=res.data.ancestors.split(',')
 this.param.ancestors=arr[0]+arr[1]+arr[2]

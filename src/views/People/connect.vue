@@ -121,11 +121,11 @@
       姓名：
       </span>
       </div>
-      <el-input v-model="info.name" placeholder="请输入人员姓名" @input="change($event)"></el-input>      
+      <el-input v-model="info.name" placeholder="请输入人员姓名" @input="change($event)" ></el-input>      
       <div class="inputTitle"><span>
       身份证号：
       </span>
-      </div><el-input v-model="info.peopleId" placeholder="请输入身份证号" @input="change($event)"></el-input>  
+      </div><el-input v-model="info.peopleId" placeholder="请输入身份证号" @input="change($event)" disabled='true'></el-input>  
       <div class="inputTitle"><span>
       联系电话：
       </span>

@@ -56,7 +56,7 @@
 				<el-menu-item index="/communityImport">旅居人员登记</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="5" v-if="role == 1">
+		<el-submenu index="6" v-if="role == 1">
 			<template slot="title">
 				<i class="el-icon-share" style="font-size: 28px;"></i>
 				<span>  用户管理</span>

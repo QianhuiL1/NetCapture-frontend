@@ -140,6 +140,15 @@
         </div>
       </template>
     </el-form-item>
+    <el-form-item label="交通工具" prop="transportation">
+      <el-input
+        v-model="formData.transportation"
+        placeholder="请输入交通工具"
+        clearable
+        prefix-icon="el-icon-position"
+        :style="{width:'100%'}"
+        />
+    </el-form-item>
     <el-form-item size="medium">
       <el-button type="primary" @click="submitForm">提交</el-button>
       <el-button @click="resetForm">重置</el-button>
@@ -164,7 +173,7 @@ export default {
     return {
       dialogVisible: false,
       queryParams:{id: ''},
-      ancestors: '0,420000,420984',
+      ancestors: '0,420000,420302',
       formData:{},
       importTable: [],
       loading: false,
@@ -234,17 +243,18 @@ for (; from < to; from++) {
           this.tempItem.toAncestors=name2
           tempArray.push(this.tempItem)
         });
-    })
-      this.importTable=tempArray
-      this.total=this.importTable.length
-      if (this.total > this.pageSize) {
-        for (let index = 0; index < this.pageSize; index++) {
-          this.tableDataEnd.push(this.importTable[index]);
+        this.importTable=tempArray
+        this.total=this.importTable.length
+        if (this.total > this.pageSize) {
+          for (let index = 0; index < this.pageSize; index++) {
+            this.tableDataEnd.push(this.importTable[index]);
+          }
+        } else {
+          this.tableDataEnd = this.importTable;
         }
-      } else {
-        this.tableDataEnd = this.importTable;
-      }
-      this.loading= false;
+        this.loading= false;
+    })
+      
     },
     handleAdd(){
       this.dialogVisible=true
@@ -298,7 +308,7 @@ for (; from < to; from++) {
         if(this.selectedArea==''){
         this.$message.error('来源地不能为空');
         }else{
-          this.formData.toAncestors="0,420000,420984"
+          this.formData.toAncestors=this.ancestors
           this.formData.fromAncestors="0,"+this.selectedArea[0]+"0000,"+this.selectedArea[2]
           this.formData.recordTime=this.getCurrentTime()
           add(this.formData).then(res=>{

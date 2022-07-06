@@ -96,7 +96,6 @@
                 v-model="form.oldPassword"
                 style="width: 90%"
                 placeholder="请输入旧密码"
-                show-password
               />
             </el-form-item>
             <el-form-item label="新密码" prop="newPassword">
@@ -104,7 +103,6 @@
                 v-model="form.newPassword"
                 style="width: 90%"
                 placeholder="请输入新密码"
-                show-password
               />
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmPassword">
@@ -112,7 +110,6 @@
                 v-model="form.confirmPassword"
                 style="width: 90%"
                 placeholder="请输入确认密码"
-                show-password
               />
             </el-form-item>
             <el-form-item>

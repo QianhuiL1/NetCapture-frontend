@@ -167,6 +167,16 @@ export default {
         })
         echarts.registerMap('滁州', cZjson);
         var chart = echarts.init(document.getElementById('map'));
+        chart.showLoading({
+          text:'数据加载中......',
+          color:"#B2312D",
+          textColor:"#B2312D",
+          fontSize: 50,
+          showSpinner: true,
+          spinnerRadius: 20,
+          lineWidth: 5,
+          zlevel: 0,
+        })
         let option = {
             title: {
                 text: '中国今日疫情趋势',
@@ -216,12 +226,23 @@ export default {
             ],
         };
         chart.setOption(option);
+        chart.hideLoading()
       })
     },
     getOwnAck() {
       var dateArray= this.getPreWeekTime()
       console.log(dateArray)
       this.ownAckChart = echarts.init(document.getElementById('ownAckChart'));
+      this.ownAckChart.showLoading({
+          text:'数据加载中......',
+          color:"#B2312D",
+          textColor:"#B2312D",
+          fontSize: 50,
+          showSpinner: true,
+          spinnerRadius: 20,
+          lineWidth: 5,
+          zlevel: 0,
+        })
       var dataAxis = dateArray
       var yMax = 50000;
       var dataShadow = [];
@@ -317,6 +338,7 @@ export default {
             ]
           };
           this.ownAckChart.setOption(option)
+          this.ownAckChart.hideLoading()
           }
         })
       }
@@ -337,7 +359,7 @@ export default {
       let yy = new Date().getFullYear();
       let mm = new Date().getMonth()+1;
       mm = mm < 10 ? '0' + mm : mm;
-      let dd = new Date().getDate();
+      let dd = new Date().getDate()-1;
       dd = dd < 10 ? '0' + dd : dd;
       var gettime = yy+'-'+mm+'-'+dd
       return gettime

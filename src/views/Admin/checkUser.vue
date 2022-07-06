@@ -177,7 +177,7 @@
         </el-pagination>
       </el-card>
     </div>
-    <el-dialog title="注册信息" :visible.sync="dialogVisible" width="20%">
+    <el-dialog title="注册信息" :visible.sync="dialogVisible" width="30%">
       <span class="noun">姓名： </span>
       <span
         style="float: right; color: #2e2d2d; font-size: 20px; font-weight: 200"

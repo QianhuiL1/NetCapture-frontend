@@ -105,6 +105,7 @@
                   <el-cascader
                     v-model="selectedOptions"
                     :options="options"
+                    placeholder="请选择所在地区"
                     filterable
                     clearable
                     style="width: 330px; margin-left:10px; "

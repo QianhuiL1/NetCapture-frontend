@@ -105,7 +105,7 @@ export default {
         xzwzz: '1,132',
         xyqz: '4,754',
         xybt: '555',
-        xzzz: '254',
+        xzzy: '254',
         xzsw: '9',
       },
         dialogVisible: false,
@@ -153,10 +153,7 @@ export default {
   methods: {
     initForm(){
       var today = this.getCurrentTime()
-      console.log('初始化')
       getAll(today).then(res=>{
-        console.log('访问接口成功')
-        console.log(res)
         this.totalNum.xzqz=res.data.confirm
         this.totalNum.xzbt=res.data.confirm-res.data.input
         this.totalNum.xzjw=res.data.input
@@ -177,6 +174,16 @@ export default {
     initCharts(){
       // 新增本土趋势图
       this.ownAddChart= echarts.init(document.getElementById('ownAddChart'))
+      this.ownAddChart.showLoading({
+          text:'数据加载中......',
+          color:"#B2312D",
+          textColor:"#B2312D",
+          fontSize: 50,
+          showSpinner: true,
+          spinnerRadius: 20,
+          lineWidth: 5,
+          zlevel: 0,
+        })
       var lchartDate=this.getPreWeekTime()
       console.log(lchartDate)
       var lchartNum=[]
@@ -203,11 +210,22 @@ export default {
           }]
         };
         this.ownAddChart.setOption(this.ownAddOption)
+         this.ownAddChart.hideLoading()
           }
         })
       }
     // 初始化境外输入趋势折线图
     this.otherAddChart= echarts.init(document.getElementById('otherAddChart'))
+    this.otherAddChart.showLoading({
+          text:'数据加载中......',
+          color:"#B2312D",
+          textColor:"#B2312D",
+          fontSize: 50,
+          showSpinner: true,
+          spinnerRadius: 20,
+          lineWidth: 5,
+          zlevel: 0,
+    })
     var rchartNum=[]
     for(var i=0;i<lchartDate.length;i++){
         getAll(lchartDate[i]).then(res=>{
@@ -232,6 +250,7 @@ export default {
               }]
               }
             this.otherAddChart.setOption(this.otherAddOption)
+            this.otherAddChart.hideLoading()
           }
         })
       }
@@ -242,7 +261,7 @@ export default {
       let yy = new Date().getFullYear();
       let mm = new Date().getMonth()+1;
       mm = mm < 10 ? '0' + mm : mm;
-      let dd = new Date().getDate();
+      let dd = new Date().getDate()-1;
       dd = dd < 10 ? '0' + dd : dd;
       var gettime = yy+'-'+mm+'-'+dd;
       return gettime
