@@ -257,7 +257,7 @@ handleEdit (row) {
     this.listID=row.peopleId;   
 }, 
 edit () { 
-      infectUpdate(this.info).then(response => {
+      infectUpdate(this.info).then(() => {
           this.$message.success("修改成功！")
           this.getList1()
         });

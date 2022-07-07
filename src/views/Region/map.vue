@@ -7,7 +7,7 @@
           :class="[menuIndex == 'region' ? 'active' : '']"
           @click="
             menuIndex = 'region';
-            clearLine();
+            initMap();
             setRegion();
           "
         >
@@ -18,7 +18,7 @@
           :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
             menuIndex = 'track';
-            clearRegion();
+            initMap();
             setLine();
           "
         >
@@ -29,8 +29,7 @@
           :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
             menuIndex = 'dataPanel';
-            clearLine();
-            clearRegion();
+            initMap();
           "
         >
           数据面板
@@ -225,16 +224,9 @@ export default {
         resizeEnable: true,
         zoom: 10,
         mapStyle: "amap://styles/white",
-        center: [114.306434, 30.7988],
+        center: [114.306434, 31.9988],
       });
-      this.map.plugin(["AMap.DistrictSearch"], () => {});
       this.map.plugin(["AMap.InfoWindow"], () => {});
-      var opts = {
-        subdistrict: 0, //获取边界不需要返回下级行政区
-        extensions: "all", //返回行政区边界坐标组等具体信息
-        level: "biz_area", //查询行政级别为 商圈
-      };
-      this.districtOption = new AMap.DistrictSearch(opts);
       AMap.plugin("AMap.Geocoder", function () {});
       var geoOption = {
         city: "全国",
@@ -245,12 +237,15 @@ export default {
     setMarker(row) {
       const this_ = this;
       this_.geoCoder.getLocation(row.address, function (status, result) {
-            if (status === "complete" && result.geocodes.length) {
-            var marker = new AMap.Marker({
+      if (status === "complete" && result.geocodes.length) {
+        var marker = new AMap.Marker({
+          map:this_.map,
           icon:'//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png',
           position: result.geocodes[0].location,
           offset: new AMap.Pixel(-13, -30),
         });
+        this_.map.setCenter(result.geocodes[0].location)
+        this_.map.setZoom(10)
         marker.content =
           "<div style='width:280px;height:130px;'>" +
           "<h4 style='font-weight:600;'>重点地区：" +
@@ -282,7 +277,6 @@ export default {
         this_.infoWindow = infoWindow
         this_.marker = marker
         marker.setMap(this_.map);
-      this_.map.setFitView();
             }
           });
     },
@@ -296,7 +290,7 @@ export default {
       var district = new AMap.DistrictSearch(opts);
       const map = this.map
       const this_ = this
-      map.setZoom(6)
+      map.setZoom(5)
       this.regions.forEach((item) => {
         var ar = item.split('省')
         item = ar[ar.length-1]
@@ -315,27 +309,29 @@ export default {
                         fillColor: '#ff0000',
                         strokeColor: '#ff0000'
                     });
-                    this_.polygons.push(polygon);
                 }
+                this_.polygons.push(polygon);
             }
         })
         });
-      map.setFitView();//视口自适应
     },
     clearRegion() {
       const this_=this
-      if(this_.marker != null)
-      this_.map.remove(this_.marker)
-      this_.map.remove(this_.polygons)
+      if(this_.marker != null){
+        this_.map.remove(this_.marker)
+      }
+      this.polygons.forEach((item) => {
+        item.setMap(null)
+        this_.map.remove(item)
+      })
       this.marker = null
       this.polygons = []
     },
     setLine() {
       const tmp_this = this;
       const map = this.map;
-      var name = "";
-      var lng = "";
-      var lat = "";
+      map.setCenter(tmp_this.travelData[0].location)
+      map.setZoom(13)
       this.lineArr = [];
       var point = 0;
       var record = this.travelData[0].recordId;
@@ -352,7 +348,18 @@ export default {
         if (item.recordId != record) {
           point = 0;
           record = item.recordId;
-          tmp_this.initLine();
+          tmp_this.polyline = new AMap.Polyline({
+        map: tmp_this.map,
+        path: tmp_this.lineArr,
+        showDir: true,
+        strokeColor: "#77DDFF", // 线颜色--浅蓝色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 5, // 线宽
+        // strokeStyle: "solid"  //线样式
+        lineJoin: "round", // 折线拐点的绘制样式
+      });
+      tmp_this.polyline.show();
+      tmp_this.polylines.push(tmp_this.polyline);
           tmp_this.lineArr = [];
         }
         tmp_this.lineArr.push(location);
@@ -415,14 +422,9 @@ export default {
         map.add(markerspot);
         tmp_this.points.push(markerspot);
       });
-      map.remove(tmp_this.infoWindow)
-      this.initLine();
-    },
-    initLine() {
-      const this_ = this;
       this.polyline = new AMap.Polyline({
-        map: this.map,
-        path: null,
+        map: tmp_this.map,
+        path: tmp_this.lineArr,
         showDir: true,
         strokeColor: "#77DDFF", // 线颜色--浅蓝色
         // strokeOpacity: 1,     //线透明度
@@ -430,10 +432,8 @@ export default {
         // strokeStyle: "solid"  //线样式
         lineJoin: "round", // 折线拐点的绘制样式
       });
-      this.polyline.setPath(this_.lineArr);
       this.polyline.show();
-      this.polylines.push(this_.polyline);
-      this_.map.setFitView();
+      this.polylines.push(tmp_this.polyline);
     },
 
     clearLine() {
