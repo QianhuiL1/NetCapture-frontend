@@ -412,8 +412,8 @@ export default {
           "离开时间：" +
           leftTime +
           "</div>";
-        markerspot.on("click", markerClick);
-        markerspot.emit("click", { target: markerspot });
+        markerspot.on("mouseover", markerClick);
+        markerspot.emit("mouseover", { target: markerspot });
         function markerClick(e) {
           infoWindow.setContent(e.target.content);
           infoWindow.open(map, e.target.getCenter());
