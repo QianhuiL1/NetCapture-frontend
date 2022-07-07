@@ -64,10 +64,10 @@ export default{
           }
           data.push(dataItem)
         })
+        data.push()
         getList().then(res=>{
           for(var j=0;j<res.rows.length;j++){
             var linkItem={}
-            console.log(j)
             linkItem.source=res.rows[j].dadname
             linkItem.target=res.rows[j].sonname
             linkItem.name=''

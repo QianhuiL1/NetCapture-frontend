@@ -11,8 +11,8 @@
   <el-form-item label="姓名" prop="name">
     <el-input v-model="ruleForm.name"></el-input>
   </el-form-item>
-  <el-form-item label="地点" prop="position">
-    <el-input v-model="ruleForm.position"></el-input>
+  <el-form-item label="地点" prop="address">
+    <el-input v-model="ruleForm.address"></el-input>
   </el-form-item>
   <el-form-item>
     <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { pushScanInfo } from '../../api/code';
+
 export default{
   name:'Form',
   created(){
@@ -45,8 +47,8 @@ callback(new Error('身份证号格式不正确'))
         ruleForm: {
           peopleId:'',
           name: '',
-          position:'武汉大学计算机学院八楼报告厅',
-          time:''
+          address:'武汉大学计算机学院',
+          submittingTime:''
         },
         rules: {
           peopleId:[
@@ -62,7 +64,7 @@ callback(new Error('身份证号格式不正确'))
               trigger: "blur"
             }
           ],
-          position:[
+          address:[
             {required: true, message:'请输入地点',trigger:'blur'}
           ]
         }
@@ -71,9 +73,12 @@ callback(new Error('身份证号格式不正确'))
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
-          this.formName.time= this.getCurrentTime()
           if (valid) {
-            this.$message.success('提交成功');
+            this.ruleForm.submittingTime= this.getCurrentTime()
+            console.log(this.ruleForm)
+            pushScanInfo(this.ruleForm).then(res=>{
+              this.$message.success('提交成功');
+            })
           } else {
             this.$message.error('提交失败');
             return false;
@@ -89,9 +94,11 @@ callback(new Error('身份证号格式不正确'))
         var month = date.getMonth() + 1
         var day = date.getDate()
         var hour = date.getHours()
+        month = month < 10 ? '0' + month : month;
+        day = day < 10 ? '0' + day : day;
         var minute = date.getMinutes()
         var second = date.getSeconds()
-        return (year+'-'+month+'-'+day+'-'+' '+hour+':'+minute+':'+second)
+        return (year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second)
       },
       // 生成随机身份证号
       getId(){

@@ -200,7 +200,7 @@ import {
 } from "../../api/Person/basic";
 import {
   getAncestor
-} from "../../api/Region/basic";
+} from "../../api/Region/base";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
 
@@ -209,7 +209,7 @@ export default {
   data() {
     return {
       param: {
-        ancestors: "420302",
+        ancestors: "0420000420202",
       },
       dialogVisible: false,
       typeArr: [
@@ -278,7 +278,7 @@ export default {
     getInfectList() {
       this.loading = true;
       var temp = [];
-      console.log(this.$store.state.user.dept)
+      
       getAncestor(this.$store.state.user.dept).then((res)=>{
         let arr=res.data.ancestors.split(',')
 this.param.ancestors=arr[0]+arr[1]+arr[2]
@@ -307,6 +307,7 @@ searchByArea(this.param.ancestors).then((res) => {
       this.loading = true;
       if (this.queryParams.name != "") {
         searchByName(this.queryParams.name).then((res) => {
+          
           if (res.rows.length < 1) {
             this.infectTable = [];
           } else {
@@ -333,23 +334,28 @@ searchByArea(this.param.ancestors).then((res) => {
         });
       } else if (this.queryParams.peopleId != "") {
         searchById(this.queryParams.peopleId).then((res) => {
+          console.log('在查询中')
+          console.log(res)
           this.infectTable = [];
-          var ancestor = res.data.ancestors.split(",").join("");
-          if (ancestor == this.param.ancestors) {
-            if (res.data.status != "0") {
-              res.data.infectTime = this.formatDate(res.data.positiveTime);
-              this.infectTable.push(res.data);
-              this.total = this.infectTable.length;
-              if (this.total > this.pageSize) {
-                for (let index = 0; index < this.pageSize; index++) {
-                  this.tableDataEnd.push(this.infectTable[index]);
-                }
-              } else {
-                this.tableDataEnd = this.infectTable;
+          if(res.data){
+            var ancestor = res.data.ancestors.split(",").join("");
+            if (ancestor == this.param.ancestors) {
+              if (res.data.status != "0") {
+                res.data.infectTime = this.formatDate(res.data.positiveTime);
+                this.infectTable.push(res.data);
               }
-              this.loading = false;
             }
           }
+          this.total = this.infectTable.length;
+          if (this.total > this.pageSize) {
+            for (let index = 0; index < this.pageSize; index++) {
+              this.tableDataEnd.push(this.infectTable[index]);
+            }
+          } else {
+            this.tableDataEnd = this.infectTable;
+          }
+          this.loading = false;
+          this.loading = false
         });
       } else if (this.queryParams.type != "") {
         var temp = [];

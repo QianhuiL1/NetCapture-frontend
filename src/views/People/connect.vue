@@ -87,11 +87,11 @@
         </el-table-column>    
       <el-table-column label="操作" min-width="20%">
       <template slot-scope="scope">
-            <el-button
-    size="medium"
-    type="text"
-    @click="handleEdit(scope.row)"
-  >
+    <el-button
+      size="medium"
+      type="text" 
+      @click="handleEdit(scope.row)"
+    >
     <i class="el-icon-edit" style="color: #3388ff" />
     <span style="color: #223355"> 编辑</span>
   </el-button>
@@ -186,8 +186,8 @@ export default {
       selectedOptions: [],
       ids:ids,
         centerDialogAdd: false,      
-centerDialogEdit: false,      
-centerDialogDel: false, 
+        centerDialogEdit: false,      
+        centerDialogDel: false, 
         info:{
             name:'',
             peopleId:'',

@@ -163,7 +163,7 @@ import {page,searchById,add,update,deleteById} from '../../api/Community/base'
 import {searchById as searchDetail} from '../../api/Person/basic'
 import {
   getAncestor
-} from "../../api/Region/basic";
+} from "../../api/Region/base";
 let pcas = require("./pcas/pcas-code.json")
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
@@ -224,9 +224,8 @@ for (; from < to; from++) {
       this.loading=true
       var tempArray=[]
        getAncestor(this.$store.state.user.dept).then((res)=>{
-        let arr=res.data.ancestors.split(',')
-this.ancestors=arr[0]+arr[1]+arr[2]
       page(this.ancestors).then(response=>{
+        console.log(response)
         response.rows.forEach(item => {
           this.tempItem=item
           this.tempItem.name=item.personInfo.name
@@ -273,9 +272,19 @@ this.ancestors=arr[0]+arr[1]+arr[2]
         this.initTable()
       }else{
         searchById(this.queryParams.id).then(res=>{
+          console.log(res)
         if(res.total<1){
+          console.log('小于1')
           this.importTable=[]
           this.total=0
+          if (this.total > this.pageSize) {
+          for (let index = 0; index < this.pageSize; index++) {
+            this.tableDataEnd.push(this.importTable[index]);
+          }
+          } else {
+            this.tableDataEnd = this.importTable;
+          }
+          this.loading=false
           // 若查询为空
         }else{
           this.tempItem=res.rows[0]
@@ -285,6 +294,18 @@ this.ancestors=arr[0]+arr[1]+arr[2]
           this.tempItem.toAddress=res.rows[0].personInfo.address
           this.tempItem.sex=res.rows[0].personInfo.sex
           this.tempItem.status=res.rows[0].personInfo.status
+          var fromArray=res.rows[0].fromAncestors.split(',')
+          var name1=''
+          for(var i=1;i<fromArray.length;i++){
+            name1+= CodeToText[fromArray[i]]+' '
+          }
+          this.tempItem.fromAncestors=name1
+          var toArray =res.rows[0].toAncestors.split(',')
+          var name2=''
+          for(var j=1;j<toArray.length;j++){
+            name2+=CodeToText[toArray[j]]+' '
+          }
+          this.tempItem.toAncestors=name2
           this.total=1
           this.importTable.push(this.tempItem)
           this.loading=false

@@ -149,7 +149,7 @@
 import { searchByArea,updatePersonInfo,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
 import {
   getAncestor
-} from "../../api/Region/basic";
+} from "../../api/Region/base";
 
 export default{
   name:'residentList',
@@ -211,21 +211,23 @@ for (; from < to; from++) {
 }}},
     initTable(){
       this.loading= true
-       getAncestor(this.$store.state.user.dept).then((res)=>{
+      // this.$store.state.user.dept
+       getAncestor("420302").then((res)=>{
+        console.log(res)
         let arr=res.data.ancestors.split(',')
-this.param.ancestors=arr[0]+arr[1]+arr[2]
-      searchByArea(this.param.ancestors).then(res=>{
-      this.residentTable=res.rows
-      this.total=res.rows.length
-      if (this.total > this.pageSize) {
-        for (let index = 0; index < this.pageSize; index++) {
-          this.tableDataEnd.push(this.residentTable[index]);
+        this.param.ancestors=arr[0]+arr[1]+arr[2]
+        searchByArea(this.param.ancestors).then(res=>{
+        this.residentTable=res.rows
+        this.total=res.rows.length
+        if (this.total > this.pageSize) {
+          for (let index = 0; index < this.pageSize; index++) {
+            this.tableDataEnd.push(this.residentTable[index]);
+          }
+        } else {
+          this.tableDataEnd = this.residentTable;
         }
-      } else {
-        this.tableDataEnd = this.residentTable;
-      }
-      this.loading=false
-    })
+        this.loading=false
+      })
        })
     },
     handleQuery(){
