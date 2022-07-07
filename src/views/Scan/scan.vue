@@ -43,6 +43,14 @@ callback(new Error('身份证号格式不正确'))
         callback()
       }
     }
+    const validateName = (rule, value,callback) =>{
+      var verify =  /[^\u4e00-\u9fa5]/;
+      if(verify.test(this.ruleForm.name)){
+        callback(new Error('请输入中文名'))
+      }else{
+        callback()
+      }
+    }
       return {
         ruleForm: {
           peopleId:'',
@@ -57,12 +65,10 @@ callback(new Error('身份证号格式不正确'))
           ],
           name: [
             { required: true, message: '请输入您的姓名', trigger: 'blur' },
-            { min:2,max: 4, message: '姓名长度需介于2和4之间', trigger: 'blur' },
+            { min:2,max: 10, message: '姓名长度需介于2和10之间', trigger: 'blur' },
             {
-              pattern: /^[a-zA-Z\u4e00-\u9fa5]+$/,
-              message: "请勿输入特殊字符",
-              trigger: "blur"
-            }
+              required:true,validator:validateName,trigger:'blur'
+              }
           ],
           address:[
             {required: true, message:'请输入地点',trigger:'blur'}
@@ -75,9 +81,9 @@ callback(new Error('身份证号格式不正确'))
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.ruleForm.submittingTime= this.getCurrentTime()
-            console.log(this.ruleForm)
             pushScanInfo(this.ruleForm).then(res=>{
               this.$message.success('提交成功');
+              this.resetForm('ruleForm')
             })
           } else {
             this.$message.error('提交失败');
@@ -114,7 +120,6 @@ callback(new Error('身份证号格式不正确'))
        }       
        var lastNumber = lastNumberArray[parseInt(total%11)];
        var id_no_String = address + birthday + s + lastNumber;
-       console.log(id_no_String)
        return id_no_String
     }
     }

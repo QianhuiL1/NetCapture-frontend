@@ -10,7 +10,10 @@
       <div class="rdiv">
     </div>
     <el-submenu index="4" class="submenu">
-      <template slot="title"><span style="font-size:20px;">{{ username }}</span></template>
+      <template slot="title">
+        <span style="font-size:20px;">{{ username }}</span>
+        <span style="font-size: 10px" v-if="role==3">(湖北省)</span>
+        </template>
       <router-link to="" @click.native="openOwn">
         <el-menu-item>个人中心</el-menu-item>
       </router-link>
@@ -96,6 +99,7 @@
                 v-model="form.oldPassword"
                 style="width: 90%"
                 placeholder="请输入旧密码"
+                showPassword
               />
             </el-form-item>
             <el-form-item label="新密码" prop="newPassword">
@@ -103,6 +107,7 @@
                 v-model="form.newPassword"
                 style="width: 90%"
                 placeholder="请输入新密码"
+                showPassword
               />
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmPassword">
@@ -110,6 +115,7 @@
                 v-model="form.confirmPassword"
                 style="width: 90%"
                 placeholder="请输入确认密码"
+                showPassword
               />
             </el-form-item>
             <el-form-item>
@@ -133,7 +139,7 @@
 </template>
  
 <script>
-import { getUserByName,updateUser,resetUserPwd,updateUserPwd,updateAuthRole } from "../api/system/user"
+import { getUserByName,updateUser,resetUserPwd,updateUserPwd,updateAuthRole, delUser } from "../api/system/user"
 import screenfull from "screenfull"
 export default {
   name: 'TopNav',
@@ -291,10 +297,13 @@ export default {
         }
         this.baseInfo.userId=this.userId
         this.baseInfo.userName=this.$store.state.user.name.split(',')[0]
-        console.log(this.baseInfo)
+        this.baseInfo.roleIds=[]
+        this.baseInfo.roleIds.push(this.$store.state.user.roles)
         updateUser(this.baseInfo).then(res=>{
-          this.$message.success('修改资料成功')
-          this.userDialog=false
+          updateAuthRole(this.baseInfo.userId).then(re=>{
+            this.$message.success('修改资料成功')
+            this.userDialog=false
+          })
         })
       },
       handleSubmit(){

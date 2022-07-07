@@ -144,12 +144,12 @@ export default {
   component: {
   },
   mounted(){
-    this.getOwnAck()
-  },
-  created() {
     this.initMap()
     this.getOwnAck()
     this.initQuickInfo()
+  },
+  created() {
+    // 3,4,5,6 日有数据
   },
   methods: {
     getHelp(){
@@ -179,7 +179,7 @@ export default {
         })
         let option = {
             title: {
-                text: '中国今日疫情趋势',
+                text: '中国昨日疫情趋势',
                 x:'center'
             },
             dataRange:{
@@ -231,7 +231,6 @@ export default {
     },
     getOwnAck() {
       var dateArray= this.getPreWeekTime()
-      console.log(dateArray)
       this.ownAckChart = echarts.init(document.getElementById('ownAckChart'));
       this.ownAckChart.showLoading({
           text:'数据加载中......',
@@ -246,14 +245,14 @@ export default {
       var dataAxis = dateArray
       var yMax = 50000;
       var dataShadow = [];
-      for (var i = 0; i < dateArray.length; i++) {
+      for (var i = 0; i < dataAxis.length; i++) {
           dataShadow.push(yMax);
       }
       var numArray=[]
-      for(var m=0;m<dateArray.length;m++){
-        getAll(dateArray[m]).then(res=>{
+      for(var m=0;m<dataAxis.length;m++){
+        getAll(dataAxis[m]).then(res=>{
           numArray.push(res.data.confirm)
-          if(m==dateArray.length){
+          if(m==dataAxis.length){
             let option = {
             title: {
                 text: '新增确诊趋势',
@@ -365,20 +364,6 @@ export default {
       return gettime
     },
     getPreWeekTime(){
-      // var array= []
-      // for (var i=6;i>=0;i--){
-      //   var date1 = new Date()
-      //   var date2 = new Date(date1)
-      //   date2.setDate(date1.getDate()-i)
-      //   let yy = date2.getFullYear();
-      //   let mm = date2.getMonth()+1;
-      //   mm = mm < 10 ? '0' + mm : mm;
-      //   let dd = date2.getDate();
-      //   dd = dd < 10 ? '0' + dd : dd;
-      //   var gettime = yy+'-'+mm+'-'+dd
-      //   array.push(gettime)
-      // }
-      // return array
       var now = new Date()
       var array=[]
       for(var j=7;j>=0;j--){

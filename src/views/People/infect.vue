@@ -498,7 +498,7 @@ this.queryParams.ancestors =
       require.ensure([], () => {
         const { export_json_to_excel } = require("@/excel/Export2Excel");
         const tHeader = ["姓名", "身份证号", "联系电话", "确诊时间"];
-        const filterVal = ["name", "peopleId", "phonenumber", "createTime"];
+        const filterVal = ["name", "peopleId", "phonenumber", "positiveTime"];
         const list = that.infectList;
         const data = that.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, "感染人员表");

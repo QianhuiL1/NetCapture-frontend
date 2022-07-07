@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Header v-show="$route.path!='/'&& $route.path!='/register'"></Header>
-    <router-view v-show="$route.path=='/'||$route.path=='/register'" v-if="isRouterAlive"/>
+    <Header v-show="$route.path!='/'&& $route.path!='/register' && $route.path!='/scan'"></Header>
+    <router-view v-show="$route.path=='/'||$route.path=='/register' ||$route.path=='/scan'" v-if="isRouterAlive"/>
     <!-- <router-view/> -->
     <!-- <Scan/> -->
   </div>

@@ -90,6 +90,11 @@ export default {
             path: "/topology",
             component: () =>
                 import ("@/views/People/topology.vue")
+        },
+        {
+            path: "/scan",
+            component: () =>
+                import ("@/views/Scan/scan.vue")
         }
     ],
     // 去掉Vue地址的#
