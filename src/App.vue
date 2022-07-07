@@ -3,6 +3,7 @@
     <Header v-show="$route.path!='/'&& $route.path!='/register'"></Header>
     <router-view v-show="$route.path=='/'||$route.path=='/register'" v-if="isRouterAlive"/>
     <!-- <router-view/> -->
+    <!-- <Scan/> -->
   </div>
 </template>
 
@@ -10,6 +11,7 @@
 // import Header from './components/Header.vue'
 import Header from './components/Header.vue'
 import Login from './views/Login/login.vue'
+import Scan from './views/Scan/scan.vue'
 
 export default  {
   name:  'App',
@@ -41,7 +43,8 @@ export default  {
     },
   components: {
     Header,
-    Login
+    Login,
+    Scan
   }
 }
 </script>

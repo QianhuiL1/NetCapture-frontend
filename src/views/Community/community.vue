@@ -233,10 +233,7 @@ this.param.ancestors=arr[0]+arr[1]+arr[2]
       {
         this.initTable()
       }else if(this.queryParams.peopleId!=''){
-        console.log('身份证号不为空')
-        console.log(this.queryParams.peopleId)
         searchById(this.queryParams.peopleId).then(res=>{
-          console.log(res)
           this.residentTable=[]
           this.residentTable.push(res.data)
           this.total=this.residentTable.length

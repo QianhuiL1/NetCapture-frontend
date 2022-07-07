@@ -144,7 +144,6 @@ export default {
       captchaOnOff: true,
       // 注册开关
       register: true,
-
     }
   },
   computed: {
@@ -186,7 +185,8 @@ export default {
           this.loginForm.uuid = res.uuid;
         }
       });
-    },getCookie() {
+    },
+    getCookie() {
       const username = Cookies.get("username");
       const password = Cookies.get("password");
       this.loginForm = {
@@ -215,7 +215,7 @@ export default {
       })
     },
     handleLogin(){
-            this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
           if (this.loginForm.rememberMe) {
@@ -232,12 +232,10 @@ export default {
             }else{
               this.$message.info("账号等待审核……")
             }
-            
             // this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {
-              this.loading = false;
               this.getCode();
             }
           });
