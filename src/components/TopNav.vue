@@ -231,6 +231,7 @@ export default {
 
   },
   methods: {
+    clear(){},
       openOwn(){
         this.userDialog=true
         this.user.name=this.username

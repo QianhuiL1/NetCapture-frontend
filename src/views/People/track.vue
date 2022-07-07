@@ -128,7 +128,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[10, 15, 30, 50]"
+      :page-sizes="[5, 10, 20]"
       :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
@@ -268,7 +268,7 @@ export default {
     this.formQuery.name = this.$route.params.peopleName;
     this.formQuery.id = this.$route.params.peopleId;
     this.formQuery.phone = this.$route.params.peoplePhone;
-    this.getList()
+    //this.getList()
     setTimeout(() => {
       this.initMap();
     }, 1000);
@@ -276,7 +276,7 @@ export default {
   data() {
     return {
       tableDataEnd:[],
-      pageSize:15,
+      pageSize:5,
       currentPage:1,
       total: 1,
       count: true,
@@ -361,7 +361,6 @@ for (; from < to; from++) {
       this.geoCoder = new AMap.Geocoder(geoOption);
       this.setMarker();
       this.initLine();
-      //this.initroad();
     },
 
     setMarker() {
@@ -383,73 +382,11 @@ for (; from < to; from++) {
               //tmp_this.initroad();
               tmp_this.initLine();
             }
-        // tmp_this.set(lng,lat)
-        
-            // let index1 = parseInt(index) + 1;
-            // var text = new AMap.Text({
-            //   text: index1,
-            //   anchor: "center", // 设置文本标记锚点
-            //   // draggable: true, // 是否可移动文本
-            //   cursor: "pointer",
-            //   angle: 10,
-            //   style: {
-            //     // padding: ".75rem 1.25rem",
-            //     // "margin-bottom": "1rem",
-            //     // "border-radius": ".25rem",
-            //     "margin-top": "2px",
-            //     "background-color": "#cccccc",
-            //     opacity: "0.7",
-            //     // width: "100%",
-            //     "border-width": 0,
-            //     "box-shadow": "0 2px 6px 0 rgba(114, 124, 245, .5)",
-            //     "text-align": "center",
-            //     "font-size": "20px",
-            //     "font-weight": "500",
-            //     color: "#000000",
-            //   },
-            //   position: [lng, lat],
-            // });
-            // text.setMap(map);
             map.setFitView();
           }
         });
       }
     },
-//     set(lng, lat){
-//       var markerspot = null
-//       const map = this.map;
-//       var isAdd = false;
-//       var radius = 20
-// setInterval(()=>{
-//           // 修改半径
-//           if(radius == 20){
-//             isAdd = true;
-//           } 
-//           if(radius == 50){
-//             isAdd = false;
-//           }
-//           if(isAdd){
-//             radius+=2;
-//           } else {
-//             radius-=2;
-//           }
-//           markerspot && map.remove(markerspot)
-//           markerspot = new AMap.CircleMarker({
-//               center: [lng, lat],
-//               radius: radius, 
-//               strokeColor: "white", // 边框颜色
-//               strokeWeight: 2,
-//               strokeOpacity: 0.5,
-//               fillColor: "#cccccc", // 背景色
-//               fillOpacity: 0.7, //透明度
-//               zIndex: 1000,
-//               bubble: true,
-//               cursor: "pointer",
-//               clickable: true,
-//             });
-//             map.add(markerspot);
-//         },50)
-//     },
 
     initLine() {
       let Driving_obj = new AMap.Driving({
@@ -516,6 +453,7 @@ for (; from < to; from++) {
     },
     getList() {
       this.loading = true;
+      this.tableDataEnd = []
       travelList({ peopleId: this.formQuery.id }).then((response) => {
         if (response.rows.length === 0) {
           trackList({ peopleId: this.formQuery.id }).then((res) => {

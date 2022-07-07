@@ -5,7 +5,7 @@
 			<img class="logoimg" src="../assets/littlelogo.png" alt="">
 			<div class="tim"><span>疫情流调系统</span></div>
 		</div>
-		<el-submenu index="1" v-if="role != 1">
+		<el-submenu index="1">
 			<template slot="title">
 				<i class="el-icon-s-home" style="font-size: 28px;"></i>
 				<span>  国内疫情</span>

@@ -114,7 +114,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[10, 15, 30, 50]"
+      :page-sizes="[10, 20, 30, 50]"
       :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
@@ -220,7 +220,7 @@ export default {
       selectedOptions: [],
       total: 1,
       tableDataEnd:[],
-      pageSize:15,
+      pageSize:10,
       currentPage:1,
       centerDialogAdd: false,
       centerDialogEdit: false,

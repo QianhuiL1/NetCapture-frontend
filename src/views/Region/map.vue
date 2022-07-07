@@ -1,20 +1,14 @@
 <template>
   <div class="home">
     <div>
-      <!-- // 头部 -->
-      <!-- <header class="header">
-        <h1 style="font-size: 2em">
-          <span></span>
-        </h1>
-      </header> -->
       <ul class="menu">
         <li
           class="menu-item"
           :class="[menuIndex == 'region' ? 'active' : '']"
           @click="
             menuIndex = 'region';
-            //setRegion();
             clearLine();
+            setRegion();
           "
         >
           重点地区
@@ -24,12 +18,11 @@
           :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
             menuIndex = 'track';
-            //clearRegion();
+            clearRegion();
             setLine();
           "
         >
           重点轨迹
-          <!-- loadMaterialMarker() -->
         </li>
         <li
           class="menu-item"
@@ -41,93 +34,74 @@
           "
         >
           数据面板
-          <!-- loadMaterialMarker() -->
         </li>
       </ul>
     </div>
     <dataPanel v-if="menuIndex === 'dataPanel'" style="z-index: 1001" />
     <div id="map"></div>
-     <!-- <aside class="asideRight weather">
-       <div v-if="menuIndex === 'region'" class="shijian_content">
-        <div class="right-header">
-          <p class="header-title">
-            更新时间: <span>{{ regionList[0].lastupdatetime }}</span>
-          </p>
-          <div class="header-button">
-            <el-input
-              v-model="address"
-              placeholder="站点查询"
-              class="input-with-select"
-            >
-              <el-button
-                slot="append"
-                icon="el-icon-search"
-                @click="searchClick"
-              />
-            </el-input>
-          </div>
-        </div>
-     
-      </div>
-    </aside>  -->
-    
     <aside class="asideRight weather">
-       <el-table
-        v-if="menuIndex == 'region'"
-        :data="regionList"
-        height="100%"
-      >
-      <el-table-column type="expand">
+      <el-table v-if="menuIndex == 'region'" :data="regionList" height="100%">
+        <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" class="demo-table-expand">
               <el-form-item>
-                <span style="padding-left: 50px; font-weight:800;">更新时间 : </span>
-                <span>{{ props.row.lastupdatetime }}</span>
-              </el-form-item>
-              <el-form-item >
-                <span style="padding-left: 80px; font-weight:800;">所属行政区 : </span>
+                <span style="padding-left: 50px; font-weight: 800"
+                  >所属行政区 :
+                </span>
                 <span>{{ props.row.area }}</span>
               </el-form-item>
-              
+              <el-form-item>
+                <span style="padding-left: 80px; font-weight: 800"
+                  >更新时间 :
+                </span>
+                <span>{{ props.row.lastupdatetime }}</span>
+              </el-form-item>
             </el-form>
           </template>
         </el-table-column>
         <el-table-column
           label="重点地区"
           prop="address"
-          show-overflow-tooltip
         />
         <el-table-column
           label="防控级别"
           prop="level"
           align="center"
-          show-overflow-tooltip
         />
-        <el-table-column label="操作" align="center" style="width:100px !important;">
+        <el-table-column
+          label="操作"
+          align="center"
+        >
           <template slot-scope="scope">
-          <el-button style="height:28px;width:60px" @click="moveTo(scope.row)">查看</el-button>
+            <el-button
+              style="height: 28px; width: 60px"
+              @click="setMarker(scope.row)"
+              >查看</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
-      <el-table
-        v-if="menuIndex == 'track'"
-        :data="travelData"
-        height="100%"
-      >
+      <el-table v-if="menuIndex == 'track'" :data="travelData" height="100%">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" class="demo-table-expand">
               <el-form-item>
-                <span style="padding-left: 50px; font-weight:800;">重点人员 :  </span>
+                <span style="padding-left: 50px; font-weight: 800"
+                  >重点人员 :
+                </span>
                 <span>{{ props.row.name }}</span>
               </el-form-item>
-              <el-form-item >
-                <span style="padding-left: 80px; font-weight:800;">到达时间 :  </span>
+              <el-form-item>
+                <span style="padding-left: 80px; font-weight: 800"
+                  >到达时间 :
+                </span>
                 <span>{{ props.row.arriveTime }}</span>
               </el-form-item>
               <el-form-item>
-                <span style="padding-left: 110px; font-weight:800;">离开时间 :  </span>
-              <span>{{ props.row.leftTime }}</span>
+                <span style="padding-left: 110px; font-weight: 800"
+                  >离开时间 :
+                </span>
+                <span>{{ props.row.leftTime }}</span>
               </el-form-item>
             </el-form>
           </template>
@@ -135,11 +109,24 @@
         <el-table-column
           label="轨迹地点"
           prop="address"
-          show-overflow-tooltip
         />
-        <el-table-column label="操作" align="center" style="width:100px !important;">
+        <el-table-column
+          label="到达时间"
+          prop="arriveTime"
+          align="center"
+        />
+        <el-table-column
+          label="操作"
+          align="center"
+          style="width: 100px !important"
+        >
           <template slot-scope="scope">
-          <el-button style="height:28px;width:60px" @click="moveTo(scope.row)">查看</el-button>
+            <el-button
+            v-if="menuIndex == 'track'"
+              style="height: 28px; width: 60px"
+              @click="moveTo(scope.row)"
+              >查看</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -151,7 +138,6 @@ import { travelList } from "../../api/People/travel/basic";
 import dataPanel from "@/components/dataPancel";
 import { infectInfo, infectList } from "../../api/People/infect/basic";
 import { regionList } from "../../api/Region/basic";
-import { CodeToText } from 'element-china-area-data'
 const AMap = window.AMap;
 export default {
   name: "Map",
@@ -159,7 +145,6 @@ export default {
     // 初始化地图页面
     this.initMap();
     this.initData();
-    
   },
   components: {
     geoCoder: "",
@@ -167,7 +152,7 @@ export default {
   },
   data() {
     return {
-      address:"",
+      address: "",
       asideRightSwitch: true,
       menuIndex: "region",
       count: true,
@@ -197,55 +182,50 @@ export default {
       polygons: [],
       polylines: [],
       path: [],
-      Driving_obj: null,
-      regions:[],
+      infoWindow: null,
+      regions: [],
       texts: [],
-      points: [],
+      marker: null,
+      points:[]
     };
   },
   methods: {
     initData() {
-      const this_=this
+      const this_ = this;
       travelList().then((response) => {
         this.travelData = response.rows;
         this.travelData.forEach((item) => {
-          infectInfo(item.peopleId).then((res)=>{
-            item.name = res.data.name
-          })
-      this.geoCoder.getLocation(item.address, function (status, result) {
-          if (status === "complete" && result.geocodes.length) {
-            item.location = result.geocodes[0].location
-          }
-          })
-      })
+          infectInfo(item.peopleId).then((res) => {
+            item.name = res.data.name;
+          });
+          this.geoCoder.getLocation(item.address, function (status, result) {
+            if (status === "complete" && result.geocodes.length) {
+              item.location = result.geocodes[0].location;
+            }
+          });
+        });
       });
-      var i = 0
       regionList().then((response) => {
-this.regionList = response.rows
-this.regionList.forEach((item) => {
-  item.level = item.risklevel==2?"高风险地区":(item.risklevel==1?"中风险地区":"低风险地区")
-      this_.geoCoder.getLocation(item.address, function (status, result) {
-          if (status === "complete" && result.geocodes.length) {
-            item.location = result.geocodes[0].location
-i=i+1
- if(i == this_.regionList.length)
-      {
-this_.setRegion();
-      }
-          }
-          })
-      })
-      })
-    },
-    searchClick(){
-
+        this.regionList = response.rows;
+        this.regionList.forEach((item) => {
+          item.level =
+            item.risklevel == 2
+              ? "高风险地区"
+              : item.risklevel == 1
+              ? "中风险地区"
+              : "低风险地区";
+              if(this_.regions.indexOf(item.area) == -1)
+              this_.regions.push(item.area)
+        });
+        this_.setRegion()
+      });
     },
     initMap() {
       this.map = new AMap.Map("map", {
         resizeEnable: true,
         zoom: 10,
         mapStyle: "amap://styles/white",
-        center: [114.306434, 30.5988],
+        center: [114.306434, 30.7988],
       });
       this.map.plugin(["AMap.DistrictSearch"], () => {});
       this.map.plugin(["AMap.InfoWindow"], () => {});
@@ -262,81 +242,93 @@ this_.setRegion();
       };
       this.geoCoder = new AMap.Geocoder(geoOption);
     },
-    setRegion() {
-      const this_=this
-      this.regionList.forEach((item) => {
-      var marker = new AMap.Marker({
-            //icon:'//vdata.amap.com/icons/b18/1/2.png',
-            position: item.location,
-            offset: new AMap.Pixel(-13, -30)
+    setMarker(row) {
+      const this_ = this;
+      this_.geoCoder.getLocation(row.address, function (status, result) {
+            if (status === "complete" && result.geocodes.length) {
+            var marker = new AMap.Marker({
+          icon:'//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png',
+          position: result.geocodes[0].location,
+          offset: new AMap.Pixel(-13, -30),
         });
-        marker.content = "<div style='width:200px;height:150px;'>" + 
-         "<h4 style='font-weight:600;'>重点地区：" + "<span style='font-weight:200;'>" + item.address + "</span>" + "</h4>"+
-          "<h4 style='font-weight:600;'>所属地：" + "<span style='font-weight:200;'>" + item.area + "</span>" + "</h4>"+
-            "<h4 style='font-weight:600;'>防控级别："+ "<span style='font-weight:200;'>" + item.level + "</span>" + "</h4>"+"</div>";
-          marker.on("click", showInfoP);
-          function showInfoP(e) {
-            var infoWindow = new AMap.InfoWindow({
-              offset: new AMap.Pixel(0, -30),
-            });
-            infoWindow.setContent(e.target.content);
-            infoWindow.open(this_.map, e.lnglat);
-          }
-        marker.setMap(this.map);
-        this.regions.push(marker)
-      })
-        this.map.setFitView();
-    },
-//     showRegion(result, color, stroke) {
-//       const this_ = this;
-//       var code = ""
-//       var codeArray = []
-//       let bounds = result.districtList[0].boundaries;
-//       if (bounds) {
-//         for (let i = 0, l = bounds.length; i < l; i++) {
-//           //生成行政区划polygon
-//           let polygon = new AMap.Polygon({
-//             map: this.map, // 指定地图对象
-//             strokeWeight: 1, // 轮廓线宽度
-//             path: bounds[i], //轮廓线的节点坐标数组
-//             fillOpacity: 0.4, //透明度
-//             fillColor: color, //填充颜色
-//             strokeColor: stroke, //线条颜色
-//           });
-//           getAncestor(result.districtList[0].adcode).then((response)=>{
-// code = response.data.ancestors
-// codeArray = code.split(",");
-// this.polygons.push(polygon);
-//           var level = color == "#ff0000" ? "一级重点区域" : "二级重点区域";
-//           polygon.content =
-//             "<h4>重点地区：" +
-//             CodeToText[codeArray[1]] + "/" + CodeToText[codeArray[2]]+
-//             "</h4>" +
-//             "<h4>区域级别：" +
-//             level +
-//             "</h4>";
-//           polygon.on("click", showInfoP);
-//           function showInfoP(e) {
-//             var infoWindow = new AMap.InfoWindow({
-//               offset: new AMap.Pixel(0, -30),
-//             });
-//             infoWindow.setContent(e.target.content);
-//             infoWindow.open(this_.map, e.lnglat);
-//           }
-//       })
-//         }
-//         // 地图自适应
-//         this.map.setFitView();
-//       }
-//     },
-    clearRegion() {
-      for (var index in this.regions) {
-        if (this.regions[index]) {
-          this.regions[index].setMap(null);
-          this.regions[index] = null;
+        marker.content =
+          "<div style='width:280px;height:130px;'>" +
+          "<h4 style='font-weight:600;'>重点地区：" +
+          "<span style='font-weight:200;'>" +
+          row.address +
+          "</span>" +
+          "</h4>" +
+          "<h4 style='font-weight:600;'>所属地：" +
+          "<span style='font-weight:200;'>" +
+          row.area +
+          "</span>" +
+          "</h4>" +
+          "<h4 style='font-weight:600;'>防控级别：" +
+          "<span style='font-weight:200;'>" +
+          row.level +
+          "</span>" +
+          "</h4>" +
+          "</div>";
+        marker.on("click", showInfoP);
+        var infoWindow = new AMap.InfoWindow({
+            offset: new AMap.Pixel(0, -30),
+          });
+          infoWindow.setContent(marker.content);
+          infoWindow.open(this_.map, result.geocodes[0].location);
+        function showInfoP(e) {
+          infoWindow.setContent(e.target.content);
+          infoWindow.open(this_.map, result.geocodes[0].location);
         }
-      }
-      this.regions = [];
+        this_.infoWindow = infoWindow
+        this_.marker = marker
+        marker.setMap(this_.map);
+      this_.map.setFitView();
+            }
+          });
+    },
+    setRegion(){
+      this.map.plugin(["AMap.DistrictSearch"], () => {});
+      var opts = {
+                subdistrict: 0,  
+                extensions: 'all',  
+                level: 'district'  
+            };
+      var district = new AMap.DistrictSearch(opts);
+      const map = this.map
+      const this_ = this
+      map.setZoom(6)
+      this.regions.forEach((item) => {
+        var ar = item.split('省')
+        item = ar[ar.length-1]
+        ar = item.split('区')
+        item = ar[ar.length-1]
+        district.search(item, function(status, result) {
+            var bounds = result.districtList[0].boundaries;
+            if (bounds) {
+                for (var i = 0, l = bounds.length; i < l; i++) {
+                    //生成行政区划polygon
+                    var polygon = new AMap.Polygon({
+                        map: map,
+                        strokeWeight: 1,
+                        path: bounds[i],
+                        fillOpacity: 0.4,
+                        fillColor: '#ff0000',
+                        strokeColor: '#ff0000'
+                    });
+                    this_.polygons.push(polygon);
+                }
+            }
+        })
+        });
+      map.setFitView();//视口自适应
+    },
+    clearRegion() {
+      const this_=this
+      if(this_.marker != null)
+      this_.map.remove(this_.marker)
+      this_.map.remove(this_.polygons)
+      this.marker = null
+      this.polygons = []
     },
     setLine() {
       const tmp_this = this;
@@ -355,75 +347,76 @@ this_.setRegion();
         const arriveTime = item.arriveTime;
         const leftTime = item.leftTime;
         const peopleId = item.peopleId;
-        const location = item.location
-        const name = item.name
-            if(item.recordId != record){
-              point = 0
-              record = item.recordId
-              tmp_this.initLine()
-              tmp_this.lineArr = []
-            }
-            tmp_this.lineArr.push(location);
-            tmp_this.points.push(markerspot);
-            var text = new AMap.Text({
-              text: ++point,
-              anchor: "center", // 设置文本标记锚点
-              // draggable: true, // 是否可移动文本
-              cursor: "pointer",
-              angle: 10,
-              style: {
-                "margin-top": "2px",
-                "background-color": "#9b9a99",
-                opacity: "1",
-                "border-width": 0,
-                "text-align": "center",
-                "font-size": "20px",
-                color: "#fff",
-              },
-              position: location,
-            });
-            text.setMap(map);
-            tmp_this.texts.push(text);
-            var markerspot = new AMap.CircleMarker({
-              center: location,
-              radius: 20,
-              strokeColor: "white", // 边框颜色
-              strokeWeight: 2,
-              strokeOpacity: 0.5,
-              fillColor: "#9b9a99", // 背景色
-              fillOpacity: 1, //透明度
-              zIndex: 1000,
-              bubble: true,
-              cursor: "pointer",
-              clickable: true,
-            });
-              markerspot.content =
-              "<div style='font-size:18px; font-height:20px;'>" +
-              "轨迹地点：" +
-              spot +
-              "<br/>" +
-              "人员姓名：" +
-              name +
-              "<br/>" +
-              "身份证号：" +
-              peopleId +
-              "<br/>" +
-              "到达时间：" +
-              arriveTime +
-              "<br/>" +
-              "离开时间：" +
-              leftTime +
-              "</div>";
-            markerspot.on("mouseover", markerClick);
-            markerspot.emit("mouseover", { target: markerspot });
-            function markerClick(e) {
-              infoWindow.setContent(e.target.content);
-              infoWindow.open(map, e.target.getCenter());
-            }
-            map.add(markerspot);
-            tmp_this.points.push(markerspot);
-          })
-          this.initLine()
+        const location = item.location;
+        const name = item.name;
+        if (item.recordId != record) {
+          point = 0;
+          record = item.recordId;
+          tmp_this.initLine();
+          tmp_this.lineArr = [];
+        }
+        tmp_this.lineArr.push(location);
+        var text = new AMap.Text({
+          text: ++point,
+          anchor: "center", // 设置文本标记锚点
+          // draggable: true, // 是否可移动文本
+          cursor: "pointer",
+          angle: 10,
+          style: {
+            "margin-top": "2px",
+            "background-color": "#9b9a99",
+            opacity: "1",
+            "border-width": 0,
+            "text-align": "center",
+            "font-size": "20px",
+            color: "#fff",
+          },
+          position: location,
+        });
+        text.setMap(map);
+        tmp_this.texts.push(text);
+        var markerspot = new AMap.CircleMarker({
+          center: location,
+          radius: 20,
+          strokeColor: "white", // 边框颜色
+          strokeWeight: 2,
+          strokeOpacity: 0.5,
+          fillColor: "#9b9a99", // 背景色
+          fillOpacity: 1, //透明度
+          zIndex: 1000,
+          bubble: true,
+          cursor: "pointer",
+          clickable: true,
+        });
+        markerspot.content =
+          "<div style='font-size:18px; font-height:20px;'>" +
+          "轨迹地点：" +
+          spot +
+          "<br/>" +
+          "人员姓名：" +
+          name +
+          "<br/>" +
+          "身份证号：" +
+          peopleId +
+          "<br/>" +
+          "到达时间：" +
+          arriveTime +
+          "<br/>" +
+          "离开时间：" +
+          leftTime +
+          "</div>";
+        markerspot.on("click", markerClick);
+        markerspot.emit("click", { target: markerspot });
+        function markerClick(e) {
+          infoWindow.setContent(e.target.content);
+          infoWindow.open(map, e.target.getCenter());
+          tmp_this.infoWindow = infoWindow
+        }
+        map.add(markerspot);
+        tmp_this.points.push(markerspot);
+      });
+      map.remove(tmp_this.infoWindow)
+      this.initLine();
     },
     initLine() {
       const this_ = this;
@@ -440,22 +433,25 @@ this_.setRegion();
       this.polyline.setPath(this_.lineArr);
       this.polyline.show();
       this.polylines.push(this_.polyline);
-      this.map.setZoom(15)
-      this.map.setCenter(this_.lineArr[0])
+      this_.map.setFitView();
     },
 
     clearLine() {
-      const this_ = this;
-      //this.Driving_obj.clear();
-      this.map.clearMap();
-      this.map.remove(this_.polylines);
-      this.map.remove(this_.texts);
+      // this.map.clearMap();
+      const this_=this
       this.map.remove(this_.points);
+      this.map.remove(this_.texts);
+      this.map.remove(this_.polylines)
+      this.map.remove(this_.infoWindow)
+      this.polylines = []
+      this.texts = []
+      this.points = []
+      this.lineArr = []
     },
-    moveTo(row){
-      this.map.setZoom(20)
-      this.map.setCenter(row.location)
-    }
+    moveTo(row) {
+      this.map.setZoom(20);
+      this.map.setCenter(row.location);
+    },
   },
 };
 </script>
@@ -761,7 +757,7 @@ div {
     display: inline-block;
     vertical-align: middle;
     border-radius: 5px 0 0 5px;
-    background-color: #DD5043;
+    background-color: #dd5043;
     cursor: pointer;
     &.is-active {
       transform: translate(-100%, -50%) rotate(180deg);
