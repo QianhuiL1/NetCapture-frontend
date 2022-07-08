@@ -414,11 +414,11 @@ this.queryParams.ancestors =
         this.activities = [];
         travelList({ peopleId: this.people.id }).then((response) => {
           if (response.rows.length === 0) {
-            trackList({ people_id: this.formQuery.id }).then((res) => {
+            trackList({ peopleId: this.people.id }).then((res) => {
               for (var index in res.rows) {
                 this.activities.push({
-                  content: response.rows[index].address,
-                  timestamp: response.rows[index].time,
+                  content: res.rows[index].address,
+                  timestamp: res.rows[index].time,
                 });
               }
             });

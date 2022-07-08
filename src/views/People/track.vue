@@ -64,14 +64,12 @@
                 :row-class-name="tableRowClassName"
                 :data="tableDataEnd"
                 v-loading="loading"
-                :default-sort="{ prop: 'date', order: 'ascending' }"
                 style="width: 100%; height: 30%"
               >
                 <el-table-column
                   fixed
                   prop="date"
                   label="到达时间"
-                  sortable
                   style="width: 30%"
                 >
                   <template slot-scope="scope">
@@ -266,7 +264,6 @@ export default {
     this.formQuery.id = this.$route.params.peopleId;
     this.formQuery.phone = this.$route.params.peoplePhone;
     setTimeout(() => {
-      this.getList()
       this.initMap();
     }, 1000);
   },
@@ -519,6 +516,7 @@ this.formQuery.name = response.rows[0].name;
       this.new_time1 = row.leftTime;
       this.new_address = row.address;
       this.spot.travelId = row.travelId;
+      this.spot.recordId = row.recordId;
       this.listID = index;
       this.centerDialogEdit = true;
       travelList({ peopleId: this.formQuery.id }).then((response) => {

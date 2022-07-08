@@ -196,7 +196,7 @@ export default {
   components: { Treeselect },
   data() {
     return {
-      parentId:"",
+      parentId:"北京市",
       province:province,
       city:city,
       area:area,
@@ -222,6 +222,7 @@ export default {
       refreshTable: true,
       // 查询参数
       queryParams: {
+        parentId:"110000",
         deptName: "",
         status: ""
       },
@@ -260,7 +261,7 @@ export default {
     };
   },
   created() {
-    //this.getList();
+    this.getList();
   },
   methods: {
     handleSizeChange: function (pageSize) { // 每页条数切换

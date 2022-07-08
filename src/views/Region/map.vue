@@ -7,8 +7,8 @@
           :class="[menuIndex == 'region' ? 'active' : '']"
           @click="
             menuIndex = 'region';
-            initMap();
-            setRegion();
+            clearLine();
+            setRegion1();
           "
         >
           重点地区
@@ -18,7 +18,7 @@
           :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
             menuIndex = 'track';
-            initMap();
+            clearRegion();
             setLine();
           "
         >
@@ -29,7 +29,8 @@
           :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
             menuIndex = 'dataPanel';
-            initMap();
+            clearRegion();
+            clearLine();
           "
         >
           数据面板
@@ -109,6 +110,7 @@
         <el-table-column
           label="轨迹地点"
           prop="address"
+          show-overflow-tooltip
         />
         <el-table-column
           label="到达时间"
@@ -169,16 +171,7 @@ export default {
       travelData: [],
       district: [],
       districtOption: "",
-      cityType: [
-        {
-          value: "#EDCA3E",
-          label: "一级防控区",
-        },
-        {
-          value: "#9454D6",
-          label: "二级防控区",
-        },
-      ],
+      i:0,
       polygons: [],
       polylines: [],
       path: [],
@@ -237,6 +230,10 @@ export default {
     },
     setMarker(row) {
       const this_ = this;
+      if(this.marker != null){
+this.marker.setMap(null)
+this.marker = null
+      }
       this_.geoCoder.getLocation(row.address, function (status, result) {
       if (status === "complete" && result.geocodes.length) {
         var marker = new AMap.Marker({
@@ -291,6 +288,7 @@ export default {
       var district = new AMap.DistrictSearch(opts);
       const map = this.map
       const this_ = this
+      map.setCenter([114.306434, 32.9988],)
       map.setZoom(5)
       this.regions.forEach((item) => {
         var ar = item.split('省')
@@ -300,33 +298,43 @@ export default {
         district.search(item, function(status, result) {
             var bounds = result.districtList[0].boundaries;
             if (bounds) {
-                for (var i = 0, l = bounds.length; i < l; i++) {
-                    //生成行政区划polygon
-                    var polygon = new AMap.Polygon({
+              var polygon = new AMap.Polygon({
                         map: map,
                         strokeWeight: 1,
-                        path: bounds[i],
                         fillOpacity: 0.4,
                         fillColor: '#ff0000',
                         strokeColor: '#ff0000'
                     });
+                for (var i = 0, l = bounds.length; i < l; i++) {
+                    //生成行政区划polygon
+                    polygon.setPath(bounds[i])
+                    if(i == bounds.length-1)
+this_.polygons.push(polygon);
                 }
-                this_.polygons.push(polygon);
+                
             }
         })
         });
     },
     clearRegion() {
-      const this_=this
-      if(this_.marker != null){
-        this_.map.remove(this_.marker)
+      if(this.i == 0){
+        this.initMap()
+        this.i = 1
       }
-      this.polygons.forEach((item) => {
-        item.setMap(null)
-        this_.map.remove(item)
+      const this_=this
+      if(this.marker != null){
+        this.map.remove(this_.marker)
+      }
+      this.map.remove(this.polygons)
+    },
+    setRegion1(){
+      const map = this.map
+            this.polygons.forEach((item) => {
+        if(item != null){
+item.setMap(map)
+        }
       })
-      this.marker = null
-      this.polygons = []
+      map.setFitView(this.polygons)
     },
     setLine() {
       const tmp_this = this;
@@ -438,7 +446,7 @@ export default {
     },
 
     clearLine() {
-      // this.map.clearMap();
+      //this.map.clearMap();
       const this_=this
       this.map.remove(this_.points);
       this.map.remove(this_.texts);
