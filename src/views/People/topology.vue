@@ -113,6 +113,7 @@ export default{
                 layout: 'force', // 图的布局，类型为力导图
                 symbolSize: 40, // 调整节点的大小
                 roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+                focusNodeAdjacency: true,
                 edgeSymbol: ['circle', 'arrow'],
                 edgeSymbolSize: [2, 10],
                 edgeLabel: {
@@ -133,6 +134,11 @@ export default{
                     curveness: 0.3,
                     color:'target'
                   }
+                },
+                emphasis: {
+                    lineStyle: {
+                        width: 10
+                    }
                 },
                 edgeLabel: {
                 normal: {
