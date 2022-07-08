@@ -29,7 +29,8 @@
           :class="[menuIndex == 'dataPanel' ? 'active' : '']"
           @click="
             menuIndex = 'dataPanel';
-            initMap();
+            clearRegion();
+            clearLine();
           "
         >
           数据面板
@@ -170,16 +171,7 @@ export default {
       travelData: [],
       district: [],
       districtOption: "",
-      cityType: [
-        {
-          value: "#EDCA3E",
-          label: "一级防控区",
-        },
-        {
-          value: "#9454D6",
-          label: "二级防控区",
-        },
-      ],
+      i:0,
       polygons: [],
       polylines: [],
       path: [],
@@ -325,6 +317,10 @@ this_.polygons.push(polygon);
         });
     },
     clearRegion() {
+      if(this.i == 0){
+        this.initMap()
+        this.i = 1
+      }
       const this_=this
       if(this.marker != null){
         this.map.remove(this_.marker)
