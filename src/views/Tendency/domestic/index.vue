@@ -230,7 +230,6 @@ export default {
       })
     },
     getOwnAck() {
-      var dateArray= this.getPreWeekTime()
       this.ownAckChart = echarts.init(document.getElementById('ownAckChart'));
       this.ownAckChart.showLoading({
           text:'数据加载中......',
@@ -242,17 +241,33 @@ export default {
           lineWidth: 5,
           zlevel: 0,
         })
-      var dataAxis = dateArray
-      var yMax = 50000;
-      var dataShadow = [];
-      for (var i = 0; i < dataAxis.length; i++) {
-          dataShadow.push(yMax);
-      }
-      var numArray=[]
-      for(var m=0;m<dataAxis.length;m++){
-        getAll(dataAxis[m]).then(res=>{
-          numArray.push(res.data.confirm)
-          if(m==dataAxis.length){
+      var now = new Date()
+      var array=[]
+      for(var j=6;j>=0;j--){
+        var date = new Date(now.getTime()-j*24*3600*1000)
+        var yy = date.getFullYear()
+        var mm = date.getMonth()+1
+        var dd = date.getDate()
+        mm = mm < 10 ? '0' + mm : mm;
+        dd = dd < 10 ? '0' + dd : dd;
+        var needDate= yy+'-'+mm+'-'+ dd
+        array.push (needDate)
+        if(j==0){
+          var dataAxis = array
+          var yMax = 50000;
+          var dataShadow = [];
+          for (var i = 0; i < dataAxis.length; i++) {
+              dataShadow.push(yMax);
+          }
+          var numArray=[]
+          for(var m=0;m<7;m++){
+            getAll(array[m]).then(res=>{
+              if(typeof(res.data)=="undefined"){
+                numArray.push(0)
+          }else{
+            numArray.push(res.data.confirm)
+          }
+          if(m==7){
             let option = {
             title: {
                 text: '新增确诊趋势',
@@ -340,6 +355,8 @@ export default {
           this.ownAckChart.hideLoading()
           }
         })
+        }
+      }
       }
     },
     initQuickInfo(){
