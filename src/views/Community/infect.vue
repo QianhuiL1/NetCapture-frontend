@@ -113,7 +113,7 @@
               <span v-else>男</span>
             </template>
           </el-table-column>
-          <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
+          <el-table-column label="身份证号" prop="people_id" min-width="20%" />
           <el-table-column label="状态" prop="type" min-width="10%">
             <template slot-scope="scope">
               <span v-if="scope.row.status == '0'">健康</span>
@@ -165,7 +165,7 @@
         </el-form-item>
         <el-form-item label="身份证号" prop="name">
           <el-input
-            v-model="formData.peopleId"
+            v-model="formData.people_id"
             placeholder="请输入重点人员身份证号"
             clearable
             prefix-icon="el-icon-star-on"
@@ -407,12 +407,12 @@ searchByArea(this.param.ancestors).then((res) => {
     submitForm() {
       if (this.formData.name == "") {
         this.$message.error("姓名不能为空！");
-      } else if (this.formData.peopleId == "") {
+      } else if (this.formData.people_id == "") {
         this.$message.error("身份证号不能为空！");
       } else if (this.formData.positiveTime == "") {
         this.$message.error("确诊时间不能为空！");
       } else {
-        searchById(this.formData.peopleId).then((res) => {
+        searchById(this.formData.people_id).then((res) => {
           if (res.data.name != this.formData.name) {
             this.$message.error("身份证号与姓名不符!");
           } else {

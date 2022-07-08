@@ -64,7 +64,7 @@
             <span v-else>男</span>
           </template>
           </el-table-column>
-        <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
+        <el-table-column label="身份证号" prop="people_id" min-width="20%" />
         <el-table-column label="联系电话" prop="phonenumber" min-width="20%" />
         <el-table-column label="健康状态" v-model="type" min-width="10%">
           <template slot-scope="scope">

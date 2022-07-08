@@ -188,7 +188,7 @@ export default {
       tempItem:{
         name:'',
         sex: '',
-        peopleId: '',
+        people_id: '',
         phonenumber: '',
         status:'',
         fromAncestors:'',
@@ -225,7 +225,6 @@ for (; from < to; from++) {
       var tempArray=[]
        getAncestor(this.$store.state.user.dept).then((res)=>{
       page(this.ancestors).then(response=>{
-        console.log(response)
         response.rows.forEach(item => {
           this.tempItem=item
           this.tempItem.name=item.personInfo.name
@@ -272,9 +271,7 @@ for (; from < to; from++) {
         this.initTable()
       }else{
         searchById(this.queryParams.id).then(res=>{
-          console.log(res)
         if(res.total<1){
-          console.log('小于1')
           this.importTable=[]
           this.total=0
           if (this.total > this.pageSize) {
@@ -289,7 +286,7 @@ for (; from < to; from++) {
         }else{
           this.tempItem=res.rows[0]
           this.tempItem.name=res.rows[0].personInfo.name
-          this.tempItem.peopleId=res.rows[0].personInfo.peopleId
+          this.tempItem.peopleId=res.rows[0].personInfo.people_id
           this.tempItem.phonenumber=res.rows[0].personInfo.phonenumber
           this.tempItem.toAddress=res.rows[0].personInfo.address
           this.tempItem.sex=res.rows[0].personInfo.sex
@@ -328,7 +325,7 @@ for (; from < to; from++) {
     areaChange(){
     },
     submitForm(){
-      if(this.formData.peopleId==''||this.formData.toAddress==''){
+      if(this.formData.people_id==''||this.formData.toAddress==''){
         this.$message.error('身份证号和现居地不能为空');
       }else{
         if(this.selectedArea==''){
