@@ -61,6 +61,7 @@
         <el-table-column
           label="重点地区"
           prop="address"
+          show-overflow-tooltip
         />
         <el-table-column
           label="防控级别"

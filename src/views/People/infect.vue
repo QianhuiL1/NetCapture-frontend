@@ -27,7 +27,7 @@
             style="float: left; margin-left: 50px"
           >
             <el-input
-              v-model="queryParams.peopleId"
+              v-model="queryParams.people_id"
               placeholder="请输入身份证号"
               clearable
               @keyup.enter.native="handleQuery"
@@ -91,7 +91,7 @@
             :show-overflow-tooltip="true"
             min-width="10%"
           />
-          <el-table-column label="身份证号" prop="peopleId" min-width="20%" />
+          <el-table-column label="身份证号" prop="people_id" min-width="20%" />
           <el-table-column
             label="联系电话"
             prop="phonenumber"
@@ -396,7 +396,7 @@ this.queryParams.ancestors =
     handleClick(row, mode) {
       if (mode === "detail") {
         // 加载详情内容
-        this.people.id = row.peopleId;
+        this.people.id = row.people_id;
         infectInfo(this.people.id).then((response) => {
           this.people.name = response.data.name;
           this.people.sex = response.data.sex === 0 ? "女" : "男";
@@ -408,13 +408,13 @@ this.queryParams.ancestors =
 
         this.dialogVisible = true;
       } else if (mode === "line") {
-        this.people.id = row.peopleId;
+        this.people.id = row.people_id;
         this.people.name = row.name;
         this.people.phone = row.phonenumber;
         this.activities = [];
         travelList({ peopleId: this.people.id }).then((response) => {
           if (response.rows.length === 0) {
-            trackList({ peopleId: this.formQuery.id }).then((res) => {
+            trackList({ people_id: this.formQuery.id }).then((res) => {
               for (var index in res.rows) {
                 this.activities.push({
                   content: response.rows[index].address,
@@ -453,7 +453,7 @@ this.queryParams.ancestors =
           TimeList(this.startDate, this.endDate).then((res) => {
             for (var i in this.infectList) {
               for (var index in res.rows) {
-                if (res.rows[index].peopleId === this.infectList[i].peopleId) {
+                if (res.rows[index].people_id === this.infectList[i].people_id) {
                   list.push(res.rows[index]);
                   continue;
                 }
@@ -483,7 +483,7 @@ this.queryParams.ancestors =
     resetQuery() {
       this.queryParams.status = 3;
       this.queryParams.name = "";
-      this.queryParams.peopleId = "";
+      this.queryParams.people_id = "";
       this.queryParams.type = "";
       this.queryDateRange = [];
       this.queryParams.ancestors = "";

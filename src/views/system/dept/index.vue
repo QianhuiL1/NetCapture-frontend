@@ -94,13 +94,13 @@
   >
     <i class="el-icon-edit" style="color: #3388ff" />
     <span style="color: #223355"> 修改</span></el-button>
-          <el-button
+          <!-- <el-button
     size="mini"
     type="text"
     @click="handleAdd(scope.row)"
   >
     <i class="el-icon-plus" style="color: #3388ff" />
-    <span style="color: #223355"> 新增</span></el-button>
+    <span style="color: #223355"> 新增</span></el-button> -->
     <el-button
     v-if="scope.row.parentId != 0"
     size="mini"

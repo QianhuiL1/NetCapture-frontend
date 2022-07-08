@@ -259,17 +259,14 @@ export default {
     Pagination
   },
   created() {
-    setTimeout(() => {
-    if(this.$route.params.peopleId === undefined){
       this.queryPeople();
-    }},1000);
   },
   mounted() {
     this.formQuery.name = this.$route.params.peopleName;
     this.formQuery.id = this.$route.params.peopleId;
     this.formQuery.phone = this.$route.params.peoplePhone;
-    //this.getList()
     setTimeout(() => {
+      this.getList()
       this.initMap();
     }, 1000);
   },
@@ -427,25 +424,32 @@ for (; from < to; from++) {
         for (var index in response.rows) {
           this.peopleList.push({
             label: response.rows[index].name,
-            value: response.rows[index].peopleId,
+            value: response.rows[index].people_id,
           });
         }
-        this.formQuery.name = response.rows[0].name;
-        this.queryInfo(response.rows[0].peopleId);
+        
+        if(this.$route.params.peopleId == undefined)
+        {
+this.formQuery.name = response.rows[0].name;
+           this.queryInfo(response.rows[0].people_id);
+        }else{
+           this.queryInfo(this.$route.params.peopleId)
+        }
+        
       });
     },
     queryInfo(id) {
       if (id != "") {
         infectInfo(id).then((response) => {
           this.formQuery.name = response.data.name;
-          this.formQuery.id = response.data.peopleId;
+          this.formQuery.id = response.data.people_id;
           this.formQuery.phone = response.data.phonenumber;
           this.getList();
         });
       } else if (this.formQuery.name != "") {
         infectInfo(this.formQuery.name).then((response) => {
           this.formQuery.name = response.data.name;
-          this.formQuery.id = response.data.peopleId;
+          this.formQuery.id = response.data.people_id;
           this.formQuery.phone = response.data.phonenumber;
           this.getList();
         });

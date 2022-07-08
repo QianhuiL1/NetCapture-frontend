@@ -26,7 +26,7 @@
         </el-form-item>
         <el-form-item label="身份证号:" prop="id" style="float: left;margin-left:50px;">
           <el-input
-            v-model="queryParams.peopleId"
+            v-model="queryParams.people_id"
             placeholder="请输入身份证号"
             clearable
             @keyup.enter.native="getList1"
@@ -81,7 +81,7 @@
           :show-overflow-tooltip="true"
           min-width="20%"
         />
-        <el-table-column label="身份证号" prop="peopleId" min-width="25%" />
+        <el-table-column label="身份证号" prop="people_id" min-width="25%" />
         <el-table-column label="联系电话" prop="phonenumber" min-width="20%" />
           <el-table-column label="家庭住址" prop="address" min-width="30%">
         </el-table-column>    
@@ -98,7 +98,7 @@
     <el-button
     size="medium"
     type="text"
-    @click="handleDelete(scope.row.peopleId)"
+    @click="handleDelete(scope.row.people_id)"
   >
     <i class="el-icon-delete" style="color: #d81e06" />
     <span style="color: #223355"> 删除</span></el-button>
@@ -125,7 +125,7 @@
       <div class="inputTitle"><span>
       身份证号：
       </span>
-      </div><el-input v-model="info.peopleId" placeholder="请输入身份证号" @input="change($event)" disabled='true'></el-input>  
+      </div><el-input v-model="info.people_id" placeholder="请输入身份证号" @input="change($event)" disabled='true'></el-input>  
       <div class="inputTitle"><span>
       联系电话：
       </span>
@@ -148,7 +148,7 @@
       <div class="inputTitle"><span>
       身份证号：
       </span>
-      </div><el-input v-model="info.peopleId" placeholder="请输入身份证号" @input="change($event)" @keyup.enter.native="queryInfo"></el-input>  
+      </div><el-input v-model="info.people_id" placeholder="请输入身份证号" @input="change($event)" @keyup.enter.native="queryInfo"></el-input>  
      <div class="inputTitle"><span>
       联系电话：
       </span>
@@ -190,7 +190,7 @@ export default {
         centerDialogDel: false, 
         info:{
             name:'',
-            peopleId:'',
+            people_id:'',
             phonenumber:'',
             address:'',
         },
@@ -198,7 +198,7 @@ export default {
         id:'',
       queryParams: {
         name: "",
-        peopleId:'',
+        people_id:'',
         address:'',
         status: 2,
       },
@@ -251,10 +251,10 @@ handleQuery(){
 handleEdit (row) {   
     this.centerDialogEdit = true   
     this.info.name=row.name
-    this.info.peopleId=row.peopleId
+    this.info.people_id=row.people_id
     this.info.phonenumber=row.phonenumber
     this.info.address=row.address
-    this.listID=row.peopleId;   
+    this.listID=row.people_id;   
 }, 
 edit () { 
       infectUpdate(this.info).then(() => {
@@ -262,7 +262,7 @@ edit () {
           this.getList1()
         });
     this.info.name=''
-    this.info.peopleId=''
+    this.info.people_id=''
     this.info.phonenumber=''
     this.info.address=''
     this.centerDialogEdit = false 
@@ -271,7 +271,7 @@ handleAdd () {
     this.centerDialogAdd = true    
     },    
 add () { 
-  infectInfo(this.info.peopleId).then((response) => {  
+  infectInfo(this.info.people_id).then((response) => {  
       if (response.data.name === "") {
         this.$message.warning("未查询到有关人员信息！")
         return
@@ -279,11 +279,11 @@ add () {
           this.$message.warning("该密接人员信息已存在！")
         return
       } else{
-      infectUpdate({ peopleId: this.info.peopleId,status:2 })
+      infectUpdate({ people_id: this.info.people_id,status:2 })
       this.$message.success('添加成功')
       this.centerDialogAdd = false   
       this.info.name=''
-    this.info.peopleId=''
+    this.info.people_id=''
     this.info.phonenumber=''
     this.info.address=''  
     this.getList1()  
@@ -299,7 +299,7 @@ handleDelete (id) {
         type: 'warning'
       })
         .then(function() {
-          return infectUpdate({ peopleId: id,status:0 })
+          return infectUpdate({ people_id: id,status:0 })
         })
         .then(() => {
           this.getList1()
@@ -324,15 +324,15 @@ handleDelete (id) {
     },
     resetQuery() {
       this.queryParams.name = "";
-      this.queryParams.peopleId = "";
+      this.queryParams.people_id = "";
       this.queryParams.address = "";
       this.queryParams.ancestors = ""
       this.selectedOptions = '';
       this.getList1();
     },
     queryInfo(){
-      if(this.info.peopleId!=""){
-      infectInfo(this.info.peopleId).then((response)=>{
+      if(this.info.people_id!=""){
+      infectInfo(this.info.people_id).then((response)=>{
       this.info=response.data
     })
   }},
