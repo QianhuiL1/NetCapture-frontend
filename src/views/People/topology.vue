@@ -4,7 +4,7 @@
     <el-card class="table_content">
       <div class="main">
         <template>
-          <div id="topology" style="width:100%;height:500px;margin: 0 auto"></div>
+          <div id="topology" style="width:100%;height:700px;margin: 0 auto"></div>
         </template>
       </div>
     </el-card>
