@@ -50,3 +50,11 @@ export function deletePersonInfo(id) {
         method: 'delete'
     })
 }
+
+// 重置所有人员的健康状态
+export function resetStatus() {
+    return request({
+        url: prefix + '/statusEmpty',
+        method: 'put'
+    })
+}

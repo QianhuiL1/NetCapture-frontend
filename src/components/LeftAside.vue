@@ -65,11 +65,17 @@
 				<el-menu-item index="/checkUser">审核注册用户</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
+		<el-submenu index="7" v-if="role == 1" @click.native="swap">
+			<template slot="title">
+				<i class="el-icon-delete-solid" style="font-size: 28px;"></i>
+				<span>  一键清零</span>
+			</template>
+		</el-submenu>
 	</el-menu>
 </template>
 
 <script>
-
+import {resetStatus} from '../api/Person/basic'
   // 导出模块
   export default {
     name:'LeftAside',
@@ -103,6 +109,40 @@
 			this.role=(this.$store.state.user.roles)
 			},1000)
 		},
+		swap(){
+			const h = this.$createElement
+			this.$msgbox({
+          title: '提示',
+          message: h('p', null, [
+            h('span', null, '是否要执行 '),
+            h('i', { style: 'color: #DD5043' }, '清零操作')
+          ]),
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              instance.confirmButtonLoading = true;
+              instance.confirmButtonText = '执行中...';
+							resetStatus().then(res=>{
+								setTimeout(() => {
+                done();
+                setTimeout(() => {
+                  instance.confirmButtonLoading = false;
+                }, 300);
+              }, 2000);
+							})
+            } else {
+              done()
+            }
+          }
+        }).then(action => {
+          this.$message({
+            type: 'success',
+            message: '清零成功!'
+          });
+        });
+		}
     }
 	}
 </script>
@@ -200,6 +240,15 @@
     background-size: 25px;
 }
 .el-icon-view:before{
+			font-size: 16px;
+			visibility: hidden;
+}
+
+.el-icon-delete-solid{
+		background: url('../assets/zero.png') center center no-repeat;
+    background-size: 25px;
+}
+.el-icon-delete-solid:before{
 			font-size: 16px;
 			visibility: hidden;
 }

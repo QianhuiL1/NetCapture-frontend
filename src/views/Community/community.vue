@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import { searchByArea,updatePersonInfo,deletePersonInfo,searchByName, searchById } from "../../api/Person/basic";
+import { searchByArea,updatePersonInfo,resetStatus,searchByName, searchById } from "../../api/Person/basic";
 import {
   getAncestor
 } from "../../api/Region/base";
@@ -205,10 +205,10 @@ export default{
         let from = (currentPage - 1) * this.pageSize;
         let to = currentPage * this.pageSize;
         this.tableDataEnd = [];
-for (; from < to; from++) {
-          if (list[from]) {
-            this.tableDataEnd.push(list[from]);
-}}},
+        for (; from < to; from++) {
+                  if (list[from]) {
+                    this.tableDataEnd.push(list[from]);
+        }}},
     initTable(){
       this.loading= true
       // this.$store.state.user.dept

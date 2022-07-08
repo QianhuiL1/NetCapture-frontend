@@ -1,7 +1,7 @@
 <template>
   <div class="home_container">
     <div class="title">
-      <span>疫网捕获日报平台</span>
+      <span>疫网捕获一码通行</span>
     </div>
     <div class="form">
    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -55,7 +55,7 @@ callback(new Error('身份证号格式不正确'))
         ruleForm: {
           peopleId:'',
           name: '',
-          address:'武汉大学计算机学院',
+          address:'武汉大学计算机学院202教室',
           submittingTime:''
         },
         rules: {
