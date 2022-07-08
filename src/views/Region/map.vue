@@ -8,7 +8,7 @@
           @click="
             menuIndex = 'region';
             initMap();
-            setRegion();
+            setRegion1();
           "
         >
           重点地区
@@ -18,7 +18,7 @@
           :class="[menuIndex == 'track' ? 'active' : '']"
           @click="
             menuIndex = 'track';
-            initMap();
+            clearRegion();
             setLine();
           "
         >
@@ -109,6 +109,7 @@
         <el-table-column
           label="轨迹地点"
           prop="address"
+          show-overflow-tooltip
         />
         <el-table-column
           label="到达时间"
@@ -237,6 +238,10 @@ export default {
     },
     setMarker(row) {
       const this_ = this;
+      if(this.marker != null){
+this.marker.setMap(null)
+this.marker = null
+      }
       this_.geoCoder.getLocation(row.address, function (status, result) {
       if (status === "complete" && result.geocodes.length) {
         var marker = new AMap.Marker({
@@ -318,15 +323,19 @@ export default {
     },
     clearRegion() {
       const this_=this
-      if(this_.marker != null){
-        this_.map.remove(this_.marker)
+      if(this.marker != null){
+        this.map.remove(this_.marker)
       }
-      this.polygons.forEach((item) => {
-        item.setMap(null)
-        this_.map.remove(item)
+      this.map.clearMap()
+    },
+    setRegion1(){
+      const map = this.map
+            this.polygons.forEach((item) => {
+        if(item != null){
+item.setMap(map)
+        }
       })
-      this.marker = null
-      this.polygons = []
+      map.setFitView(this.polygons)
     },
     setLine() {
       const tmp_this = this;
@@ -438,12 +447,12 @@ export default {
     },
 
     clearLine() {
-      // this.map.clearMap();
-      const this_=this
-      this.map.remove(this_.points);
-      this.map.remove(this_.texts);
-      this.map.remove(this_.polylines)
-      this.map.remove(this_.infoWindow)
+      //this.map.clearMap();
+      // const this_=this
+      // this.map.remove(this_.points);
+      // this.map.remove(this_.texts);
+      // this.map.remove(this_.polylines)
+      // this.map.remove(this_.infoWindow)
       this.polylines = []
       this.texts = []
       this.points = []
