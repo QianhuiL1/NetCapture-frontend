@@ -65,12 +65,12 @@
 				<el-menu-item index="/checkUser">审核注册用户</el-menu-item>
 			</el-menu-item-group>
 		</el-submenu>
-		<el-submenu index="7" v-if="role == 1" @click.native="swap">
-			<template slot="title">
-				<i class="el-icon-delete-solid" style="font-size: 28px;"></i>
-				<span>  一键清零</span>
-			</template>
-		</el-submenu>
+<!--		<el-submenu index="7" v-if="role == 1" @click.native="swap">-->
+<!--			<template slot="title">-->
+<!--				<i class="el-icon-delete-solid" style="font-size: 28px;"></i>-->
+<!--				<span>  一键清零</span>-->
+<!--			</template>-->
+<!--		</el-submenu>-->
 	</el-menu>
 </template>
 
@@ -105,7 +105,7 @@ import {resetStatus} from '../api/Person/basic'
 				if(this.n == 50){
 					clearInterval(this.id)
 				}
-				
+
 			this.role=(this.$store.state.user.roles)
 			},1000)
 		},
@@ -157,11 +157,11 @@ import {resetStatus} from '../api/Person/basic'
   .el-menu-item-group__title {
     padding: 0px;
   }
-	
+
 	.el-menu ::v-deep(.el-sub-menu.is-active > .el-sub-menu__title) {
 		color: #3949AB !important;
 	}
- 
+
 	.el-menu {
 		border: none;
     height:100%;
